@@ -1,0 +1,72 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 65a827bf008ebb763b783657152b32da3580e0de080388edbf8de8998f6c2995
+
+name:           cq2rdf
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/githubuser/cq2rdf#readme>
+homepage:       https://github.com/githubuser/cq2rdf#readme
+bug-reports:    https://github.com/githubuser/cq2rdf/issues
+author:         Konstantinos Lambrou-Latreille
+maintainer:     example@example.com
+copyright:      2020 Konstantinos Lambrou-Latreille
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/cq2rdf
+
+library
+  exposed-modules:
+      Import
+      Run
+      Types
+      Util
+  other-modules:
+      Paths_cq2rdf
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.11 && <10
+    , rio >=0.1.12.0
+  default-language: Haskell2010
+
+executable cq2rdf-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_cq2rdf
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.11 && <10
+    , cq2rdf
+    , optparse-simple
+    , rio >=0.1.12.0
+  default-language: Haskell2010
+
+test-suite cq2rdf-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      UtilSpec
+      Paths_cq2rdf
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.11 && <10
+    , cq2rdf
+    , hspec
+    , rio >=0.1.12.0
+  default-language: Haskell2010
