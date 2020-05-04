@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 65a827bf008ebb763b783657152b32da3580e0de080388edbf8de8998f6c2995
+-- hash: d650c119b69a81675f6afb8aaf72cea0030924c796881ab142ab2efeb0932fd8
 
 name:           cq2rdf
 version:        0.1.0.0
@@ -27,7 +27,10 @@ source-repository head
 
 library
   exposed-modules:
+      Data.RDF.State
       Import
+      Model
+      Namespaces
       Run
       Types
       Util
@@ -37,8 +40,20 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.11 && <10
+      aeson >=1.4 && <1.5
+    , base >=4.11 && <10
+    , conduit >=1.3 && <1.4
+    , directory >=1.3 && <1.4
+    , esqueleto >=3 && <3.1
+    , mtl >=2.2 && <2.3
+    , persistent >=2.8 && <2.11
+    , persistent-sqlite
+    , persistent-template
+    , rdf4h >=4 && <5
+    , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
+    , text >=1.2 && <1.3
+    , time >=1.8 && <1.9
   default-language: Haskell2010
 
 executable cq2rdf-exe
@@ -49,10 +64,22 @@ executable cq2rdf-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.11 && <10
+      aeson >=1.4 && <1.5
+    , base >=4.11 && <10
+    , conduit >=1.3 && <1.4
     , cq2rdf
+    , directory >=1.3 && <1.4
+    , esqueleto >=3 && <3.1
+    , mtl >=2.2 && <2.3
     , optparse-simple
+    , persistent >=2.8 && <2.11
+    , persistent-sqlite
+    , persistent-template
+    , rdf4h >=4 && <5
+    , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
+    , text >=1.2 && <1.3
+    , time >=1.8 && <1.9
   default-language: Haskell2010
 
 test-suite cq2rdf-test
@@ -65,8 +92,20 @@ test-suite cq2rdf-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.11 && <10
+      aeson >=1.4 && <1.5
+    , base >=4.11 && <10
+    , conduit >=1.3 && <1.4
     , cq2rdf
+    , directory >=1.3 && <1.4
+    , esqueleto >=3 && <3.1
     , hspec
+    , mtl >=2.2 && <2.3
+    , persistent >=2.8 && <2.11
+    , persistent-sqlite
+    , persistent-template
+    , rdf4h >=4 && <5
+    , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
+    , text >=1.2 && <1.3
+    , time >=1.8 && <1.9
   default-language: Haskell2010
