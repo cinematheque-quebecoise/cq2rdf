@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d650c119b69a81675f6afb8aaf72cea0030924c796881ab142ab2efeb0932fd8
+-- hash: b5e8e48a09dc99a635bbd8456ad6a929b43d6001ba5cb6ca661fb67af93c7e63
 
 name:           cq2rdf
 version:        0.1.0.0
@@ -14,7 +14,7 @@ bug-reports:    https://github.com/githubuser/cq2rdf/issues
 author:         Konstantinos Lambrou-Latreille
 maintainer:     example@example.com
 copyright:      2020 Konstantinos Lambrou-Latreille
-license:        BSD3
+license:        GPL-3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
@@ -29,7 +29,6 @@ library
   exposed-modules:
       Data.RDF.State
       Import
-      Model
       Namespaces
       Run
       Types
@@ -42,9 +41,12 @@ library
   build-depends:
       aeson >=1.4 && <1.5
     , base >=4.11 && <10
+    , bytestring >=0.9 && <0.11
+    , cinetv4h
     , conduit >=1.3 && <1.4
     , directory >=1.3 && <1.4
-    , esqueleto >=3 && <3.1
+    , esqueleto >=3 && <3.4
+    , filepath
     , mtl >=2.2 && <2.3
     , persistent >=2.8 && <2.11
     , persistent-sqlite
@@ -53,7 +55,9 @@ library
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
     , text >=1.2 && <1.3
-    , time >=1.8 && <1.9
+    , time >=1.8 && <1.10
+    , xsd
+    , zlib >=0.6 && <0.7
   default-language: Haskell2010
 
 executable cq2rdf-exe
@@ -66,10 +70,13 @@ executable cq2rdf-exe
   build-depends:
       aeson >=1.4 && <1.5
     , base >=4.11 && <10
+    , bytestring >=0.9 && <0.11
+    , cinetv4h
     , conduit >=1.3 && <1.4
     , cq2rdf
     , directory >=1.3 && <1.4
-    , esqueleto >=3 && <3.1
+    , esqueleto >=3 && <3.4
+    , filepath
     , mtl >=2.2 && <2.3
     , optparse-simple
     , persistent >=2.8 && <2.11
@@ -79,13 +86,16 @@ executable cq2rdf-exe
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
     , text >=1.2 && <1.3
-    , time >=1.8 && <1.9
+    , time >=1.8 && <1.10
+    , xsd
+    , zlib >=0.6 && <0.7
   default-language: Haskell2010
 
 test-suite cq2rdf-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      System.SparqlSpec
       UtilSpec
       Paths_cq2rdf
   hs-source-dirs:
@@ -94,18 +104,24 @@ test-suite cq2rdf-test
   build-depends:
       aeson >=1.4 && <1.5
     , base >=4.11 && <10
+    , bytestring >=0.9 && <0.11
+    , cinetv4h
     , conduit >=1.3 && <1.4
     , cq2rdf
     , directory >=1.3 && <1.4
-    , esqueleto >=3 && <3.1
+    , esqueleto >=3 && <3.4
+    , filepath
     , hspec
     , mtl >=2.2 && <2.3
     , persistent >=2.8 && <2.11
     , persistent-sqlite
     , persistent-template
+    , process
     , rdf4h >=4 && <5
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
     , text >=1.2 && <1.3
-    , time >=1.8 && <1.9
+    , time >=1.8 && <1.10
+    , xsd
+    , zlib >=0.6 && <0.7
   default-language: Haskell2010

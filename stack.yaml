@@ -39,10 +39,18 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-extra-deps: [
-  rdf4h-4.0.0
-, hgal-2.0.0.2
-]
+# extra-deps: [
+#   rdf4h-4.0.0
+# , hgal-2.0.0.2
+# ]
+extra-deps:
+  - ../cinetvdb/cinetv4h
+  - git: https://github.com/robstewart57/rdf4h.git
+    commit: 9658c9c361fb175f614a127c96da8ec42665334a
+  - algebraic-graphs-0.5@sha256:6eeec5ed1687ff7aa916e7bf9f02f51aaabde6f314dc0b7b1a84156974d7da73,8071
+  - hgal-2.0.0.2
+  - xsd-0.5.0.1@sha256:1978547075a93be0e4ffc82f4d9f984c5977bd457af6fa394465d0712d815c68,1969
+  - shelltestrunner-1.9
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

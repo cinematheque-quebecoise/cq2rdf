@@ -19,6 +19,21 @@ main = do
                  <> short 'v'
                  <> help "Verbose output?"
                   )
+       <*> strOption ( long "baseuri"
+                    <> short 'b'
+                    <> metavar "BASEURI"
+                    <> help "RDF Base URI"
+                     )
+       <*> strOption ( long "sqlitedb"
+                    <> short 's'
+                    <> metavar "SQLITEDBFILE"
+                    <> help "File path of the Sqlite database file"
+                     )
+       <*> strOption ( long "outputdir"
+                    <> short 'o'
+                    <> metavar "OUTPUTDIR"
+                    <> help "Output directory of result"
+                     )
     )
     empty
   lo <- logOptionsHandle stderr (optionsVerbose options)

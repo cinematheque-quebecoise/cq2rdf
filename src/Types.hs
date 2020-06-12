@@ -7,6 +7,9 @@ import RIO.Process
 -- | Command line arguments
 data Options = Options
   { optionsVerbose :: !Bool
+  , optionsBaseUri :: !Text
+  , optionsSqlitePath :: !Text
+  , optionsOutputDir :: !Text
   }
 
 data App = App
