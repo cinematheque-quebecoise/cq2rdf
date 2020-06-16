@@ -400,6 +400,9 @@ createFilmoTriples filmoEntity = do
   addTriple $ RDF.triple (RDF.unode filmoRecordingEventUri)
                          (RDF.unode $ RDF.mkUri frbroo "R22_created_a_realization_of")
                          (RDF.unode filmoUri)
+  addTriple $ RDF.triple (RDF.unode filmoUri)
+                         (RDF.unode $ RDF.mkUri frbroo "R22i_was_realised_through")
+                         (RDF.unode filmoRecordingEventUri)
 
   addTriple $ RDF.triple (RDF.unode filmoRecordingEventUri)
                          (RDF.unode $ RDF.mkUri RDF.rdf "type")
@@ -482,7 +485,13 @@ createRecordingRoleActivityTriples filmoGeneriqueEntity = do
           addTriple $ RDF.triple (RDF.unode recordingWorkUri)
                                  (RDF.unode $ RDF.mkUri frbroo "R2_is_derivative_of")
                                  (RDF.unode workUri)
+          addTriple $ RDF.triple (RDF.unode workUri)
+                                 (RDF.unode $ RDF.mkUri frbroo "R2i_has_derivative")
+                                 (RDF.unode recordingWorkUri)
 
+          addTriple $ RDF.triple (RDF.unode workConceptionUri)
+                                 (RDF.unode $ RDF.mkUri frbroo "R16_initiated")
+                                 (RDF.unode workUri)
           addTriple $ RDF.triple (RDF.unode workUri)
                                  (RDF.unode $ RDF.mkUri frbroo "R16i_was_initiated_by")
                                  (RDF.unode workConceptionUri)
@@ -490,6 +499,9 @@ createRecordingRoleActivityTriples filmoGeneriqueEntity = do
           addTriple $ RDF.triple (RDF.unode workConceptionUri)
                                  (RDF.unode $ RDF.mkUri crm "P14_carried_out_by")
                                  (RDF.unode recordingActivityAgentUri)
+          addTriple $ RDF.triple (RDF.unode recordingActivityAgentUri)
+                                 (RDF.unode $ RDF.mkUri crm "P14i_performed")
+                                 (RDF.unode workConceptionUri)
         Nothing -> return ()
 
       return ()
@@ -502,6 +514,9 @@ createRecordingRoleActivityTriples filmoGeneriqueEntity = do
       addTriple $ RDF.triple (RDF.unode recordingEventUri)
                              (RDF.unode $ RDF.mkUri crm "P9_consists_of")
                              (RDF.unode recordingActivityUri)
+      addTriple $ RDF.triple (RDF.unode recordingActivityUri)
+                             (RDF.unode $ RDF.mkUri crm "P9i_forms_part_of")
+                             (RDF.unode recordingEventUri)
 
       addTriple $ RDF.triple (RDF.unode recordingActivityUri)
                              (RDF.unode $ RDF.mkUri RDF.rdf "type")
@@ -516,6 +531,9 @@ createRecordingRoleActivityTriples filmoGeneriqueEntity = do
           addTriple $ RDF.triple (RDF.unode recordingActivityUri)
                                  (RDF.unode $ RDF.mkUri crm "P14_carried_out_by")
                                  (RDF.unode recordingActivityPersonUri)
+          addTriple $ RDF.triple (RDF.unode recordingActivityPersonUri)
+                                 (RDF.unode $ RDF.mkUri crm "P14i_performed")
+                                 (RDF.unode recordingActivityUri)
         Nothing -> return ()
 
       case recordingActivityLegalBodyUriMaybe of
@@ -523,6 +541,9 @@ createRecordingRoleActivityTriples filmoGeneriqueEntity = do
           addTriple $ RDF.triple (RDF.unode recordingActivityUri)
                                  (RDF.unode $ RDF.mkUri crm "P14_carried_out_by")
                                  (RDF.unode recordingActivityLegalBodyUri)
+          addTriple $ RDF.triple (RDF.unode recordingActivityLegalBodyUri)
+                                 (RDF.unode $ RDF.mkUri crm "P14i_performed")
+                                 (RDF.unode recordingActivityUri)
         Nothing -> return ()
 
   where
@@ -580,6 +601,9 @@ createResourceTimeSpanTriples resourceUri beginDateMaybe endDateMaybe = do
     addTriple $ RDF.triple (RDF.unode $ resourceUri)
                            (RDF.unode $ RDF.mkUri crm "P4_has_time-span")
                            (RDF.unode $ resourceTimeSpanUri)
+    addTriple $ RDF.triple (RDF.unode $ resourceTimeSpanUri)
+                           (RDF.unode $ RDF.mkUri crm "P4i_is_time-span_of")
+                           (RDF.unode $ resourceUri)
 
     case beginDateMaybe of
       Just beginDate -> do
@@ -654,10 +678,14 @@ createFilmoDirectorTriples filmoRealisationEntity = do
   let recordingActivityUri = "/resource/RecordingRoleActivity" <> filmoDirectorId
   let recordingActivityRoleUri = "/resource/Role" <> (Text.pack $ show customDirectorRoleId)
   let recordingActivityPersonUri = "/resource/Person" <> directorId
+  let recordingEventUri = "/resource/RecordingEvent" <> filmoId
 
-  addTriple $ RDF.triple (RDF.unode $ "/resource/RecordingEvent" <> filmoId)
+  addTriple $ RDF.triple (RDF.unode recordingEventUri)
                          (RDF.unode $ RDF.mkUri crm "P9_consists_of")
                          (RDF.unode recordingActivityUri)
+  addTriple $ RDF.triple (RDF.unode recordingActivityUri)
+                         (RDF.unode $ RDF.mkUri crm "P9i_forms_part_of")
+                         (RDF.unode recordingEventUri)
 
   addTriple $ RDF.triple (RDF.unode recordingActivityUri)
                          (RDF.unode $ RDF.mkUri RDF.rdf "type")
@@ -670,6 +698,9 @@ createFilmoDirectorTriples filmoRealisationEntity = do
   addTriple $ RDF.triple (RDF.unode recordingActivityUri)
                          (RDF.unode $ RDF.mkUri crm "P14_carried_out_by")
                          (RDF.unode recordingActivityPersonUri)
+  addTriple $ RDF.triple (RDF.unode recordingActivityPersonUri)
+                         (RDF.unode $ RDF.mkUri crm "P14i_performed")
+                         (RDF.unode recordingActivityUri)
   return ()
 
   where
@@ -751,6 +782,9 @@ createFilmoPlaceTriples filmoPaysEntity = do
   addTriple $ RDF.triple (RDF.unode prodEventUri)
                          (RDF.unode $ RDF.mkUri crm "P7_took_place_at")
                          (RDF.unode placeUri)
+  addTriple $ RDF.triple (RDF.unode placeUri)
+                         (RDF.unode $ RDF.mkUri crm "P7i_witnessed")
+                         (RDF.unode prodEventUri)
 
 -- | Get all rows from Pays_LienWikidata table in database.
 getPaysLienWikidata :: (MonadIO m)
