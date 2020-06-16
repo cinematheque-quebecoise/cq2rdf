@@ -1,10 +1,9 @@
-release-branch:
-  stage: release
-  image: registry.gitlab.com/gitlab-org/release-cli
-  when: manual
-  # We recommend the use of `except: tags` to prevent these pipelines
-  # from running. See the notes section below for details.
-  except:
-    - tags
-  script:
-    - release-cli create --name release-branch-$CI_JOB_ID --description release-branch-$CI_COMMIT_REF_NAME-$CI_JOB_ID --tag-name job-$CI_JOB_ID --ref $CI_COMMIT_SHA
+image: nixos/nix:latest
+
+stages:
+  - build
+
+compile:
+    stage: build
+    script:
+      - nix-build --no-out-link release.nix
