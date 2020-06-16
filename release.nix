@@ -12,6 +12,12 @@ let
 
   compiler = "ghc883";
 
+  cinetvdb = builtins.fetchGit {
+    url = "git@gitlab.com:cinematheque-quebecoise/cinetvdb.git";
+    ref = "refs/heads/master";
+    rev = "d4da3fcb730abbff869679814c76ee569bab0fdd";
+  };
+
   haskellPackages = pkgs.haskell.packages.${compiler}.override {
     overrides = self: upser: rec {
       rdf4h = self.callCabal2nix "rdf4h" (builtins.fetchGit {
@@ -24,11 +30,12 @@ let
         ref = "refs/heads/master";
         rev = "2a429fd397d7b6a556a399b867dfe37cfefbc041";
       }) {};
+      cinetv4h = self.callCabal2nix "cinetv4h" ("${cinetvdb}/cinetv4h") {};
     };
   };
 in
   haskellPackages.callCabal2nix "cq2rdf" (./.) {
-    cinetv4h = haskellPackages.callCabal2nix "cinetv4h" (./../cinetvdb/cinetv4h) {};
+    #cinetv4h = haskellPackages.callCabal2nix "cinetv4h" (./../cinetvdb/cinetv4h) {};
     rdf4h = pkgs.haskell.lib.dontCheck haskellPackages.rdf4h;
     xsd = pkgs.haskell.lib.dontCheck haskellPackages.xsd;
     # esqueleto = haskellPackages.callHackage "esqueleto" "3.0.0" {};
