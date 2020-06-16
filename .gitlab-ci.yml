@@ -27,10 +27,10 @@ before_script:
 
   - git clone git@gitlab.com:cinematheque-quebecoise/cinetvdb.git
 
- stages:
-   - build
+stages:
+  - build
 
- compile:
--  stage: build
--  script:
--    - nix-build --no-out-link release.nix
+compile:
+  stage: build
+  script:
+    - nix-build --no-out-link release.nix
