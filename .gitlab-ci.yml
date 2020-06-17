@@ -34,3 +34,16 @@ compile:
   stage: build
   script:
     - nix-build --no-out-link release.nix
+
+release:
+  stage: build
+  script:
+    - echo "$ACCESS_TOKEN"
+    - VERSION=$(grep version package.yaml | sed 's/version:\s*\([[:digit:]]\.[[:digit:]]*\)/\1/')
+    - echo $VERSION
+    - "curl --header \"PRIVATE-TOKEN: $ACCESS_TOKEN\" --request DELETE https://gitlab.com/api/v4/projects/18031890/repository/tags/v$VERSION"
+    - "curl --header 'Content-Type: application/json' --header \"PRIVATE-TOKEN: $ACCESS_TOKEN\" --data '{ \"name\": \"Version '${VERSION}' release\", \"tag_name\": \"v'${VERSION}'\", \"ref\": \"master\" }' --request POST https://gitlab.com/api/v4/projects/18031890/releases"
+  only:
+    refs:
+      - master
+      - triggers
