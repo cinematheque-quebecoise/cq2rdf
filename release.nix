@@ -10,6 +10,8 @@ let
     rev = "7c399a4ee080f33cc500a3fda33af6fccfd617bd";
   }) {};
 
+  hdt = import ./hdt.nix { inherit pkgs; };
+
   compiler = "ghc883";
 
   cinetvdb = builtins.fetchGit {
@@ -33,10 +35,18 @@ let
       cinetv4h = self.callCabal2nix "cinetv4h" ("${cinetvdb}/cinetv4h") {};
     };
   };
-in
-  haskellPackages.callCabal2nix "cq2rdf" (./.) {
-    #cinetv4h = haskellPackages.callCabal2nix "cinetv4h" (./../cinetvdb/cinetv4h) {};
+
+  cq2rdf = haskellPackages.callCabal2nix "cq2rdf" (./.) {
     rdf4h = pkgs.haskell.lib.dontCheck haskellPackages.rdf4h;
     xsd = pkgs.haskell.lib.dontCheck haskellPackages.xsd;
     # esqueleto = haskellPackages.callHackage "esqueleto" "3.0.0" {};
-  }
+  };
+
+in
+  pkgs.haskell.lib.overrideCabal cq2rdf (drv: {
+    buildDepends = [ hdt pkgs.makeWrapper ];
+    postInstall = ''
+      wrapProgram "$out/bin/cq2rdf-exe" \
+        --prefix PATH ":" "${hdt}/bin"
+    '';
+  })

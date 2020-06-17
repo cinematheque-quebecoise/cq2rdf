@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b5e8e48a09dc99a635bbd8456ad6a929b43d6001ba5cb6ca661fb67af93c7e63
+-- hash: 2cbf8c24d5168a95ac4b5371ee9a2cc698d39f280684c47cddf61b096a7fecb1
 
 name:           cq2rdf
 version:        0.1.0.0
@@ -51,7 +51,9 @@ library
     , persistent >=2.8 && <2.11
     , persistent-sqlite
     , persistent-template
+    , process
     , rdf4h >=4 && <5
+    , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
     , text >=1.2 && <1.3
@@ -82,7 +84,9 @@ executable cq2rdf-exe
     , persistent >=2.8 && <2.11
     , persistent-sqlite
     , persistent-template
+    , process
     , rdf4h >=4 && <5
+    , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
     , text >=1.2 && <1.3
@@ -118,6 +122,7 @@ test-suite cq2rdf-test
     , persistent-template
     , process
     , rdf4h >=4 && <5
+    , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
     , text >=1.2 && <1.3

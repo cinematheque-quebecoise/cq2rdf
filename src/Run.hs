@@ -2,6 +2,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE DeriveGeneric #-}
 module Run (run) where
 
 import Import hiding ((^.))
@@ -16,6 +18,7 @@ import Data.RDF (RDF)
 import qualified Data.RDF as RDF
 import qualified Data.RDF.Namespace as RDF
 import Text.RDF.RDF4H.TurtleSerializer
+import Text.RDF.RDF4H.NTriplesSerializer
 import Data.Pool (Pool)
 import Database.Esqueleto hiding (get)
 import Database.Persist.Sqlite (SqliteConf(..))
@@ -29,9 +32,16 @@ import qualified Data.ByteString.Lazy as BS
 import System.Directory (doesFileExist, removeFile)
 import Text.XML.XSD (fromUTCTime)
 import System.FilePath (joinPath)
+import Text.RE.TDFA.Text
+import System.Process (callCommand)
 
 -- Used for converting the prefix mappings in JSON format
 instance ToJSON RDF.PrefixMappings
+
+data Metadata = Metadata { metadataOriginalDate :: Text
+                         , metadataCreationDate :: Text
+                         } deriving (Generic)
+instance ToJSON Metadata
 
 -- run :: RIO App ()
 -- run = do
@@ -58,86 +68,112 @@ run = do
 
   logInfo "Converting CineTV in RDF..."
 
-  currentTime <- liftIO $ fmap getCurrentDayText getCurrentTime
+  originalDate <- getSqliteDbDate
+  creationDate <- liftIO $ fmap getCurrentDayText getCurrentTime
 
   -- let emptyRdf = RDF.empty :: RDF RDF.TList
-  let baseUri = Just $ RDF.BaseUrl $ optionsBaseUri $ appOptions env
-  let emptyRdf = RDF.mkRdf [] baseUri prefixMappings :: RDF RDF.TList
+  let baseUri = optionsBaseUri $ appOptions env
+  let baseUriJust = Just $ RDF.BaseUrl baseUri
+  let emptyRdf = RDF.mkRdf [] baseUriJust prefixMappings :: RDF RDF.TList
   graph <- liftIO $ execStateT (cq2rdf pool) emptyRdf
 
-  let outputDir = Text.pack $ joinPath [Text.unpack $ optionsOutputDir $ appOptions env, Text.unpack currentTime]
+  let outputDir = Text.pack $ joinPath [Text.unpack $ optionsOutputDir $ appOptions env, "data"]
   liftIO $ createDirectoryIfMissing True $ Text.unpack outputDir
 
   let prefixesFpath = Text.unpack $ outputDir <> "/prefixes.json"
   liftIO $ TextL.writeFile prefixesFpath $ encodeToLazyText $ RDF.prefixMappings graph
 
-  let cmtqFpath = Text.unpack $ outputDir <> "/cmtq-dataset-" <> currentTime <> ".ttl"
-  liftIO $ withFile cmtqFpath WriteMode (\h -> RDF.hWriteRdf (TurtleSerializer Nothing prefixMappings) h graph)
+  let metadataFpath = Text.unpack $ outputDir <> "/metadata.json"
+  liftIO $ TextL.writeFile metadataFpath $ encodeToLazyText $ Metadata originalDate creationDate
 
-  -- Compress output file
-  let cmtqFpathCompressed = cmtqFpath <> ".gz"
-  liftIO $ BS.readFile cmtqFpath >>= (return . compress) >>= BS.writeFile cmtqFpathCompressed
-  liftIO $ removeFile cmtqFpath
+  let cmtqTurtleFpath = Text.unpack $ outputDir <> "/cmtq-dataset.ttl"
+  liftIO $ withFile cmtqTurtleFpath WriteMode (\h -> RDF.hWriteRdf (TurtleSerializer Nothing prefixMappings) h graph)
+
+  let cmtqNtriplesFpath = Text.unpack $ outputDir <> "/cmtq-dataset.nt"
+  liftIO $ withFile cmtqNtriplesFpath WriteMode (\h -> RDF.hWriteRdf NTriplesSerializer h graph)
+
+  -- Compress output Turtle file
+  let cmtqTurtleFpathCompressed = cmtqTurtleFpath <> ".gz"
+  liftIO $ BS.readFile cmtqTurtleFpath >>= (return . compress) >>= BS.writeFile cmtqTurtleFpathCompressed
+  liftIO $ removeFile cmtqTurtleFpath
+
+  -- Compress output N-triples file
+  let cmtqNtriplesFpathCompressed = cmtqNtriplesFpath <> ".gz"
+  liftIO $ BS.readFile cmtqNtriplesFpath >>= (return . compress) >>= BS.writeFile cmtqNtriplesFpathCompressed
+  liftIO $ removeFile cmtqNtriplesFpath
+
+  let cmtqHdtFpath = Text.unpack $ outputDir <> "/cmtq-dataset.hdt"
+  let rdf2hdtCmd = "rdf2hdt -B " <> Text.unpack baseUri <> "/resource -f ttl " <> cmtqNtriplesFpathCompressed <> " " <> cmtqHdtFpath
+  liftIO $ callCommand rdf2hdtCmd
 
   logInfo "Finished!"
+
+getSqliteDbDate :: RIO App Text
+getSqliteDbDate = do
+  sqliteDbPath <- fmap (optionsSqlitePath . appOptions) ask
+  case matchedText $ sqliteDbPath ?=~ [re|[0-9]+-[0-9]+-[0-9]+|] of
+    Just date -> return date
+    Nothing -> do
+      logError "The SQLite file must contain a date in the format YYYY-MM-DD"
+      exitFailure
 
 cq2rdf :: (MonadIO m)
        => Pool SqlBackend
        -> RdfState RDF.TList m ()
 cq2rdf pool = do
-  nomEntities <- getNomEntities pool
-  createPeopleTriples nomEntities
+  -- nomEntities <- getNomEntities pool
+  -- createPeopleTriples nomEntities
 
   fonctionEntities <- getFonctionEntities pool
   createRolesTriples fonctionEntities
 
-  recordingRoleActivities <- getRecordingRoleActivities pool
-  createRecordingRoleActivitiesTriples recordingRoleActivities
+  -- recordingRoleActivities <- getRecordingRoleActivities pool
+  -- createRecordingRoleActivitiesTriples recordingRoleActivities
 
-  filmos <- getFilmos pool
-  createFilmosTriples filmos
+  -- filmos <- getFilmos pool
+  -- createFilmosTriples filmos
 
-  legalBodies <- getLegalBodies pool
-  createLegalBodiesTriples legalBodies
+  -- legalBodies <- getLegalBodies pool
+  -- createLegalBodiesTriples legalBodies
 
-  movieCategories <- getMovieCategories pool
-  createMovieCategoriesTriples movieCategories
+  -- movieCategories <- getMovieCategories pool
+  -- createMovieCategoriesTriples movieCategories
 
-  filmosSubject <- getFilmosSubject pool
-  createFilmosSubjectTriples filmosSubject
+  -- filmosSubject <- getFilmosSubject pool
+  -- createFilmosSubjectTriples filmosSubject
 
-  filmosDirector <- getFilmosDirector pool
-  createFilmosDirectorTriples filmosDirector
+  -- filmosDirector <- getFilmosDirector pool
+  -- createFilmosDirectorTriples filmosDirector
 
-  filmosPlaces <- getFilmosPlaces pool
-  createFilmosPlacesTriples filmosPlaces
+  -- filmosPlaces <- getFilmosPlaces pool
+  -- createFilmosPlacesTriples filmosPlaces
 
-  places <- getPlaces pool
-  createPlacesTriples places
+  -- places <- getPlaces pool
+  -- createPlacesTriples places
 
-  paysLienWikidata <- getPaysLienWikidata pool
-  mkAllPaysLienWikidataRdf paysLienWikidata
+  -- paysLienWikidata <- getPaysLienWikidata pool
+  -- mkAllPaysLienWikidataRdf paysLienWikidata
 
-  filmoLienWikidata <- getFilmoLienWikidata pool
-  mkAllFilmoLienWikidataRdf filmoLienWikidata
+  -- filmoLienWikidata <- getFilmoLienWikidata pool
+  -- mkAllFilmoLienWikidataRdf filmoLienWikidata
 
-  nomLienWikidata <- getNomLienWikidata pool
-  mkAllNomLienWikidataRdf nomLienWikidata
+  -- nomLienWikidata <- getNomLienWikidata pool
+  -- mkAllNomLienWikidataRdf nomLienWikidata
 
-  filmoResumes <- getFilmoResumes pool
-  mkAllFilmoResumesRdf filmoResumes
+  -- filmoResumes <- getFilmoResumes pool
+  -- mkAllFilmoResumesRdf filmoResumes
 
-  filmoResumesAnglais <- getFilmoResumesAnglais pool
-  mkAllFilmoResumesAnglaisRdf filmoResumesAnglais
+  -- filmoResumesAnglais <- getFilmoResumesAnglais pool
+  -- mkAllFilmoResumesAnglaisRdf filmoResumesAnglais
 
-  langue <- getLangue pool
-  mkAllLangueRdf langue
+  -- langue <- getLangue pool
+  -- mkAllLangueRdf langue
 
-  langueLienWikidata <- getLangueLienWikidata pool
-  mkAllLangueLienWikidataRdf langueLienWikidata
+  -- langueLienWikidata <- getLangueLienWikidata pool
+  -- mkAllLangueLienWikidataRdf langueLienWikidata
 
-  filmoLangue <- getFilmoLangue pool
-  mkAllFilmoLangueRdf filmoLangue
+  -- filmoLangue <- getFilmoLangue pool
+  -- mkAllFilmoLangueRdf filmoLangue
 
   return ()
 
