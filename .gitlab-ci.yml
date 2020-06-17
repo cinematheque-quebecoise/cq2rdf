@@ -1,7 +1,7 @@
 image: nixos/nix:latest
 
 before_script:
-  - nix-env -i git openssh
+  - nix-env -i git openssh curl
 
   ##
   ## Run ssh-agent (inside the build environment)
@@ -43,7 +43,6 @@ release:
     - echo $VERSION
     - "curl --header \"PRIVATE-TOKEN: $ACCESS_TOKEN\" --request DELETE https://gitlab.com/api/v4/projects/18031890/repository/tags/v$VERSION"
     - "curl --header 'Content-Type: application/json' --header \"PRIVATE-TOKEN: $ACCESS_TOKEN\" --data '{ \"name\": \"Version '${VERSION}' release\", \"tag_name\": \"v'${VERSION}'\", \"ref\": \"master\" }' --request POST https://gitlab.com/api/v4/projects/18031890/releases"
-  only:
-    refs:
-      - master
-      - triggers
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master" && $CI_PIPELINE_SOURCE == "trigger"'
+      when: always
