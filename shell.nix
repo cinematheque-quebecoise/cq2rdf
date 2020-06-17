@@ -13,6 +13,7 @@ pkgs.stdenv.mkDerivation {
     haskellPackages.cabal-install
     pkgs.zlib
     pkgs.glibcLocales
+    pkgs.curl
     haskellPackages.shelltestrunner
     hdt
   ];

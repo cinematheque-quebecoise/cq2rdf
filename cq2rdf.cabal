@@ -4,26 +4,20 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2cbf8c24d5168a95ac4b5371ee9a2cc698d39f280684c47cddf61b096a7fecb1
+-- hash: 00911981c79fe28bb7c088bbe463ba43609a2be89245f354e701e6fa7ac4264d
 
 name:           cq2rdf
-version:        0.1.0.0
-description:    Please see the README on Github at <https://github.com/githubuser/cq2rdf#readme>
-homepage:       https://github.com/githubuser/cq2rdf#readme
-bug-reports:    https://github.com/githubuser/cq2rdf/issues
+version:        0.1
+description:    Please see the README on Gitlab at <https://gitlab.com/cinematheque-quebecoise/cq2rdf#readme>
 author:         Konstantinos Lambrou-Latreille
-maintainer:     example@example.com
-copyright:      2020 Konstantinos Lambrou-Latreille
+maintainer:     klambroulatreille@cinematheque.qc.ca
+copyright:      2020 Cinémathèque québécoise
 license:        GPL-3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
     ChangeLog.md
-
-source-repository head
-  type: git
-  location: https://github.com/githubuser/cq2rdf
 
 library
   exposed-modules:

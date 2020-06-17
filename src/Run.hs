@@ -121,59 +121,59 @@ cq2rdf :: (MonadIO m)
        => Pool SqlBackend
        -> RdfState RDF.TList m ()
 cq2rdf pool = do
-  -- nomEntities <- getNomEntities pool
-  -- createPeopleTriples nomEntities
+  nomEntities <- getNomEntities pool
+  createPeopleTriples nomEntities
 
   fonctionEntities <- getFonctionEntities pool
   createRolesTriples fonctionEntities
 
-  -- recordingRoleActivities <- getRecordingRoleActivities pool
-  -- createRecordingRoleActivitiesTriples recordingRoleActivities
+  recordingRoleActivities <- getRecordingRoleActivities pool
+  createRecordingRoleActivitiesTriples recordingRoleActivities
 
-  -- filmos <- getFilmos pool
-  -- createFilmosTriples filmos
+  filmos <- getFilmos pool
+  createFilmosTriples filmos
 
-  -- legalBodies <- getLegalBodies pool
-  -- createLegalBodiesTriples legalBodies
+  legalBodies <- getLegalBodies pool
+  createLegalBodiesTriples legalBodies
 
-  -- movieCategories <- getMovieCategories pool
-  -- createMovieCategoriesTriples movieCategories
+  movieCategories <- getMovieCategories pool
+  createMovieCategoriesTriples movieCategories
 
-  -- filmosSubject <- getFilmosSubject pool
-  -- createFilmosSubjectTriples filmosSubject
+  filmosSubject <- getFilmosSubject pool
+  createFilmosSubjectTriples filmosSubject
 
-  -- filmosDirector <- getFilmosDirector pool
-  -- createFilmosDirectorTriples filmosDirector
+  filmosDirector <- getFilmosDirector pool
+  createFilmosDirectorTriples filmosDirector
 
-  -- filmosPlaces <- getFilmosPlaces pool
-  -- createFilmosPlacesTriples filmosPlaces
+  filmosPlaces <- getFilmosPlaces pool
+  createFilmosPlacesTriples filmosPlaces
 
-  -- places <- getPlaces pool
-  -- createPlacesTriples places
+  places <- getPlaces pool
+  createPlacesTriples places
 
-  -- paysLienWikidata <- getPaysLienWikidata pool
-  -- mkAllPaysLienWikidataRdf paysLienWikidata
+  paysLienWikidata <- getPaysLienWikidata pool
+  mkAllPaysLienWikidataRdf paysLienWikidata
 
-  -- filmoLienWikidata <- getFilmoLienWikidata pool
-  -- mkAllFilmoLienWikidataRdf filmoLienWikidata
+  filmoLienWikidata <- getFilmoLienWikidata pool
+  mkAllFilmoLienWikidataRdf filmoLienWikidata
 
-  -- nomLienWikidata <- getNomLienWikidata pool
-  -- mkAllNomLienWikidataRdf nomLienWikidata
+  nomLienWikidata <- getNomLienWikidata pool
+  mkAllNomLienWikidataRdf nomLienWikidata
 
-  -- filmoResumes <- getFilmoResumes pool
-  -- mkAllFilmoResumesRdf filmoResumes
+  filmoResumes <- getFilmoResumes pool
+  mkAllFilmoResumesRdf filmoResumes
 
-  -- filmoResumesAnglais <- getFilmoResumesAnglais pool
-  -- mkAllFilmoResumesAnglaisRdf filmoResumesAnglais
+  filmoResumesAnglais <- getFilmoResumesAnglais pool
+  mkAllFilmoResumesAnglaisRdf filmoResumesAnglais
 
-  -- langue <- getLangue pool
-  -- mkAllLangueRdf langue
+  langue <- getLangue pool
+  mkAllLangueRdf langue
 
-  -- langueLienWikidata <- getLangueLienWikidata pool
-  -- mkAllLangueLienWikidataRdf langueLienWikidata
+  langueLienWikidata <- getLangueLienWikidata pool
+  mkAllLangueLienWikidataRdf langueLienWikidata
 
-  -- filmoLangue <- getFilmoLangue pool
-  -- mkAllFilmoLangueRdf filmoLangue
+  filmoLangue <- getFilmoLangue pool
+  mkAllFilmoLangueRdf filmoLangue
 
   return ()
 
