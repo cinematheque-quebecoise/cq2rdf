@@ -12,8 +12,8 @@ main :: IO ()
 main = do
   (options, ()) <- simpleOptions
     $(simpleVersion Paths_cq2rdf.version)
-    "Header for command line arguments"
-    "Program description, also for command line arguments"
+    "cq2rdf  Copyright (C) 2020  Cinemathèque québécoise\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it under certain conditions."
+    "cq2rdf is a tool to convert the database of Cinemathèque québécoise in multple RDF formats."
     (Options
        <$> switch ( long "verbose"
                  <> short 'v'
