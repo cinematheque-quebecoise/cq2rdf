@@ -1,3 +1,5 @@
+# Temporary package until nixpkgs accept the pull-request containing this
+# package description.
 { pkgs }:
 
 pkgs.stdenv.mkDerivation rec {

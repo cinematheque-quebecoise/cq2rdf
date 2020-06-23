@@ -31,21 +31,22 @@ Available options:
 
 Pour la compilation, l'outil [Nix](https://nixos.org/) doit être installé sur votre système.
 
-### Développement
-
-Pour développer, placez-vous dans un environnement isolé avec 
+À partir de la racine de ce projet, lancer un environnement nix:
 
 ```
 nix-shell --pure
 ```
 
-La compilation se fait avec l'outil `Cabal` (devrait être disponible grace à `nix-shell --pure`)
+### Développement
+
+Afin d'obtenir un cycle de compilation rapide pour le développement, nous
+utilisons l'outil `Cabal` (devrait être disponible grace à `nix-shell --pure`)
 
 ```
 cabal build
 ```
 
-Exécutez le programme avec 
+Testez le programme avec
 
 ```
 cabal run cq2rdf-exe -- --help
@@ -56,17 +57,23 @@ cabal run cq2rdf-exe -- --help
 Générer l'exécutable avec :
 
 ```
-$ nix-build release.nix
+$ make build
 ```
 
 L'exécutable devient disponible dans le chemin relatif `./result/bin/cq2rdf-exe`.
 
 ## Publication des données
 
-Assurez-vous de modifier correction la version du logiciel dans le fichier `package.yaml`. Ensuite, publiez les données avec:
+Assurez-vous de modifier correction la version du logiciel dans le fichier `package.yaml`.
+
+Pour publier une nouvelle version des données, vous devez générer un jeton à partir de l'interface web de Gitlab. Ce jeton est appellé un « [Personal Access Token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) ».
+
+Cette publication va téléverser le dossier qui a été généré par la commande `make run`.
+
+Pour publier les données:
 
 ```
-$ make create-release
+$ make release token=<COPIER VOTRE JETON ICI>
 ```
 
 ## License

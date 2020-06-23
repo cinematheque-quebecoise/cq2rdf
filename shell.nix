@@ -2,6 +2,7 @@
 let
   inherit (nixpkgs) pkgs;
   inherit (pkgs) haskellPackages;
+  inherit (pkgs) python35Packages;
 
   project = import ./release.nix;
 
@@ -11,12 +12,19 @@ pkgs.stdenv.mkDerivation {
   name = "shell";
   buildInputs = project.env.nativeBuildInputs ++ [
     haskellPackages.cabal-install
+    pkgs.nix
+    pkgs.curl
+    pkgs.jq
+    pkgs.git
     pkgs.zlib
     pkgs.glibcLocales
-    pkgs.curl
     haskellPackages.shelltestrunner
     hdt
   ];
 
   LANG = "en_US.UTF-8";
+
+  shellHook = ''
+    export SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt
+  '';
 }
