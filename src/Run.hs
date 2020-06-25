@@ -97,8 +97,8 @@ run = do
                                        ]
   liftIO $ createDirectoryIfMissing True $ Text.unpack outputDir
 
-  let prefixesFpath = Text.unpack $ outputDir <> "/prefixes.json"
-  liftIO $ TextL.writeFile prefixesFpath $ encodeToLazyText $ RDF.prefixMappings graph
+  -- let prefixesFpath = Text.unpack $ outputDir <> "/prefixes.json"
+  -- liftIO $ TextL.writeFile prefixesFpath $ encodeToLazyText $ RDF.prefixMappings graph
 
   let metadataFpath = Text.unpack $ outputDir <> "/metadata.json"
   liftIO $ TextL.writeFile metadataFpath $ encodeToLazyText $ Metadata originalDate creationDate

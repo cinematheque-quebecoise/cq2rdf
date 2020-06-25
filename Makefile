@@ -19,6 +19,9 @@ $(EXEC): release.nix *.nix *.yaml $(SOURCES)
 run: $(EXEC)
 	./$(EXEC) -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
+run-dev:
+	cabal run $(EXEC) -- -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
+
 # If release tag does not exist on Gitlab server, it returns a 403 Forbidden HTTP code.
 # @param token - Private Gitlab token
 # $ make release token=<YOURTOKEN>
