@@ -12,13 +12,17 @@ pkgs.stdenv.mkDerivation {
   name = "shell";
   buildInputs = project.env.nativeBuildInputs ++ [
     haskellPackages.cabal-install
+    haskellPackages.shelltestrunner
+    haskellPackages.hlint
+    haskellPackages.stylish-haskell
+    haskellPackages.brittany
+
     pkgs.nix
     pkgs.curl
     pkgs.jq
     pkgs.git
     pkgs.zlib
     pkgs.glibcLocales
-    haskellPackages.shelltestrunner
     hdt
   ];
 

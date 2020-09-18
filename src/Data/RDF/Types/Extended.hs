@@ -1,0 +1,98 @@
+-- This file is part of cq2rdf.
+
+-- cq2rdf is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- cq2rdf is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
+
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+
+module Data.RDF.Types.Extended
+  ( mkTriple
+  , mkTripleLit
+  , mkNode
+  , mkNodeLit
+  )
+where
+
+import           Data.RDF
+import           Data.Text        (pack, unpack)
+import           Import
+import           Network.URI      (isURIReference)
+import           Text.Parsec      (Parsec)
+import qualified Text.Parsec      as P (many, parse, sepBy, try)
+import qualified Text.Parsec.Char as P (alphaNum, anyChar, char, noneOf, space,
+                                        string)
+
+mkTriple :: Text -> Text -> Text -> Maybe Triple
+mkTriple subject predicate object = do
+  subjectNode   <- mkNode subject
+  predicateNode <- mkNode predicate
+  objectNode    <- mkNode object
+  return $ Triple subjectNode predicateNode objectNode
+
+mkTripleLit :: Text -> Text -> Text -> Maybe Triple
+mkTripleLit subject predicate object = do
+  subjectNode   <- mkNode subject
+  predicateNode <- mkNode predicate
+  objectNode    <- parseLiteralNode object
+  return $ Triple subjectNode predicateNode objectNode
+
+mkNode :: Text -> Maybe Node
+mkNode r = parseUriNode r <|> parseBlankNodeId r
+
+mkNodeLit :: Text -> Maybe Node
+mkNodeLit = parseLiteralNode
+
+parseUriNode :: Text -> Maybe Node
+parseUriNode uri = if isValidUri uri then Just $ unode uri else Nothing
+  where isValidUri = isURIReference . unpack
+
+parseBlankNodeId :: Text -> Maybe Node
+parseBlankNodeId blankUri = case P.parse blankNodeParser "" blankUri of
+  Left  _ -> Nothing
+  Right v -> Just $ bnode $ pack v
+
+blankNodeParser :: Parsec Text () String
+blankNodeParser = P.string "_:" *> P.many P.alphaNum
+
+parseLiteralNode :: Text -> Maybe Node
+parseLiteralNode l = case P.parse literalValueParser "" l of
+  Left  _ -> Nothing
+  Right v -> Just $ lnode v
+
+literalValueParser :: Parsec Text () LValue
+literalValueParser =
+  P.try literalValuePlainLangParser
+    <|> P.try literalValueTypedParser
+    <|> literalValuePlainParser
+
+literalValuePlainParser :: Parsec Text () LValue
+literalValuePlainParser = PlainL . pack <$> labelParser
+
+literalValuePlainLangParser :: Parsec Text () LValue
+literalValuePlainLangParser = do
+  literal <- labelParser
+  _       <- P.char '@'
+  lang    <- P.many P.alphaNum
+  return $ PlainLL (pack literal) (pack lang)
+
+literalValueTypedParser :: Parsec Text () LValue
+literalValueTypedParser = do
+  literal <- labelParser
+  _       <- P.string "^^"
+  xsdType <- P.many P.anyChar
+  return $ TypedL (pack literal) (pack xsdType)
+
+labelParser :: Parsec Text () String
+labelParser = unwords <$> P.sepBy wordParser P.space
+  where wordParser = P.many $ P.noneOf "@^"

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 00911981c79fe28bb7c088bbe463ba43609a2be89245f354e701e6fa7ac4264d
+-- hash: 56048fb26df483fcbcf12faf2ec0577f0e51a5b1b17ee8043e24e87b44f3289f
 
 name:           cq2rdf
 version:        0.1
@@ -21,10 +21,38 @@ extra-source-files:
 
 library
   exposed-modules:
+      Conversion.CineTV
+      Conversion.CineTV.GenreCategory
+      Conversion.CineTV.Language
+      Conversion.CineTV.LegalBody
+      Conversion.CineTV.Movie
+      Conversion.CineTV.MovieCategory
+      Conversion.CineTV.MovieDirector
+      Conversion.CineTV.MovieGeneric
+      Conversion.CineTV.MovieLanguage
+      Conversion.CineTV.MovieLocation
+      Conversion.CineTV.MovieResume
+      Conversion.CineTV.Person
+      Conversion.CineTV.Place
+      Conversion.CineTV.Role
+      Data.RDF.Extended
+      Data.RDF.Query.Extended
       Data.RDF.State
+      Data.RDF.Types.Extended
       Import
       Namespaces
       Run
+      Runv1
+      SW.Vocabulary
+      SW.Vocabulary.CRM
+      SW.Vocabulary.DBpedia
+      SW.Vocabulary.Foaf
+      SW.Vocabulary.FRBRoo
+      SW.Vocabulary.OWL
+      SW.Vocabulary.Rdf
+      SW.Vocabulary.Rdfs
+      SW.Vocabulary.Wikidata
+      SW.Vocabulary.XSD
       Types
       Util
   other-modules:
@@ -42,6 +70,8 @@ library
     , esqueleto >=3 && <3.4
     , filepath
     , mtl >=2.2 && <2.3
+    , network-uri
+    , parsec
     , persistent >=2.8 && <2.11
     , persistent-sqlite
     , persistent-template
@@ -74,7 +104,9 @@ executable cq2rdf-exe
     , esqueleto >=3 && <3.4
     , filepath
     , mtl >=2.2 && <2.3
+    , network-uri
     , optparse-simple
+    , parsec
     , persistent >=2.8 && <2.11
     , persistent-sqlite
     , persistent-template
@@ -93,7 +125,21 @@ test-suite cq2rdf-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      System.SparqlSpec
+      Conversion.CineTV.GenreCategorySpec
+      Conversion.CineTV.LanguageSpec
+      Conversion.CineTV.LegalBodySpec
+      Conversion.CineTV.MovieCategorySpec
+      Conversion.CineTV.MovieDirectorSpec
+      Conversion.CineTV.MovieGenericSpec
+      Conversion.CineTV.MovieLanguageSpec
+      Conversion.CineTV.MovieLocationSpec
+      Conversion.CineTV.MovieResumeSpec
+      Conversion.CineTV.MovieSpec
+      Conversion.CineTV.PersonSpec
+      Conversion.CineTV.PlaceSpec
+      Conversion.CineTV.RoleSpec
+      Data.RDF.Types.ExtendedSpec
+      Test.Hspec.Expectations.Extended
       UtilSpec
       Paths_cq2rdf
   hs-source-dirs:
@@ -110,7 +156,10 @@ test-suite cq2rdf-test
     , esqueleto >=3 && <3.4
     , filepath
     , hspec
+    , hspec-expectations
     , mtl >=2.2 && <2.3
+    , network-uri
+    , parsec
     , persistent >=2.8 && <2.11
     , persistent-sqlite
     , persistent-template

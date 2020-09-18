@@ -8,6 +8,7 @@ DESTDIR=.
 EXEC := $(shell grep "name:\s*" package.yaml | sed "s/name:\s*\(.*\)\s*/\1/")-exe
 GITLAB_PROJECT_ID=18031890
 VERSION := $(shell grep "version:\s*" package.yaml | sed "s/version:\s*\(.*\)\s*/\1/")
+GITLAB_TOKEN := $(shell cat .gitlab-token)
 
 SOURCES := $(shell find . -name '*.hs')
 
@@ -31,7 +32,7 @@ release: $(DESTDIR)/cmtq-dataset
 		"v$(VERSION)" \
 		$(GITLAB_PROJECT_ID) \
 		"New release of cq2rdf v$(VERSION)" \
-		$(token) \
+		$(GITLAB_TOKEN) \
 		$<
 
 clean:

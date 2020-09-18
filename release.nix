@@ -17,7 +17,8 @@ let
   cinetvdb = builtins.fetchGit {
     url = "git@gitlab.com:cinematheque-quebecoise/cinetvdb.git";
     ref = "refs/heads/master";
-    rev = "d4da3fcb730abbff869679814c76ee569bab0fdd";
+    # rev = "d4da3fcb730abbff869679814c76ee569bab0fdd";
+    rev = "7df9ff12f7d94791d631ccf19cf1c4d6146db616";
   };
 
   haskellPackages = pkgs.haskell.packages.${compiler}.override {
