@@ -42,9 +42,16 @@ Create all triples for representing a possible genre of a work.
 Generated triples:
 
 @
+cmtq:GenreCategory rdf:type crm:E55_Type
+cmtq:GenreCategory rdfs:label "GenreCategory"
+cmtq:GenreCategory rdfs:comment "Genre cinématographique ou catégorie d'une oeuvre"@fr
+
 for each row in table Sujet where Sujet.SujetId = Filmo_GenresCategories.SujetId
-   cmtq:Subject{Sujet.SujetID} rdf:type crm:E40_Legal_Body
-   cmtq:Subject{Sujet.SujetID} rdfs:label {Sujet.Terme}
+   cmtq:GenreCategory{Sujet.SujetID} rdf:type crm:E55_Type
+   cmtq:GenreCategory{Sujet.SujetID} rdfs:label {Sujet.Terme}@fr
+   cmtq:GenreCategory{Sujet.SujetID} crm:P2_has_type cmtq:GenreCategory
+   cmtq:GenreCategory{Sujet.SujetID} crm:P48_has_preferred_identifier cmtq:IdentifierGenreCategory{Sujet.SujetID}
+   cmtq:IdentifierGenreCategory{Sujet.SujetID} crm:P190_has_symbolic_content {Sujet.Terme}
 @
 -}
 convertGenreCategories
@@ -57,11 +64,11 @@ createGenreCategoryType :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createGenreCategoryType = do
   let genreTypeUri = baseUriPath <> "/GenreCategory"
   mapM_ addTriple $ mkTriple genreTypeUri SW.rdfType SW.crmE55
-  mapM_ addTriple $ mkTripleLit genreTypeUri SW.rdfsLabel "GenreCategory"
+  mapM_ addTriple $ mkTripleLit genreTypeUri SW.rdfsLabel (RDF.PlainL "GenreCategory")
   mapM_ addTriple $ mkTripleLit
     genreTypeUri
     SW.rdfsComment
-    "Genre cinématographique ou catégorie d'une oeuvre@fr"
+    (RDF.PlainLL "Genre cinématographique ou catégorie d'une oeuvre" "fr")
 
 createTriplesFromGenres
   :: (RDF.Rdf rdfImpl, MonadIO m) => Pool SqlBackend -> RdfState rdfImpl m ()
@@ -93,9 +100,9 @@ createTriplesFromGenre sujetEntity = do
 
   mapM_ addTriple $ RDF.mkTriple genreUri SW.rdfType SW.crmE55
   mapM_ addTriple $ RDF.mkTriple genreUri SW.crmP2 "/resource/GenreCategory"
-  mapM_ addTriple $ RDF.mkTripleLit genreUri SW.rdfsLabel (genreLabel <> "@fr")
+  mapM_ addTriple $ RDF.mkTripleLit genreUri SW.rdfsLabel (RDF.PlainLL genreLabel "fr")
   mapM_ addTriple $ RDF.mkTriple genreUri SW.crmP48 identifierGenreUri
-  mapM_ addTriple $ RDF.mkTripleLit identifierGenreUri SW.crmP190 genreId
+  mapM_ addTriple $ RDF.mkTripleLit identifierGenreUri SW.crmP190 (RDF.PlainL genreId)
 
  where
   genreId    = sqlKeyToText $ entityKey sujetEntity

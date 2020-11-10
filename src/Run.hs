@@ -43,7 +43,7 @@ import qualified Data.ByteString.Lazy as BS
 import System.Directory (doesFileExist, removeFile, createDirectoryIfMissing)
 import System.FilePath (joinPath)
 import Text.RE.TDFA.Text
--- import System.Process (callCommand)
+import System.Process (callCommand)
 
 -- Used for converting the prefix mappings in JSON format
 instance ToJSON RDF.PrefixMappings
@@ -77,7 +77,7 @@ run = do
   creationDate <- liftIO $ fmap getCurrentDayText getCurrentTime
 
   -- let emptyRdf = RDF.empty :: RDF RDF.TList
-  -- let baseUri = optionsBaseUri $ appOptions env
+  let baseUri = optionsBaseUri $ appOptions env
   -- let baseUriJust = Just $ RDF.BaseUrl baseUri
   let emptyRdf = RDF.mkRdf [] Nothing prefixMappings :: RDF RDF.TList
   graph <- liftIO $ execStateT (convertToRdf pool) emptyRdf
@@ -104,14 +104,14 @@ run = do
   liftIO $ BS.readFile cmtqTurtleFpath >>= (return . compress) >>= BS.writeFile cmtqTurtleFpathCompressed
   liftIO $ removeFile cmtqTurtleFpath
 
-  -- -- Compress output N-triples file
-  -- let cmtqNtriplesFpathCompressed = cmtqNtriplesFpath <> ".gz"
-  -- liftIO $ BS.readFile cmtqNtriplesFpath >>= (return . compress) >>= BS.writeFile cmtqNtriplesFpathCompressed
-  -- liftIO $ removeFile cmtqNtriplesFpath
+  -- Compress output N-triples file
+  let cmtqNtriplesFpathCompressed = cmtqNtriplesFpath <> ".gz"
+  liftIO $ BS.readFile cmtqNtriplesFpath >>= (return . compress) >>= BS.writeFile cmtqNtriplesFpathCompressed
+  liftIO $ removeFile cmtqNtriplesFpath
 
-  -- let cmtqHdtFpath = Text.unpack $ outputDir <> "/cmtq-dataset.hdt"
-  -- let rdf2hdtCmd = "rdf2hdt -B " <> Text.unpack baseUri <> "/resource -f ttl " <> cmtqNtriplesFpathCompressed <> " " <> cmtqHdtFpath
-  -- liftIO $ callCommand rdf2hdtCmd
+  let cmtqHdtFpath = Text.unpack $ outputDir <> "/cmtq-dataset.hdt"
+  let rdf2hdtCmd = "rdf2hdt -B " <> Text.unpack baseUri <> "/resource -f ttl " <> cmtqNtriplesFpathCompressed <> " " <> cmtqHdtFpath
+  liftIO $ callCommand rdf2hdtCmd
 
   logInfo "Finished!"
 

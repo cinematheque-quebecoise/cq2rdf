@@ -49,7 +49,11 @@ for each row in table Nom where Nom.NomId = Filmo_Generique.NomID
   cmtq:Person{Nom.NomID} foaf:givenName {Nom.Prenom}
   cmtq:Person{Nom.NomID} crm:P1_is_identified_by cmtq:AppellationPerson{Nom.NomID}
   cmtq:Person{Nom.NomID} crm:P48_has_preferred_identifier cmtq:IdentifierPerson{Nom.NomID}
+
+  cmtq:AppellationPerson{Nom.NomID} rdf:type crm:E41_Appellation
   cmtq:AppellationPerson{Nom.NomID} crm:P190_has_symbolic_content "{Nom.Prenom + Nom.Nom}"
+
+  cmtq:IdentifierPerson{Nom.NomID} rdf:type crm:E42_Identifier
   cmtq:IdentifierPerson{Nom.NomID} crm:P190_has_symbolic_content "{Nom.NomID}"
 
 for each row in table Nom_LienWikidata
@@ -82,19 +86,23 @@ createTriplesFromPerson nomEntity = do
 
   mapM_ addTriple $ mkTriple personUri SW.rdfType SW.crmE21
   mapM_ addTriple $ mkTriple personUri SW.crmP48 identifierUri
-  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 personTextId
+
+  mapM_ addTriple $ mkTriple identifierUri SW.rdfType SW.crmE42
+  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL personTextId)
 
   forM_ nameOpt $ \name -> do
-    mapM_ addTriple $ mkTripleLit personUri SW.rdfsLabel name
-    mapM_ addTriple $ mkTripleLit personUri SW.foafName name
+    mapM_ addTriple $ mkTripleLit personUri SW.rdfsLabel (RDF.PlainL name)
+    mapM_ addTriple $ mkTripleLit personUri SW.foafName (RDF.PlainL name)
     mapM_ addTriple $ mkTriple personUri SW.crmP1 appellationUri
-    mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 name
+
+    mapM_ addTriple $ mkTriple appellationUri SW.rdfType SW.crmE41
+    mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL name)
 
   forM_ lastnameOpt $ \lastname ->
-    mapM_ addTriple $ mkTripleLit personUri SW.foafFamilyName lastname
+    mapM_ addTriple $ mkTripleLit personUri SW.foafFamilyName (RDF.PlainL lastname)
 
   forM_ firstnameOpt $ \firstname ->
-    mapM_ addTriple $ mkTripleLit personUri SW.foafGivenName firstname
+    mapM_ addTriple $ mkTripleLit personUri SW.foafGivenName (RDF.PlainL firstname)
 
  where
   personTextId = sqlKeyToText $ entityKey nomEntity
@@ -162,13 +170,13 @@ createTriplesFromOrganisme subjectEntity = do
   let appellationUri = baseUriPath <> "/AppellationLegalBody" <> legalBodyId
 
   mapM_ addTriple $ mkTriple legalBodyUri SW.rdfType SW.crmE40
-  mapM_ addTriple $ mkTripleLit legalBodyUri SW.rdfsLabel legalBodyTerm
+  mapM_ addTriple $ mkTripleLit legalBodyUri SW.rdfsLabel (RDF.PlainL legalBodyTerm)
 
   mapM_ addTriple $ mkTriple legalBodyUri SW.crmP48 identifierUri
-  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 legalBodyId
+  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL legalBodyId)
 
   mapM_ addTriple $ mkTriple legalBodyUri SW.crmP1 appellationUri
-  mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 legalBodyTerm
+  mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL legalBodyTerm)
 
  where
   legalBodyId   = sqlKeyToText $ entityKey subjectEntity

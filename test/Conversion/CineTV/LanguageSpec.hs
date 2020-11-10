@@ -51,20 +51,24 @@ spec = do
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
           [ RDF.mkTriple languageUri SW.rdfType SW.crmE56
-          , RDF.mkTripleLit languageUri SW.rdfsLabel "français@fr"
+          , RDF.mkTripleLit languageUri SW.rdfsLabel (RDF.PlainLL "français" "fr")
           , RDF.mkTriple languageUri SW.crmP1 appellationUri
           , RDF.mkTriple languageUri SW.crmP48 identifierUri
           , RDF.mkTriple languageUri SW.owlSameAs (RDF.mkUri wd "Q150")
-          , RDF.mkTripleLit appellationUri SW.crmP190 "français"
-          , RDF.mkTripleLit identifierUri SW.crmP190 "100"
+
+          , RDF.mkTriple identifierUri SW.rdfType SW.crmE42
+          , RDF.mkTripleLit identifierUri SW.crmP190 (RDF.PlainL "100")
+
+          , RDF.mkTriple appellationUri SW.rdfType SW.crmE41
+          , RDF.mkTripleLit appellationUri SW.crmP190 (RDF.PlainL "français")
           ]
 
         length (RDF.query graph (RDF.mkNode languageUri) Nothing Nothing)
           `shouldBe` 5
         length (RDF.query graph (RDF.mkNode appellationUri) Nothing Nothing)
-          `shouldBe` 1
+          `shouldBe` 2
         length (RDF.query graph (RDF.mkNode identifierUri) Nothing Nothing)
-          `shouldBe` 1
+          `shouldBe` 2
 
 emptyGraph :: RDF RDF.TList
 emptyGraph = RDF.mkRdf [] Nothing prefixMappings

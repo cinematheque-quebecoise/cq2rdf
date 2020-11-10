@@ -25,6 +25,9 @@ import qualified Data.RDF.Namespace as RDF
 frbrooF1 :: Text
 frbrooF1 = RDF.mkUri frbroo "F1_Work"
 
+frbrooF3 :: Text
+frbrooF3 = RDF.mkUri frbroo "F3_Manifestation_Product_Type"
+
 frbrooF21 :: Text
 frbrooF21 = RDF.mkUri frbroo "F21_Recording_Work"
 
@@ -36,6 +39,9 @@ frbrooF26 = RDF.mkUri frbroo "F26_Recording"
 
 frbrooF29 :: Text
 frbrooF29 = RDF.mkUri frbroo "F29_Recording_Event"
+
+frbrooF30 :: Text
+frbrooF30 = RDF.mkUri frbroo "F30_Publicatio_Event"
 
 frbrooR2 :: Text
 frbrooR2 = RDF.mkUri frbroo "R2_is_derivative_of"
@@ -57,3 +63,9 @@ frbrooR22 = RDF.mkUri frbroo "R22_created_a_realization_of"
 
 frbrooR22i :: Text
 frbrooR22i = RDF.mkUri frbroo "R22i_was_realised_through"
+
+frbrooR24 :: Text
+frbrooR24 = RDF.mkUri frbroo "R24_created"
+
+frbrooCLR6 :: Text
+frbrooCLR6 = RDF.mkUri frbroo "CLR6_should_carry"

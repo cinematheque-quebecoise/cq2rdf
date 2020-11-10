@@ -48,12 +48,16 @@ spec = do
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
           [ RDF.mkTriple placeUri SW.rdfType SW.crmE53
-          , RDF.mkTripleLit placeUri SW.rdfsLabel "Québec@fr"
+          , RDF.mkTripleLit placeUri SW.rdfsLabel (RDF.PlainLL "Québec" "fr")
           , RDF.mkTriple placeUri SW.crmP1 "/resource/AppellationPlace100"
           , RDF.mkTriple placeUri SW.crmP48 "/resource/IdentifierPlace100"
           , RDF.mkTriple placeUri SW.owlSameAs (RDF.mkUri wd "Q176")
-          , RDF.mkTripleLit "/resource/AppellationPlace100" SW.crmP190 "Québec"
-          , RDF.mkTripleLit "/resource/IdentifierPlace100" SW.crmP190 "100"
+
+          , RDF.mkTriple "/resource/AppellationPlace100" SW.rdfType SW.crmE41
+          , RDF.mkTripleLit "/resource/AppellationPlace100" SW.crmP190 (RDF.PlainL "Québec")
+
+          , RDF.mkTriple "/resource/IdentifierPlace100" SW.rdfType SW.crmE42
+          , RDF.mkTripleLit "/resource/IdentifierPlace100" SW.crmP190 (RDF.PlainL "100")
           ]
 
 emptyGraph :: RDF RDF.TList

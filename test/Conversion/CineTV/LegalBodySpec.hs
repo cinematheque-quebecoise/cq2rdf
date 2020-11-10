@@ -50,11 +50,15 @@ spec = do
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
           [ RDF.mkTriple legalBodyUri SW.rdfType SW.crmE40
-          , RDF.mkTripleLit legalBodyUri SW.rdfsLabel "PÈRE FILM"
+          , RDF.mkTripleLit legalBodyUri SW.rdfsLabel (RDF.PlainL "PÈRE FILM")
           , RDF.mkTriple legalBodyUri SW.crmP1 legalBodyAppellationUri
           , RDF.mkTriple legalBodyUri SW.crmP48 legalBodyIdentifierUri
-          , RDF.mkTripleLit legalBodyAppellationUri SW.crmP190 "PÈRE FILM"
-          , RDF.mkTripleLit legalBodyIdentifierUri SW.crmP190 "100"
+
+          , RDF.mkTriple legalBodyAppellationUri SW.rdfType SW.crmE41
+          , RDF.mkTripleLit legalBodyAppellationUri SW.crmP190 (RDF.PlainL "PÈRE FILM")
+
+          , RDF.mkTriple legalBodyIdentifierUri SW.rdfType SW.crmE42
+          , RDF.mkTripleLit legalBodyIdentifierUri SW.crmP190 (RDF.PlainL "100")
           ]
 
 emptyGraph :: RDF RDF.TList

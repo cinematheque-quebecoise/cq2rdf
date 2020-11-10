@@ -31,17 +31,32 @@ crmE21 = RDF.mkUri crm "E21_Person"
 crmE33 :: Text
 crmE33 = RDF.mkUri crm "E33_Linguistic_Object"
 
+crmE35 :: Text
+crmE35 = RDF.mkUri crm "E35_Title"
+
 crmE40 :: Text
 crmE40 = RDF.mkUri crm "E40_Legal_Body"
 
+crmE41 :: Text
+crmE41 = RDF.mkUri crm "E41_Appellation"
+
+crmE42 :: Text
+crmE42 = RDF.mkUri crm "E42_Identifier"
+
 crmE53 :: Text
 crmE53 = RDF.mkUri crm "E53_Place"
+
+crmE54 :: Text
+crmE54 = RDF.mkUri crm "E54_Dimension"
 
 crmE55 :: Text
 crmE55 = RDF.mkUri crm "E55_Type"
 
 crmE56 :: Text
 crmE56 = RDF.mkUri crm "E56_Language"
+
+crmE58 :: Text
+crmE58 = RDF.mkUri crm "E58_Measurement_Unit"
 
 crmE98 :: Text
 crmE98 = RDF.mkUri crm "E98_Currency"
@@ -115,6 +130,15 @@ crmP82a = RDF.mkUri crm "P82a_begin_of_the_begin"
 crmP82b :: Text
 crmP82b = RDF.mkUri crm "P82b_end_of_the_end"
 
+crmP90 :: Text
+crmP90 = RDF.mkUri crm "P90_has_value"
+
+crmP91 :: Text
+crmP91 = RDF.mkUri crm "P91_has_unit"
+
+crmP102 :: Text
+crmP102 = RDF.mkUri crm "P102_has_title"
+
 crmP165 :: Text
 crmP165 = RDF.mkUri crm "P165_incorporates"
 
@@ -123,6 +147,9 @@ crmP180 = RDF.mkUri crm "P180_has_currency"
 
 crmP181 :: Text
 crmP181 = RDF.mkUri crm "P181_has_amount"
+
+crmP183 :: Text
+crmP183 = RDF.mkUri crm "P183_ends_before_the_start_of"
 
 crmP190 :: Text
 crmP190 = RDF.mkUri crm "P190_has_symbolic_content"

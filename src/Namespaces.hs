@@ -49,8 +49,7 @@ wdt :: Namespace
 wdt = mkPrefixedNS' "wdt" "http://www.wikidata.org/prop/direct/"
 
 prefixMappings :: PrefixMappings
-prefixMappings = ns_mappings [ cmtqo
-                             , crm
+prefixMappings = ns_mappings [ crm
                              , frbroo
                              , dbo
                              , schema
@@ -63,4 +62,5 @@ prefixMappings = ns_mappings [ cmtqo
                              , owl
                              , wd
                              , wdt
+                             -- , cmtqo
                              ]

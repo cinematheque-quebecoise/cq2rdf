@@ -26,3 +26,6 @@ xsdDateTime = RDF.mkUri RDF.xsd "dateTime"
 
 xsdDouble :: Text
 xsdDouble = RDF.mkUri RDF.xsd "double"
+
+xsdInteger :: Text
+xsdInteger = RDF.mkUri RDF.xsd "integer"

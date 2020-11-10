@@ -52,6 +52,14 @@ Generated triples:
 for each row in table Pays
     cmtq:Place{Pays.PaysID} rdf:type crm:E53_Place
     cmtq:Place{Pays.PaysID} rdfs:label {Pays.Terme}
+    cmtq:Place{Pays.PaysID} crm:P48_has_preferred_identifier cmtq:IdentifierPlace{Pays.PaysId}
+    cmtq:Place{Pays.PaysID} crm:P1_is_identified_by cmtq:AppellationPlace{Pays.PaysId}
+
+    cmtq:AppellationPlace{Place.PlaceId} rdf:type crm:E41_Appellation
+    cmtq:AppellationPlace{Place.PlaceId} crm:P190_has_symbolic_content {Pays.Terme}
+
+    cmtq:IdentifierPlace{Place.PlaceId} rdf:type crm:E42_Identifier
+    cmtq:IdentifierPlace{Place.PlaceId} crm:P190_has_symbolic_content {Pays.PaysId}
 @
 -}
 createTriplesFromPlaces
@@ -75,11 +83,15 @@ createTriplesFromPlace paysEntity = do
   let identifierUri  = baseUriPath <> "/IdentifierPlace" <> placeId
 
   mapM_ addTriple $ mkTriple placeUri SW.rdfType SW.crmE53
-  mapM_ addTriple $ mkTripleLit placeUri SW.rdfsLabel (placeLabel <> "@fr")
-  mapM_ addTriple $ mkTriple placeUri SW.crmP48 identifierUri
+  mapM_ addTriple $ mkTripleLit placeUri SW.rdfsLabel (RDF.PlainLL placeLabel "fr")
   mapM_ addTriple $ mkTriple placeUri SW.crmP1 appellationUri
-  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 placeId
-  mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 placeLabel
+  mapM_ addTriple $ mkTriple placeUri SW.crmP48 identifierUri
+
+  mapM_ addTriple $ mkTriple appellationUri SW.rdfType SW.crmE41
+  mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL placeLabel)
+
+  mapM_ addTriple $ mkTriple identifierUri SW.rdfType SW.crmE42
+  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL placeId)
 
 {-|
 Create all triples for representing the link between the Place concept from all rows in

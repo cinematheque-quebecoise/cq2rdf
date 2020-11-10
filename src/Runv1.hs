@@ -430,7 +430,7 @@ getFilmos pool =
 --   cmtq:RecordingWork{Filmo.FilmoID} cmtqo:release_event cmtq:WorkPublicRelease{Filmo.FilmoID}
 --   cmtq:WorkPublicRelease{Filmo.FilmoID} rdf:type cmtqo:Work_Public_Release
 --   cmtq:WorkPublicRelease{Filmo.FilmoID} crm:P4_has_time-span cmtq:Time-Span{Filmo.AnneeSortie}
---   cmtq:Time-Span{Filmo.AnneeSortie} crm:P79_beginning_is_qualified_by {Filmo.AnneeSortie}^^xsd:datetime
+--   cmtq:Time-Span{Filmo.AnneeSortie} crm:P79_beginning_is_qualified_by {Filmo.AnneeSortie}^^xsd:dateTime
 --   cmtq:RecordingWork{Filmo.FilmoID} frbroo:R22_created_a_realization_of cmtq:RecordingEvent{Filmo.FilmoID}
 --   cmtq:RecordingEvent{Filmo.FilmoID} crm:P4_has_time-span cmtq:Time-Span{Filmo.AnneeDebProd ou Filmo.DateDebProd + Filmo.AnneeFinProd ou Filmo.DateFinProd}
 --   cmtq:Time-Span{Filmo.AnneeDebProd ou Filmo.DateDebProd + Filmo.AnneeFinProd ou Filmo.DateFinProd}la crm:P79_beginning_is_qualified_by {Filmo.AnneeDebProd ou Filmo.DateDebProd}
@@ -1032,10 +1032,11 @@ mkFilmoResumesRdf filmoResumeEntity = do
   let filmoId = sqlKeyToText $ filmoResumesFilmoId $ entityVal filmoResumeEntity
   let filmoUri = baseUriPath <> "/RecordingWork" <> filmoId
 
-  let resume = filmoResumesResume $ entityVal filmoResumeEntity
-  addTriple $ RDF.triple (RDF.unode filmoUri)
-                         (RDF.unode $ RDF.mkUri cmtqo "synopsis")
-                         (RDF.lnode $ RDF.PlainLL resume "fr")
+  let resumeMaybe = filmoResumesResume $ entityVal filmoResumeEntity
+  forM_ resumeMaybe $ \resume ->
+    addTriple $ RDF.triple (RDF.unode filmoUri)
+                           (RDF.unode $ RDF.mkUri cmtqo "synopsis")
+                           (RDF.lnode $ RDF.PlainLL resume "fr")
 
 -- | Get all rows from FilmoResumesAnglais table in database.
 getFilmoResumesAnglais :: (MonadIO m)
@@ -1065,10 +1066,11 @@ mkFilmoResumesAnglaisRdf filmoResumeEntity = do
   let filmoId = sqlKeyToText $ filmoResumesAnglaisFilmoId $ entityVal filmoResumeEntity
   let filmoUri = baseUriPath <> "/RecordingWork" <> filmoId
 
-  let resume = filmoResumesAnglaisResumeAnglais $ entityVal filmoResumeEntity
-  addTriple $ RDF.triple (RDF.unode filmoUri)
-                         (RDF.unode $ RDF.mkUri cmtqo "synopsis")
-                         (RDF.lnode $ RDF.PlainLL resume "en")
+  let resumeMaybe = filmoResumesAnglaisResumeAnglais $ entityVal filmoResumeEntity
+  forM_ resumeMaybe $ \resume ->
+    addTriple $ RDF.triple (RDF.unode filmoUri)
+                           (RDF.unode $ RDF.mkUri cmtqo "synopsis")
+                           (RDF.lnode $ RDF.PlainLL resume "en")
 
 -- | Get all rows from Langue table in database.
 getLangue :: (MonadIO m)

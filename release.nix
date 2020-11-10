@@ -10,15 +10,14 @@ let
     rev = "7c399a4ee080f33cc500a3fda33af6fccfd617bd";
   }) {};
 
-  hdt = import ./hdt.nix { inherit pkgs; };
+  hdt = import ./nix/hdt.nix { inherit pkgs; };
 
   compiler = "ghc883";
 
   cinetvdb = builtins.fetchGit {
     url = "git@gitlab.com:cinematheque-quebecoise/cinetvdb.git";
     ref = "refs/heads/master";
-    # rev = "d4da3fcb730abbff869679814c76ee569bab0fdd";
-    rev = "7df9ff12f7d94791d631ccf19cf1c4d6146db616";
+    # rev = "7df9ff12f7d94791d631ccf19cf1c4d6146db616";
   };
 
   haskellPackages = pkgs.haskell.packages.${compiler}.override {

@@ -43,10 +43,16 @@ Generated triples:
 
 @
 for each row in table Langue
-    cmtq:Language{Langue.LangueID} rdf:type cmtqo:Language
-    cmtq:Language{Langue.LangueID} rdfs:label {Langue.Terme}
-    cmtq:Language{Langue.LangueID} crm:P48 cmtq:Identifier{Langue.LangueID}
-    cmtq:Identifier{Langue.LangueID} crm:P190 {Langue.LangueID}
+    cmtq:Language{Langue.LangueID} rdf:type crm:E56_Language
+    cmtq:Language{Langue.LangueID} rdfs:label {Langue.Terme}@fr
+    cmtq:Language{Langue.LangueID} crm:P48_has_preferred_identifier cmtq:IdentifierLanguage{Langue.LangueID}
+    cmtq:Language{Langue.LangueID} crm:P1_is_identified_by cmtq:AppellationLanguage{Langue.LangueID}
+
+    cmtq:AppellationLanguage{Langue.LangueID} rdf:type crm:E41_Appellation
+    cmtq:AppellationLanguage{Langue.LangueID} crm:P190_has_symbolic_content {Langue.Terme}
+
+    cmtq:IdentifierLanguage{Langue.LangueID} rdf:type crm:E42_Identifier
+    cmtq:IdentifierLanguage{Langue.LangueID} crm:P190_has_symbolic_content {Langue.LangueID}
 @
 -}
 convertLanguages
@@ -77,13 +83,15 @@ createTriplesFromLangue langueEntity = do
         baseUriPath <> "/AppellationLanguage" <> langueTextId
 
   mapM_ addTriple $ mkTriple langueUri SW.rdfType SW.crmE56
-  mapM_ addTriple $ mkTripleLit langueUri SW.rdfsLabel (langueLabel <> "@fr")
-
+  mapM_ addTriple $ mkTripleLit langueUri SW.rdfsLabel (RDF.PlainLL langueLabel "fr")
   mapM_ addTriple $ mkTriple langueUri SW.crmP1 langueAppellationUri
-  mapM_ addTriple $ mkTripleLit langueAppellationUri SW.crmP190 langueLabel
-
   mapM_ addTriple $ mkTriple langueUri SW.crmP48 langueIdentifierUri
-  mapM_ addTriple $ mkTripleLit langueIdentifierUri SW.crmP190 langueTextId
+
+  mapM_ addTriple $ mkTriple langueAppellationUri SW.rdfType SW.crmE41
+  mapM_ addTriple $ mkTripleLit langueAppellationUri SW.crmP190 (RDF.PlainL langueLabel)
+
+  mapM_ addTriple $ mkTriple langueIdentifierUri SW.rdfType SW.crmE42
+  mapM_ addTriple $ mkTripleLit langueIdentifierUri SW.crmP190 (RDF.PlainL langueTextId)
 
 {-|
 Create all triples for representing the link between the Language concept and a Wikidata entity from all rows in table Langue_LienWikidata.

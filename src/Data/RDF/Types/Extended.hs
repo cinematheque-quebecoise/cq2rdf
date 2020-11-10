@@ -40,18 +40,18 @@ mkTriple subject predicate object = do
   objectNode    <- mkNode object
   return $ Triple subjectNode predicateNode objectNode
 
-mkTripleLit :: Text -> Text -> Text -> Maybe Triple
-mkTripleLit subject predicate object = do
+mkTripleLit :: Text -> Text -> LValue -> Maybe Triple
+mkTripleLit subject predicate literal = do
   subjectNode   <- mkNode subject
   predicateNode <- mkNode predicate
-  objectNode    <- parseLiteralNode object
+  let objectNode = lnode literal
   return $ Triple subjectNode predicateNode objectNode
 
 mkNode :: Text -> Maybe Node
 mkNode r = parseUriNode r <|> parseBlankNodeId r
 
 mkNodeLit :: Text -> Maybe Node
-mkNodeLit = parseLiteralNode
+mkNodeLit = parsePlainLiteralNode
 
 parseUriNode :: Text -> Maybe Node
 parseUriNode uri = if isValidUri uri then Just $ unode uri else Nothing
@@ -65,8 +65,13 @@ parseBlankNodeId blankUri = case P.parse blankNodeParser "" blankUri of
 blankNodeParser :: Parsec Text () String
 blankNodeParser = P.string "_:" *> P.many P.alphaNum
 
-parseLiteralNode :: Text -> Maybe Node
-parseLiteralNode l = case P.parse literalValueParser "" l of
+parsePlainLiteralNode :: Text -> Maybe Node
+parsePlainLiteralNode l = case P.parse literalValuePlainParser "" l of
+  Left  _ -> Nothing
+  Right v -> Just $ lnode v
+
+parseLangLiteralNode :: Text -> Maybe Node
+parseLangLiteralNode l = case P.parse literalValuePlainLangParser "" l of
   Left  _ -> Nothing
   Right v -> Just $ lnode v
 
@@ -78,6 +83,8 @@ literalValueParser =
 
 literalValuePlainParser :: Parsec Text () LValue
 literalValuePlainParser = PlainL . pack <$> labelParser
+  where labelParser = unwords <$> P.sepBy wordParser P.space
+        wordParser = P.many P.anyChar
 
 literalValuePlainLangParser :: Parsec Text () LValue
 literalValuePlainLangParser = do
@@ -95,4 +102,5 @@ literalValueTypedParser = do
 
 labelParser :: Parsec Text () String
 labelParser = unwords <$> P.sepBy wordParser P.space
-  where wordParser = P.many $ P.noneOf "@^"
+  where wordParser = P.many $ P.noneOf "@"
+  -- where wordParser = P.many $ P.noneOf "@^"

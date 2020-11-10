@@ -44,7 +44,12 @@ spec = do
     it "should create a type representing a genre" $ do
       let genreUri = "/resource/GenreCategory"
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [RDF.mkTriple genreUri SW.rdfType SW.crmE55]
+        [ RDF.mkTriple genreUri SW.rdfType SW.crmE55
+        , RDF.mkTripleLit
+          genreUri
+          SW.rdfsComment
+          (RDF.PlainLL "Genre cinématographique ou catégorie d'une oeuvre" "fr")
+        ]
 
     it
         "should create movie categories for each row in table Sujet and Filmo_GenresCategories"
@@ -55,10 +60,10 @@ spec = do
 
           RDF.triplesOf graph `shouldContainElems` catMaybes
             [ RDF.mkTriple genre1Uri SW.rdfType SW.crmE55
-            , RDF.mkTripleLit genre1Uri SW.rdfsLabel "Drame@fr"
+            , RDF.mkTripleLit genre1Uri SW.rdfsLabel (RDF.PlainLL "Drame" "fr")
             , RDF.mkTriple genre1Uri SW.crmP2 genreUri
             , RDF.mkTriple genre1Uri SW.crmP48 identifierGenre1Uri
-            , RDF.mkTripleLit identifierGenre1Uri SW.crmP190 "1"
+            , RDF.mkTripleLit identifierGenre1Uri SW.crmP190 (RDF.PlainL "1")
             ]
 
 emptyGraph :: RDF RDF.TList

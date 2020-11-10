@@ -27,13 +27,20 @@ run-dev:
 # @param token - Private Gitlab token
 # $ make release token=<YOURTOKEN>
 release: $(DESTDIR)/cmtq-dataset
-	./create-release.sh \
+	cp $(DESTDIR)/example-queries.yaml $(DESTDIR)/cmtq-dataset
+	./scripts/create-release.sh \
 		"cq2rdf v$(VERSION)" \
 		"v$(VERSION)" \
 		$(GITLAB_PROJECT_ID) \
 		"New release of cq2rdf v$(VERSION)" \
 		$(GITLAB_TOKEN) \
 		$<
+
+bootstrap-blazegraph:
+	bootstrapBlazegraph cmtq-dataset/cmtq-dataset.ttl.gz
+
+test-sparql-queries:
+	test_sparql_queries queries
 
 clean:
 	rm $(EXEC)

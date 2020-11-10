@@ -35,6 +35,8 @@ import Conversion.CineTV.MovieDirector (convertMoviesDirector)
 import Conversion.CineTV.MovieGeneric (convertMoviesGeneric)
 import Conversion.CineTV.MovieLanguage (convertMoviesLanguage)
 import Conversion.CineTV.MovieResume (convertMoviesResume)
+import Conversion.CineTV.FilmoDureesOriginales (convertFilmoDureesOriginales)
+import Conversion.CineTV.FilmoTitres (convertFilmoTitres)
 import Data.RDF.State
 
 import qualified Data.RDF as RDF
@@ -58,3 +60,5 @@ convertToRdf pool = do
   convertMoviesGeneric pool
   convertMoviesLanguage pool
   convertMoviesResume pool
+  convertFilmoTitres pool
+  convertFilmoDureesOriginales pool

@@ -45,11 +45,15 @@ Create all triples for representing the Role concept for all rows in table Fonct
 Generated triples:
 
 @
+cmtq:Role rdf:type crm:E55_Type
+cmtq:Role rdfs:label "Role"
+
 for each row in table Fonction
- cmtq:Fonction{Fonction.FonctionID} rdf:type cmtqo:Role
- cmtq:Fonction{Fonction.FonctionID} rdfs:label {Fonction.Terme}
- cmtq:Fonction{Fonction.FonctionID} crm:P48 cmtq:Identifier{Fonction.FonctionID}
- cmtq:Identifier{Fonction.FonctionID} crm:P190 {Fonction.FonctionID}
+ cmtq:Fonction{Fonction.FonctionID} rdf:type crm:E55_Type
+ cmtq:Fonction{Fonction.FonctionID} rdfs:label {Fonction.Terme}@fr
+ cmtq:Fonction{Fonction.FonctionID} crm:P2_has_type cmtq:Role
+ cmtq:Fonction{Fonction.FonctionID} crm:P48 cmtq:IdentifierRole{Fonction.FonctionID}
+ cmtq:IdentifierRole{Fonction.FonctionID} crm:P190 {Fonction.FonctionID}
 @
 -}
 convertRoles
@@ -64,7 +68,12 @@ createRoleType :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createRoleType = do
   let roleTypeUri = baseUriPath <> "/Role"
   mapM_ addTriple $ mkTriple roleTypeUri SW.rdfType SW.crmE55
-  mapM_ addTriple $ mkTripleLit roleTypeUri SW.rdfsLabel "Role"
+  mapM_ addTriple $ mkTripleLit roleTypeUri SW.rdfsLabel (RDF.PlainL "Role")
+  mapM_ addTriple $ mkTripleLit
+    roleTypeUri
+    SW.rdfsComment
+    (RDF.PlainLL "Role occupé par un agent dans la production d'une oeuvre" "fr"
+    )
 
 getFonctionEntities :: (MonadIO m) => Pool SqlBackend -> m [Entity Fonction]
 getFonctionEntities pool =
@@ -95,9 +104,11 @@ createTriplesFromRole fonctionEntity = do
 
   mapM_ addTriple $ mkTriple roleUri SW.crmP2 roleTypeUri
   mapM_ addTriple $ mkTriple roleUri SW.rdfType SW.crmE55
-  mapM_ addTriple $ mkTripleLit roleUri SW.rdfsLabel (roleLabel <> "@fr")
+  mapM_ addTriple
+    $ mkTripleLit roleUri SW.rdfsLabel (RDF.PlainLL roleLabel "fr")
   mapM_ addTriple $ mkTriple roleUri SW.crmP48 roleIdentifierUri
-  mapM_ addTriple $ mkTripleLit roleIdentifierUri SW.crmP190 roleTextId
+  mapM_ addTriple
+    $ mkTripleLit roleIdentifierUri SW.crmP190 (RDF.PlainL roleTextId)
 
  where
   roleTextId = (sqlKeyToText . entityKey) fonctionEntity

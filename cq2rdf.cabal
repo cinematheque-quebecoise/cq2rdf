@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 56048fb26df483fcbcf12faf2ec0577f0e51a5b1b17ee8043e24e87b44f3289f
+-- hash: a7e9f427863af728f51ec3e14978c4a7ce00cf310dbcd7e9c0dcff0ddf5f05c8
 
 name:           cq2rdf
 version:        0.1
@@ -22,6 +22,8 @@ extra-source-files:
 library
   exposed-modules:
       Conversion.CineTV
+      Conversion.CineTV.FilmoDureesOriginales
+      Conversion.CineTV.FilmoTitres
       Conversion.CineTV.GenreCategory
       Conversion.CineTV.Language
       Conversion.CineTV.LegalBody
@@ -125,6 +127,8 @@ test-suite cq2rdf-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Conversion.CineTV.FilmoDureesOriginalesSpec
+      Conversion.CineTV.FilmoTitresSpec
       Conversion.CineTV.GenreCategorySpec
       Conversion.CineTV.LanguageSpec
       Conversion.CineTV.LegalBodySpec

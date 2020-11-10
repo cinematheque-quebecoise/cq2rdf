@@ -62,18 +62,29 @@ $ make build
 
 L'exécutable devient disponible dans le chemin relatif `./result/bin/cq2rdf-exe`.
 
+### Tests unitaires
+
+Pour exécuter les tests unitaires, exécutez la commande `cabal test`.
+
+### Tests de requêtes SPARQL
+
+Plusieurs requêtes SPARQL sont définies dans le fichier `example-queries.yaml`. Afin de valider que ces requêtes SPARQL fonctionne sur les données RDF, nous utilisons la base de données Blazegraph.
+
+Tout d'abord, exécutez la commande `make bootstrap-blazegraph` pour peupler Blazegraph avec les données RDF. Ensuite, exécutez la commande `make test-sparql-queries` pour tester les requêtes SPARQL.
+
 ## Publication des données
 
 Assurez-vous de modifier correction la version du logiciel dans le fichier `package.yaml`.
 
 Pour publier une nouvelle version des données, vous devez générer un jeton à partir de l'interface web de Gitlab. Ce jeton est appellé un « [Personal Access Token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) ».
+Mettez ce jeton dans le fichier caché `.gitlab-token` à la racine du projet.
 
 Cette publication va téléverser le dossier qui a été généré par la commande `make run`.
 
 Pour publier les données:
 
 ```
-$ make release token=<COPIER VOTRE JETON ICI>
+$ make release
 ```
 
 ## License

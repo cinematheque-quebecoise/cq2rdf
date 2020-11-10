@@ -49,15 +49,19 @@ spec = do
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
           [ RDF.mkTriple personUri SW.rdfType SW.crmE21
-          , RDF.mkTripleLit personUri SW.rdfsLabel "Ruggero Maccari"
-          , RDF.mkTripleLit personUri SW.foafName "Ruggero Maccari"
-          , RDF.mkTripleLit personUri SW.foafGivenName "Ruggero"
-          , RDF.mkTripleLit personUri SW.foafFamilyName "Maccari"
+          , RDF.mkTripleLit personUri SW.rdfsLabel (RDF.PlainL "Ruggero Maccari")
+          , RDF.mkTripleLit personUri SW.foafName (RDF.PlainL "Ruggero Maccari")
+          , RDF.mkTripleLit personUri SW.foafGivenName (RDF.PlainL "Ruggero")
+          , RDF.mkTripleLit personUri SW.foafFamilyName (RDF.PlainL "Maccari")
           , RDF.mkTriple personUri SW.crmP1 "/resource/AppellationPerson100"
           , RDF.mkTriple personUri SW.crmP48 "/resource/IdentifierPerson100"
           , RDF.mkTriple personUri SW.owlSameAs (RDF.mkUri wd "Q968421")
-          , RDF.mkTripleLit "/resource/AppellationPerson100" SW.crmP190 "Ruggero Maccari"
-          , RDF.mkTripleLit "/resource/IdentifierPerson100" SW.crmP190 "100"
+
+          , RDF.mkTriple "/resource/AppellationPerson100" SW.rdfType SW.crmE41
+          , RDF.mkTripleLit "/resource/AppellationPerson100" SW.crmP190 (RDF.PlainL "Ruggero Maccari")
+
+          , RDF.mkTriple "/resource/IdentifierPerson100" SW.rdfType SW.crmE42
+          , RDF.mkTripleLit "/resource/IdentifierPerson100" SW.crmP190 (RDF.PlainL "100")
           ]
 
 
