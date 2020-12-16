@@ -22,15 +22,8 @@ cat <<EOT >> $WEBXMLFILE
    <param-name>readOnly</param-name>
    <param-value>true</param-value>
   </context-param>
-  <context-param>
-   <param-name>queryTimeout</param-name>
-   <param-value>30000</param-value>
-  </context-param>
 </web-app>
 EOT
-
-cat $WEBXMLFILE
-
 
 java -server -Xmx4g -Djetty.port=9999 -Djetty.overrideWebXml=$WEBXMLFILE -Dcom.bigdata.rdf.sail.webapp.ConfigParams.propertyFile=$PROP_FILE -jar $BLAZEGRAPH_JAR &
 BLAZEGRAPH_PID=$!

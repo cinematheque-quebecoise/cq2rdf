@@ -2,7 +2,10 @@
 
 Programme qui convertit les données de la Cinémathèque québécoise en RDF.
 
-**Important:** Pour fonctionner, ce programme a besoin de sa base de données relationnelle au format SQLite qui n'est pas actuellement ouverte au publique.
+## Prérequis
+
+1. Le fichier SQLite qui représente la version publique de CineTV (ex. `cinetv-2019-07-12-publique.db`). Voir les « releases » du dépôt [cinetvdb](https://gitlab.com/cinematheque-quebecoise/cinetvdb).
+2. Avoir préinstallé l'outil `cabal` ou [Nix](https://nixos.org/).
 
 ## Usage
 
@@ -27,32 +30,35 @@ Available options:
   -o,--outputdir OUTPUTDIR Output directory of result
 ```
 
-## Compilation
+## Environnement de développement avec Nix
 
-Pour la compilation, l'outil [Nix](https://nixos.org/) doit être installé sur votre système.
-
-À partir de la racine de ce projet, lancer un environnement nix:
+Si [Nix](https://nixos.org/) est installé dans votre système, alors vous pouvez initialiser l'environnement de développement avec:
 
 ```
-nix-shell --pure
+$ nix-shell
 ```
 
 ### Développement
 
-Afin d'obtenir un cycle de compilation rapide pour le développement, nous
-utilisons l'outil `Cabal` (devrait être disponible grace à `nix-shell --pure`)
+Le programme peut être compilé avec:
 
 ```
-cabal build
+$ cabal build
 ```
 
-Testez le programme avec
+Il peut être exécuté avec:
 
 ```
 cabal run cq2rdf-exe -- --help
 ```
 
-### Génération d'un exécutable
+Il existe dans le `Makefile` une commande avec les paramètres prédéfinies:
+
+```
+make run-dev
+```
+
+### Génération d'un exécutable avec Nix
 
 Générer l'exécutable avec :
 
@@ -62,6 +68,12 @@ $ make build
 
 L'exécutable devient disponible dans le chemin relatif `./result/bin/cq2rdf-exe`.
 
+Pour exécuter le programme à partir de l'exécutable, exécutez:
+
+```
+$ make run
+```
+
 ### Tests unitaires
 
 Pour exécuter les tests unitaires, exécutez la commande `cabal test`.
@@ -70,18 +82,16 @@ Pour exécuter les tests unitaires, exécutez la commande `cabal test`.
 
 Plusieurs requêtes SPARQL sont définies dans le fichier `example-queries.yaml`. Afin de valider que ces requêtes SPARQL fonctionne sur les données RDF, nous utilisons la base de données Blazegraph.
 
-Tout d'abord, exécutez la commande `make bootstrap-blazegraph` pour peupler Blazegraph avec les données RDF. Ensuite, exécutez la commande `make test-sparql-queries` pour tester les requêtes SPARQL.
+Tout d'abord, exécutez la commande `make bootstrap-blazegraph` pour migrer les données RDF dans Blazegraph. Ensuite, exécutez la commande `make test-sparql-queries` pour tester les requêtes SPARQL.
 
 ## Publication des données
 
-Assurez-vous de modifier correction la version du logiciel dans le fichier `package.yaml`.
+Assurez-vous de modifier la version du logiciel dans le fichier `package.yaml`.
 
 Pour publier une nouvelle version des données, vous devez générer un jeton à partir de l'interface web de Gitlab. Ce jeton est appellé un « [Personal Access Token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) ».
 Mettez ce jeton dans le fichier caché `.gitlab-token` à la racine du projet.
 
-Cette publication va téléverser le dossier qui a été généré par la commande `make run`.
-
-Pour publier les données:
+La commande suivante va téléverser le dossier qui a été généré par la commande `make run` ou `make run-dev`:
 
 ```
 $ make release

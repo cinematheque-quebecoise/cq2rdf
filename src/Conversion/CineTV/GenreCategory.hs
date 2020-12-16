@@ -52,6 +52,9 @@ for each row in table Sujet where Sujet.SujetId = Filmo_GenresCategories.SujetId
    cmtq:GenreCategory{Sujet.SujetID} crm:P2_has_type cmtq:GenreCategory
    cmtq:GenreCategory{Sujet.SujetID} crm:P48_has_preferred_identifier cmtq:IdentifierGenreCategory{Sujet.SujetID}
    cmtq:IdentifierGenreCategory{Sujet.SujetID} crm:P190_has_symbolic_content {Sujet.Terme}
+
+for each row in table GenresCategories_LienWikidata
+  cmtq:GenreCategory{GenresCategories_LienWikidata.SujetID} owl:sameAs {GenresCategories_LienWikidata.LienWikidata}
 @
 -}
 convertGenreCategories
@@ -59,6 +62,7 @@ convertGenreCategories
 convertGenreCategories pool = do
   createGenreCategoryType
   createTriplesFromGenres pool
+  createTriplesFromAllGenresCategoriesLienWikidata pool
 
 createGenreCategoryType :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createGenreCategoryType = do
@@ -107,3 +111,31 @@ createTriplesFromGenre sujetEntity = do
  where
   genreId    = sqlKeyToText $ entityKey sujetEntity
   genreLabel = sujetTerme $ entityVal sujetEntity
+
+createTriplesFromAllGenresCategoriesLienWikidata
+  :: (RDF.Rdf rdfImpl, MonadIO m) => Pool SqlBackend -> RdfState rdfImpl m ()
+createTriplesFromAllGenresCategoriesLienWikidata pool = do
+  genresLienWikidataEntities <- getAllGenresCategoriesLienWikidataEntities pool
+  mapM_ createTriplesFromGenresCategoriesLienWikidata genresLienWikidataEntities
+
+getAllGenresCategoriesLienWikidataEntities
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity GenresCategories_LienWikidata]
+getAllGenresCategoriesLienWikidataEntities pool =
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
+
+createTriplesFromGenresCategoriesLienWikidata
+  :: (RDF.Rdf rdfImpl, MonadIO m)
+  => Entity GenresCategories_LienWikidata
+  -> RdfState rdfImpl m ()
+createTriplesFromGenresCategoriesLienWikidata genresLienWdEntity = do
+  let wikidataUriMaybe =
+        genresCategories_LienWikidataLienWikidata $ entityVal genresLienWdEntity
+
+  case wikidataUriMaybe of
+    Just wikidataUri -> do
+      let genresCategoriesId =
+            sqlKeyToText $ genresCategories_LienWikidataSujetId $ entityVal genresLienWdEntity
+      let genresCategoryUri = baseUriPath <> "/GenreCategory" <> genresCategoriesId
+      mapM_ addTriple $ mkTriple genresCategoryUri SW.owlSameAs wikidataUri
+    Nothing -> return ()
+

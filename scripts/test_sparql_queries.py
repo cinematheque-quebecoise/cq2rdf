@@ -25,9 +25,9 @@ def test_query(sparql_endpoint, query_name, query):
         print(tabulate([[v['value'] for v in r.values()] for r in results][:5]))
 
 def main(args):
-    query_index_fpath = path.join(args.querydir, 'index.yaml')
+    # query_index_fpath = path.join(args.query, 'index.yaml')
 
-    with open(query_index_fpath) as yamlFile:
+    with open(args.query) as yamlFile:
         queries_index = yaml.load(yamlFile, Loader=yaml.FullLoader)
         for query_index in queries_index:
             test_query(args.endpoint, query_index['name'], query_index['query'])
@@ -35,7 +35,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test SPARQL queries on dataset.')
     parser.add_argument('-e', dest='endpoint', help='SPARQL endpoint', required=True)
-    parser.add_argument('-q', dest='querydir', help='directory containing SPARQL queries', required=True)
+    parser.add_argument('-q', dest='query', help='yaml file containing SPARQL queries', required=True)
 
     args = parser.parse_args()
     main(args)

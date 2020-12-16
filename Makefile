@@ -10,23 +10,21 @@ GITLAB_PROJECT_ID=18031890
 VERSION := $(shell grep "version:\s*" package.yaml | sed "s/version:\s*\(.*\)\s*/\1/")
 GITLAB_TOKEN := $(shell cat .gitlab-token)
 
-SOURCES := $(shell find . -name '*.hs')
-
 build: $(EXEC)
 
-$(EXEC): release.nix *.nix *.yaml $(SOURCES)
+$(EXEC): release.nix
 	nix-build $< && rm -f $(EXEC) && cp result/bin/$(EXEC) .
 
-run: $(EXEC)
+run: $(EXEC) $(CINETV_PUBLIC_SQLITE) $(DESTDIR)
 	./$(EXEC) -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
-run-dev:
+run-dev: $(CINETV_PUBLIC_SQLITE) $(DESTDIR)
 	cabal run $(EXEC) -- -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
 # If release tag does not exist on Gitlab server, it returns a 403 Forbidden HTTP code.
 # @param token - Private Gitlab token
 # $ make release token=<YOURTOKEN>
-release: $(DESTDIR)/cmtq-dataset
+release: $(DESTDIR)/cmtq-dataset $(DESTDIR)/example-queries.yaml .gitlab-token
 	cp $(DESTDIR)/example-queries.yaml $(DESTDIR)/cmtq-dataset
 	./scripts/create-release.sh \
 		"cq2rdf v$(VERSION)" \
@@ -40,7 +38,7 @@ bootstrap-blazegraph:
 	bootstrapBlazegraph cmtq-dataset/cmtq-dataset.ttl.gz
 
 test-sparql-queries:
-	test_sparql_queries queries
+	test_sparql_queries example-queries.yaml
 
 clean:
 	rm $(EXEC)

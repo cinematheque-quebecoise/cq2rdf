@@ -30,6 +30,7 @@ import           Control.Monad.State              (execStateT)
 import           Data.Pool                        (Pool)
 import           Data.RDF                         (RDF)
 import qualified Data.RDF                         as RDF
+import qualified Data.RDF.Namespace               as RDF
 import           Database.CineTv.Public.Model
 import           Database.Esqueleto               hiding (get)
 import           Database.Persist.Sqlite          (SqliteConf (..))
@@ -61,6 +62,7 @@ spec = do
           RDF.triplesOf graph `shouldContainElems` catMaybes
             [ RDF.mkTriple genre1Uri SW.rdfType SW.crmE55
             , RDF.mkTripleLit genre1Uri SW.rdfsLabel (RDF.PlainLL "Drame" "fr")
+            , RDF.mkTriple genre1Uri SW.owlSameAs (RDF.mkUri wd "Q130232")
             , RDF.mkTriple genre1Uri SW.crmP2 genreUri
             , RDF.mkTriple genre1Uri SW.crmP48 identifierGenre1Uri
             , RDF.mkTripleLit identifierGenre1Uri SW.crmP190 (RDF.PlainL "1")
@@ -75,6 +77,9 @@ dbSetup = do
   _    <- liftIO $ flip liftSqlPersistMPool pool $ do
     runMigration migrateAll
     insertKey (toSqlKey 1) $ Sujet "Drame"
+    _ <- insert $ GenresCategories_LienWikidata
+      (toSqlKey 1)
+      (Just "http://www.wikidata.org/entity/Q130232")
     insertKey (toSqlKey 1000) $ Filmo Nothing
                                       Nothing
                                       Nothing
