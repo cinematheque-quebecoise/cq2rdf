@@ -51,13 +51,13 @@ $ cabal build
 It can be executed with:
 
 ```
-cabal run cq2rdf-exe -- --help
+$ cabal run cq2rdf-exe -- --help
 ```
 
 Predefined commands are available in the `Makefile` such as:
 
 ```
-make run-dev
+$ make run-dev
 ```
 
 ### Generating executable with Nix
@@ -76,15 +76,23 @@ To run the generated executable:
 $ make run
 ```
 
-### Uni tests
+### Unit tests
 
 Unit tests can be launched with `cabal test`.
 
-### SPARQL querie tests
+### SPARQL queries tests
 
 Predefined SPARQL queries are available in the file `example-queries.yaml`. They are used to valide the correctness of the generated RDF files. Blazegraph is used to test those queries.
 
 First off, execute `make bootstrap-blazegraph` to import the RDF data inside Blazegraph. Afterwards, execute `make test-sparql-queries` to test the SPARQL queries.
+
+### Dataset description with VoID
+
+The generated data can be described using the VoID ontology.
+
+Some default information on the RDF dataset is defined in the file `void.base.ttl`. These values can be changed if applicable.
+
+Other statements, such as number of triples with `void:triples`, are automatically inserted in the resulting file `void.ttl`.
 
 ## Data publication
 

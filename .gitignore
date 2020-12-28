@@ -5,3 +5,9 @@ tarballs/
 *.prof
 result*
 dist-newstyle
+.gitlab-token
+blazegraph.jnl
+cabal.project.local
+cmtq-dataset
+cq2rdf-exe
+rules.log

@@ -1,0 +1,97 @@
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix wv: <http://vocab.org/waiver/terms/norms> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix formats: <http://www.w3.org/ns/formats/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix : <#> .
+
+</void/Dataset> a void:DatasetDescription ;
+    dcterms:title "A VoID Description of the Cinémathèque québécoise Linked Open Dataset" ;
+    dcterms:creator wd:Q2973248 ;
+    foaf:primaryTopic </void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> ;
+    .
+
+</void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> a void:Dataset ;
+  foaf:homepage </> ;
+  dcterms:creator wd:Q2973248 ;
+  dcterms:publisher wd:Q2973248 ;
+  #dcterms:created "2020-01-01"^^xsd:date ;
+  #dcterms:issued "2020-01-01"^^xsd:date ;
+  #dcterms:modified "2020-01-01"^^xsd:date ;
+  dcterms:license <http://www.opendatacommons.org/licenses/odbl/> ;
+  dcterms:subject wd:Q10301427 ;
+
+  void:feature <http://www.w3.org/ns/formats/Turtle> ;
+  void:feature <http://www.w3.org/ns/formats/N-Triples> ;
+  void:feature wd:Q56655440 ;
+
+  void:sparqlEndpoint </sparql> ;
+
+  void:dataDump </cmtq-dataset.ttl> ;
+  void:dataDump </cmtq-dataset.nt> ;
+  void:dataDump </cmtq-dataset.hdt> ;
+
+  void:exampleResource </resource/Person1063> ;
+  void:exampleResource </resource/Work63563> ;
+
+  void:uriSpace "/resource/" ;
+
+  #void:vocabulary <http://xmlns.com/foaf/0.1/> ;
+  #void:vocabulary <http://www.cidoc-crm.org/cidoc-crm/> ;
+  #void:vocabulary <http://dbpedia.org/ontology/> ;
+  #void:vocabulary <http://purl.org/dc/terms/> ;
+  #void:vocabulary <http://iflastandards.info/ns/fr/frbr/frbroo/> ;
+  #void:vocabulary <http://www.w3.org/2002/07/owl#> ;
+  #void:vocabulary <http://rdaregistry.info/Elements/c/> ;
+  #void:vocabulary <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+  #void:vocabulary <http://www.w3.org/2000/01/rdf-schema#> ;
+  #void:vocabulary <http://schema.org/> ;
+  #void:vocabulary <http://www.wikidata.org/entity/> ;
+  #void:vocabulary <http://www.wikidata.org/prop/direct/> ;
+  #void:vocabulary <http://www.w3.org/2001/XMLSchema#> ;
+
+  #void:triples 6700000 ;
+  #void:entities 1000000 ;
+  #void:classes 100 ;
+  #void:properties 50 ;
+  #void:distinctSubjects 100000 ;
+  #void:distinctObjects 1000 ;
+
+  #void:classPartition [
+  #    void:class foaf:Person;
+  #    void:entities 312000;
+  #];
+  #void:propertyPartition [
+  #    void:property foaf:name;
+  #    void:triples 312000;
+  #];
+.
+
+#</void/Dataset#Wikidata_CinemathequeQuebecoiseLinkedOpenDatabase> a void:Linkset ;
+#  void:target :Wikidata ;
+#  void:target </void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> ;
+#  void:subset </void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> ;
+#  void:triples 25200 ;
+#  void:linkPredicate owl:sameAs;
+#.
+
+</void/Dataset#Wikidata> a void:Dataset ;
+  foaf:homepage <http://www.wikidata.org> ;
+  dcterms:creator wd:Q8288 ;
+  dcterms:created "2012-10-30"^^xsd:date ;
+  dcterms:license <https://creativecommons.org/publicdomain/zero/1.0/> ;
+
+  void:sparqlEndpoint <https://query.wikidta.org/sparql> ;
+.
+
+wd:Q56655440 a formats:Format ;
+  rdfs:label "Header Dictionary Triples" ;
+  rdfs:comment "A binary format for RDF" ;
+  formats:preferred_suffix ".hdt" ;
+  rdfs:seeAlso <https://www.rdfhdt.org/> ;
+.
