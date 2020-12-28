@@ -18,11 +18,12 @@
 
 module Namespaces where
 
-import Data.RDF
-import Data.RDF.Namespace
+import           Data.RDF
+import           Data.RDF.Namespace
 
 cmtqo :: Namespace
-cmtqo = mkPrefixedNS' "cmtqo" "http://data.cinematheque.qc.ca/ontology/cmtqo/0.1#"
+cmtqo =
+  mkPrefixedNS' "cmtqo" "http://data.cinematheque.qc.ca/ontology/cmtqo/0.1#"
 
 crm :: Namespace
 crm = mkPrefixedNS' "crm" "http://www.cidoc-crm.org/cidoc-crm/"
@@ -49,18 +50,19 @@ wdt :: Namespace
 wdt = mkPrefixedNS' "wdt" "http://www.wikidata.org/prop/direct/"
 
 prefixMappings :: PrefixMappings
-prefixMappings = ns_mappings [ crm
-                             , frbroo
-                             , dbo
-                             , schema
-                             , rdac
-                             , dcterms
-                             , rdf
-                             , rdfs
-                             , xsd
-                             , foaf
-                             , owl
-                             , wd
-                             , wdt
+prefixMappings = ns_mappings
+  [ crm
+  , frbroo
+  , dbo
+  , schema
+  , rdac
+  , dcterms
+  , rdf
+  , rdfs
+  , xsd
+  , foaf
+  , owl
+  , wd
+  , wdt
                              -- , cmtqo
-                             ]
+  ]

@@ -19,21 +19,21 @@ module CineTV.RDF.Conversion.MovieLocationSpec
   )
 where
 
-import           CineTV.RDF.Conversion.MovieLocation  (convertMoviesLocation)
-import qualified Data.RDF.Types.Extended          as RDF (mkTriple)
+import           CineTV.RDF.Conversion.MovieLocation (convertMoviesLocation)
+import qualified Data.RDF.Types.Extended             as RDF (mkTriple)
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                    as SW
+import qualified SW.Vocabulary                       as SW
 
-import           Control.Monad.State              (execStateT)
-import           Data.Pool                        (Pool)
-import           Data.RDF                         (RDF)
-import qualified Data.RDF                         as RDF
+import           Control.Monad.State                 (execStateT)
+import           Data.Pool                           (Pool)
+import           Data.RDF                            (RDF)
+import qualified Data.RDF                            as RDF
 import           Database.CineTv.Public.Model
-import           Database.Esqueleto               hiding (get)
-import           Database.Persist.Sqlite          (SqliteConf (..))
+import           Database.Esqueleto                  hiding (get)
+import           Database.Persist.Sqlite             (SqliteConf (..))
 import           Test.Hspec
-import           Test.Hspec.Expectations.Extended (shouldContainElems)
+import           Test.Hspec.Expectations.Extended    (shouldContainElems)
 
 spec :: Spec
 spec = do

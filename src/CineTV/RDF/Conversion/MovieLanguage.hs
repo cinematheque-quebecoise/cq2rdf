@@ -73,9 +73,11 @@ getFilmoLangueEntities pool =
 createTriplesFromFilmoLangue
   :: (RDF.Rdf rdfImpl, Monad m) => Entity Filmo_Langue -> RdfState rdfImpl m ()
 createTriplesFromFilmoLangue filmoLangueEntity = do
-  let filmoId = sqlKeyToText $ filmo_LangueFilmoId $ entityVal filmoLangueEntity
-  let langueId = sqlKeyToText $ filmo_LangueLangueId $ entityVal filmoLangueEntity
+  let filmoId =
+        sqlKeyToText $ filmo_LangueFilmoId $ entityVal filmoLangueEntity
+  let langueId =
+        sqlKeyToText $ filmo_LangueLangueId $ entityVal filmoLangueEntity
   let recordingUri = baseUriPath <> "/Recording" <> filmoId
-  let langueUri = baseUriPath <> "/Language" <> langueId
+  let langueUri    = baseUriPath <> "/Language" <> langueId
 
   mapM_ addTriple $ RDF.mkTriple recordingUri SW.crmP72 langueUri

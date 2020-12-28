@@ -66,18 +66,22 @@ getFilmoDureesOriginales pool =
   liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 addFilmoDureesOriginalesTriples
-  :: (RDF.Rdf rdfImpl, Monad m) => Entity FilmoDureesOriginales -> RdfState rdfImpl m ()
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity FilmoDureesOriginales
+  -> RdfState rdfImpl m ()
 addFilmoDureesOriginalesTriples filmoDureesOriginalesEntity = do
-  let filmoDureesOriginales  = entityVal filmoDureesOriginalesEntity
+  let filmoDureesOriginales = entityVal filmoDureesOriginalesEntity
 
-  let filmoId       = sqlKeyToText $ filmoDureesOriginalesFilmoId filmoDureesOriginales
-  let minutes = filmoDureesOriginalesMinutes filmoDureesOriginales
-  let seconds = filmoDureesOriginalesSecondes filmoDureesOriginales
-  let totalSecondsText = Text.pack $ show $ minutes * 60 + seconds
+  let filmoId =
+        sqlKeyToText $ filmoDureesOriginalesFilmoId filmoDureesOriginales
+  let minutes            = filmoDureesOriginalesMinutes filmoDureesOriginales
+  let seconds            = filmoDureesOriginalesSecondes filmoDureesOriginales
+  let totalSecondsText   = Text.pack $ show $ minutes * 60 + seconds
 
-  let manifestationUri = baseUriPath <> "/ManifestationProductType" <> filmoId
+  let manifestationUri   = baseUriPath <> "/ManifestationProductType" <> filmoId
   let publicationExprUri = baseUriPath <> "/PublicationExpression" <> filmoId
-  let dimensionUri = baseUriPath <> "/Dimension" <> totalSecondsText <> "Seconds"
+  let dimensionUri =
+        baseUriPath <> "/Dimension" <> totalSecondsText <> "Seconds"
 
   mapM_ addTriple $ mkTriple manifestationUri SW.rdfType SW.frbrooF3
   mapM_ addTriple $ mkTriple manifestationUri SW.frbrooCLR6 publicationExprUri
@@ -85,5 +89,7 @@ addFilmoDureesOriginalesTriples filmoDureesOriginalesEntity = do
 
   mapM_ addTriple $ mkTriple dimensionUri SW.rdfType SW.crmE54
   mapM_ addTriple $ mkTriple dimensionUri SW.crmP2 (baseUriPath <> "/Duration")
-  mapM_ addTriple $ mkTripleLit dimensionUri SW.crmP90 (RDF.TypedL totalSecondsText SW.xsdInteger)
+  mapM_ addTriple $ mkTripleLit dimensionUri
+                                SW.crmP90
+                                (RDF.TypedL totalSecondsText SW.xsdInteger)
   mapM_ addTriple $ mkTriple dimensionUri SW.crmP91 (baseUriPath <> "/Second")

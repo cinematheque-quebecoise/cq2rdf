@@ -23,7 +23,7 @@ where
 
 import qualified Data.RDF.Types.Extended      as RDF (mkTriple, mkTripleLit)
 import           Database.CineTv.Public.Model
-import           Import                       hiding ((^.), on, isNothing)
+import           Import                       hiding (isNothing, on, (^.))
 import qualified SW.Vocabulary                as SW
 import           Util                         (sqlKeyToText)
 
@@ -32,14 +32,17 @@ import qualified Data.RDF                     as RDF
 import           Data.RDF.State
 import           Database.Esqueleto           hiding (get)
 
-data MovieSynopses = MovieSynopses { movieId :: Text
-                                   , synopses :: [Synopsis]
-                                   }
+data MovieSynopses = MovieSynopses
+    { movieId  :: Text
+    , synopses :: [Synopsis]
+    }
 
-data Synopsis = Synopsis { synopsisId :: Text
-                         , synopsisText :: Text
-                         , synopsisLangId :: Text
-                         } deriving (Eq)
+data Synopsis = Synopsis
+    { synopsisId     :: Text
+    , synopsisText   :: Text
+    , synopsisLangId :: Text
+    }
+    deriving (Eq)
 
 baseUriPath :: Text
 baseUriPath = "/resource"
@@ -81,7 +84,8 @@ convertMoviesResume pool = do
 createSynopsisType :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createSynopsisType = do
   mapM_ addTriple $ RDF.mkTriple synopsisTypeUri SW.rdfType SW.crmE55
-  mapM_ addTriple $ RDF.mkTripleLit synopsisTypeUri SW.rdfsLabel (RDF.PlainL "Synopsis")
+  mapM_ addTriple
+    $ RDF.mkTripleLit synopsisTypeUri SW.rdfsLabel (RDF.PlainL "Synopsis")
 
 createTriplesFromMoviesResume
   :: (RDF.Rdf rdfImpl, MonadIO m) => Pool SqlBackend -> RdfState rdfImpl m ()
@@ -104,21 +108,28 @@ FROM   Filmo, FilmoResumesAnglais
 WHERE  Filmo.filmoid = FilmoResumesAnglais.filmoid and FilmoResumes.filmoId IS NULL
 @
 -}
-getFilmoResumeEntities
-  :: (MonadIO m) => Pool SqlBackend -> m [MovieSynopses]
+getFilmoResumeEntities :: (MonadIO m) => Pool SqlBackend -> m [MovieSynopses]
 getFilmoResumeEntities pool = do
-  resumesPartOne <- liftIO
+  resumesPartOne <-
+    liftIO
     $ flip liftSqlPersistMPool pool
     $ select
     $ distinct
     $ from
     $ \(filmo, filmoResumes `LeftOuterJoin` filmoResumesAnglais) -> do
-        on (just (filmoResumes ^. FilmoResumesFilmoId) ==. filmoResumesAnglais ?. FilmoResumesAnglaisFilmoId)
+        on
+          (   just (filmoResumes ^. FilmoResumesFilmoId)
+          ==. filmoResumesAnglais
+          ?.  FilmoResumesAnglaisFilmoId
+          )
         where_ (filmo ^. FilmoId ==. filmoResumes ^. FilmoResumesFilmoId)
         return (filmoResumes, filmoResumesAnglais)
 
   synopsesPartOne <- forM resumesPartOne $ \(resumeFr, resumeEnMaybe) -> do
-    let synopsesMultiLang = catMaybes [resumeEntityToSynopsis resumeFr, join $ fmap resumeAnglaisEntityToSynopsis resumeEnMaybe]
+    let synopsesMultiLang = catMaybes
+          [ resumeEntityToSynopsis resumeFr
+          , resumeAnglaisEntityToSynopsis =<< resumeEnMaybe
+          ]
     -- let synopsisFr = resumeEntityToSynopsis resumeFr
     -- let synopsesMultiLang = case fmap resumeAnglaisEntityToSynopsis resumeEnMaybe of
     --       Just synopsisEn -> [ synopsisFr, synopsisEn ]
@@ -127,21 +138,30 @@ getFilmoResumeEntities pool = do
     let filmoId = sqlKeyToText $ filmoResumesFilmoId $ entityVal resumeFr
     return $ MovieSynopses filmoId synopsesMultiLang
 
-  resumesPartTwo <- liftIO
+  resumesPartTwo <-
+    liftIO
     $ flip liftSqlPersistMPool pool
     $ select
     $ distinct
     $ from
     $ \(filmo, filmoResumesAnglais `LeftOuterJoin` filmoResumes) -> do
-        on (just (filmoResumesAnglais ^. FilmoResumesAnglaisFilmoId) ==. filmoResumes ?. FilmoResumesFilmoId)
+        on
+          (   just (filmoResumesAnglais ^. FilmoResumesAnglaisFilmoId)
+          ==. filmoResumes
+          ?.  FilmoResumesFilmoId
+          )
         where_
-          ( filmo ^. FilmoId ==. filmoResumesAnglais ^. FilmoResumesAnglaisFilmoId
+          (   filmo
+          ^.  FilmoId
+          ==. filmoResumesAnglais
+          ^.  FilmoResumesAnglaisFilmoId
           &&. isNothing (filmoResumes ?. FilmoResumesFilmoId)
           )
         return filmoResumesAnglais
 
   synopsesPartTwo <- forM resumesPartTwo $ \resumeEn -> do
-    let filmoId = sqlKeyToText $ filmoResumesAnglaisFilmoId $ entityVal resumeEn
+    let filmoId =
+          sqlKeyToText $ filmoResumesAnglaisFilmoId $ entityVal resumeEn
     let synopsis = resumeAnglaisEntityToSynopsis resumeEn
     return $ MovieSynopses filmoId (catMaybes [synopsis])
 
@@ -149,15 +169,18 @@ getFilmoResumeEntities pool = do
 
 resumeEntityToSynopsis :: Entity FilmoResumes -> Maybe Synopsis
 resumeEntityToSynopsis filmoResumesEntity =
-  let resumeEntityId = sqlKeyToText $ entityKey filmoResumesEntity
+  let resumeEntityId        = sqlKeyToText $ entityKey filmoResumesEntity
       resumeEntityTextMaybe = filmoResumesResume $ entityVal filmoResumesEntity
-   in fmap (\resumeText -> Synopsis resumeEntityId resumeText "38") resumeEntityTextMaybe
+  in  fmap (\resumeText -> Synopsis resumeEntityId resumeText "38")
+           resumeEntityTextMaybe
 
 resumeAnglaisEntityToSynopsis :: Entity FilmoResumesAnglais -> Maybe Synopsis
 resumeAnglaisEntityToSynopsis filmoAnglaisResumesEntity =
   let resumeEntityId = sqlKeyToText $ entityKey filmoAnglaisResumesEntity
-      resumeEntityTextMaybe = filmoResumesAnglaisResumeAnglais $ entityVal filmoAnglaisResumesEntity
-   in fmap (\resumeText -> Synopsis resumeEntityId resumeText "8") resumeEntityTextMaybe
+      resumeEntityTextMaybe =
+          filmoResumesAnglaisResumeAnglais $ entityVal filmoAnglaisResumesEntity
+  in  fmap (\resumeText -> Synopsis resumeEntityId resumeText "8")
+           resumeEntityTextMaybe
 
 createTriplesFromFilmoResume
   :: (RDF.Rdf rdfImpl, Monad m) => MovieSynopses -> RdfState rdfImpl m ()
@@ -165,7 +188,12 @@ createTriplesFromFilmoResume movieSynopses = do
   let workUri = baseUriPath <> "/Work" <> movieId movieSynopses
 
   forM_ (synopses movieSynopses) $ \synopsis -> do
-    let synopsisUri = baseUriPath <> "/Synopsis" <> synopsisId synopsis <> "Language" <> synopsisLangId synopsis
+    let synopsisUri =
+          baseUriPath
+            <> "/Synopsis"
+            <> synopsisId synopsis
+            <> "Language"
+            <> synopsisLangId synopsis
     let languageUri = baseUriPath <> "/Language" <> synopsisLangId synopsis
 
     mapM_ addTriple $ RDF.mkTriple workUri SW.crmP67 synopsisUri
@@ -173,8 +201,15 @@ createTriplesFromFilmoResume movieSynopses = do
     mapM_ addTriple $ RDF.mkTriple synopsisUri SW.crmP67 workUri
     mapM_ addTriple $ RDF.mkTriple synopsisUri SW.crmP2 synopsisTypeUri
     mapM_ addTriple $ RDF.mkTriple synopsisUri SW.crmP72 languageUri
-    mapM_ addTriple $ RDF.mkTripleLit synopsisUri SW.crmP190 (RDF.PlainL (synopsisText synopsis))
+    mapM_ addTriple $ RDF.mkTripleLit synopsisUri
+                                      SW.crmP190
+                                      (RDF.PlainL (synopsisText synopsis))
 
     forM_ (filter (synopsis /=) $ synopses movieSynopses) $ \otherSynopsis -> do
-      let otherSynopsisUri = baseUriPath <> "/Synopsis" <> synopsisId otherSynopsis <> "Language" <> synopsisLangId otherSynopsis
+      let otherSynopsisUri =
+            baseUriPath
+              <> "/Synopsis"
+              <> synopsisId otherSynopsis
+              <> "Language"
+              <> synopsisLangId otherSynopsis
       mapM_ addTriple $ RDF.mkTriple synopsisUri SW.crmP73 otherSynopsisUri

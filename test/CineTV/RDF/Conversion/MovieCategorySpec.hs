@@ -19,21 +19,21 @@ module CineTV.RDF.Conversion.MovieCategorySpec
   )
 where
 
-import           CineTV.RDF.Conversion.MovieCategory  (convertMoviesCategory)
-import qualified Data.RDF.Types.Extended          as RDF (mkTriple)
+import           CineTV.RDF.Conversion.MovieCategory (convertMoviesCategory)
+import qualified Data.RDF.Types.Extended             as RDF (mkTriple)
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                    as SW
+import qualified SW.Vocabulary                       as SW
 
-import           Control.Monad.State              (execStateT)
-import           Data.Pool                        (Pool)
-import           Data.RDF                         (RDF)
-import qualified Data.RDF                         as RDF
+import           Control.Monad.State                 (execStateT)
+import           Data.Pool                           (Pool)
+import           Data.RDF                            (RDF)
+import qualified Data.RDF                            as RDF
 import           Database.CineTv.Public.Model
-import           Database.Esqueleto               hiding (get)
-import           Database.Persist.Sqlite          (SqliteConf (..))
+import           Database.Esqueleto                  hiding (get)
+import           Database.Persist.Sqlite             (SqliteConf (..))
 import           Test.Hspec
-import           Test.Hspec.Expectations.Extended (shouldContainElems)
+import           Test.Hspec.Expectations.Extended    (shouldContainElems)
 
 spec :: Spec
 spec = do
@@ -44,8 +44,8 @@ spec = do
     $ it
         "should create movie language for each row in table Sujet and Filmo_GenresCategories"
     $ do
-        let workUri          = "/resource/Work1"
-        let drameUri = "/resource/GenreCategory10"
+        let workUri    = "/resource/Work1"
+        let drameUri   = "/resource/GenreCategory10"
         let comedieUri = "/resource/GenreCategory11"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes

@@ -19,8 +19,8 @@ module CineTV.RDF.Conversion.RoleSpec
   )
 where
 
+import           CineTV.RDF.Conversion.Role       (convertRoles)
 import           Control.Monad.State              (execStateT)
-import           CineTV.RDF.Conversion.Role           (convertRoles)
 import           Data.Pool                        (Pool)
 import           Data.RDF                         (RDF)
 import qualified Data.RDF                         as RDF

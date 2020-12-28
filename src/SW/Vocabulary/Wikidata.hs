@@ -17,8 +17,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SW.Vocabulary.Wikidata where
 
-import Import hiding ((^.))
-import Namespaces
+import           Import             hiding ((^.))
+import           Namespaces
 
 import qualified Data.RDF.Namespace as RDF
 

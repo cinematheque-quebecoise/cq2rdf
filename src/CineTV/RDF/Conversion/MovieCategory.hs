@@ -65,17 +65,29 @@ getFilmoGenreCategoryEntities pool =
     $ from
     $ \(filmo, filmoGenreCategory, sujet) -> do
         where_
-          (   (sujet ^. SujetId ==. filmoGenreCategory ^. Filmo_GenresCategoriesSujetId)
-          &&. (filmo ^. FilmoId ==. filmoGenreCategory ^. Filmo_GenresCategoriesFilmoId)
+          (   (   sujet
+              ^.  SujetId
+              ==. filmoGenreCategory
+              ^.  Filmo_GenresCategoriesSujetId
+              )
+          &&. (   filmo
+              ^.  FilmoId
+              ==. filmoGenreCategory
+              ^.  Filmo_GenresCategoriesFilmoId
+              )
           )
         return filmoGenreCategory
 
 createTriplesFromFilmoGenreCategory
-  :: (RDF.Rdf rdfImpl, Monad m) => Entity Filmo_GenresCategories -> RdfState rdfImpl m ()
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Filmo_GenresCategories
+  -> RdfState rdfImpl m ()
 createTriplesFromFilmoGenreCategory filmoGenreCategoryEntity = do
-  let filmoId = sqlKeyToText $ filmo_GenresCategoriesFilmoId $ entityVal filmoGenreCategoryEntity
-  let sujetId = sqlKeyToText $ filmo_GenresCategoriesSujetId $ entityVal filmoGenreCategoryEntity
-  let workUri = baseUriPath <> "/Work" <> filmoId
+  let filmoId = sqlKeyToText $ filmo_GenresCategoriesFilmoId $ entityVal
+        filmoGenreCategoryEntity
+  let sujetId = sqlKeyToText $ filmo_GenresCategoriesSujetId $ entityVal
+        filmoGenreCategoryEntity
+  let workUri          = baseUriPath <> "/Work" <> filmoId
   let genreCategoryUri = baseUriPath <> "/GenreCategory" <> sujetId
 
   mapM_ addTriple $ RDF.mkTriple workUri SW.crmP2 genreCategoryUri

@@ -19,8 +19,8 @@ module CineTV.RDF.Conversion.LegalBodySpec
   )
 where
 
+import           CineTV.RDF.Conversion.LegalBody  (convertLegalBodies)
 import           Control.Monad.State              (execStateT)
-import           CineTV.RDF.Conversion.LegalBody      (convertLegalBodies)
 import           Import
 import           Namespaces
 import qualified SW.Vocabulary                    as SW
@@ -53,10 +53,10 @@ spec = do
           , RDF.mkTripleLit legalBodyUri SW.rdfsLabel (RDF.PlainL "PÈRE FILM")
           , RDF.mkTriple legalBodyUri SW.crmP1 legalBodyAppellationUri
           , RDF.mkTriple legalBodyUri SW.crmP48 legalBodyIdentifierUri
-
           , RDF.mkTriple legalBodyAppellationUri SW.rdfType SW.crmE41
-          , RDF.mkTripleLit legalBodyAppellationUri SW.crmP190 (RDF.PlainL "PÈRE FILM")
-
+          , RDF.mkTripleLit legalBodyAppellationUri
+                            SW.crmP190
+                            (RDF.PlainL "PÈRE FILM")
           , RDF.mkTriple legalBodyIdentifierUri SW.rdfType SW.crmE42
           , RDF.mkTripleLit legalBodyIdentifierUri SW.crmP190 (RDF.PlainL "100")
           ]

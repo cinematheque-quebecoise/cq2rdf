@@ -19,21 +19,21 @@ module CineTV.RDF.Conversion.MovieDirectorSpec
   )
 where
 
-import           CineTV.RDF.Conversion.MovieDirector  (convertMoviesDirector)
-import qualified Data.RDF.Types.Extended          as RDF (mkTriple)
+import           CineTV.RDF.Conversion.MovieDirector (convertMoviesDirector)
+import qualified Data.RDF.Types.Extended             as RDF (mkTriple)
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                    as SW
+import qualified SW.Vocabulary                       as SW
 
-import           Control.Monad.State              (execStateT)
-import           Data.Pool                        (Pool)
-import           Data.RDF                         (RDF)
-import qualified Data.RDF                         as RDF
+import           Control.Monad.State                 (execStateT)
+import           Data.Pool                           (Pool)
+import           Data.RDF                            (RDF)
+import qualified Data.RDF                            as RDF
 import           Database.CineTv.Public.Model
-import           Database.Esqueleto               hiding (get)
-import           Database.Persist.Sqlite          (SqliteConf (..))
+import           Database.Esqueleto                  hiding (get)
+import           Database.Persist.Sqlite             (SqliteConf (..))
 import           Test.Hspec
-import           Test.Hspec.Expectations.Extended (shouldContainElems)
+import           Test.Hspec.Expectations.Extended    (shouldContainElems)
 
 spec :: Spec
 spec = do
@@ -41,20 +41,22 @@ spec = do
   graph <- runIO $ execStateT (convertMoviesDirector pool) emptyGraph
 
   describe "converting cinetv movie director to RDF"
-    $ it
-        "should create movie director for each row in Filmo_Realisation"
+    $ it "should create movie director for each row in Filmo_Realisation"
     $ do
-      let recordingEventUri = "/resource/RecordingEvent1"
-      let realisationActivityUri = "/resource/RecordingActivityDirector1-10"
-      let realisationActivityCarriedOutByUri = "/resource/RecordingActivityCarriedOutByDirector1-10"
-      let personUri = "/resource/Person10"
-      let roleUri = "/resource/Role1"
-      RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple recordingEventUri SW.crmP9 realisationActivityUri
-        , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP01 realisationActivityUri
-        , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP02 personUri
-        , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP14_1 roleUri
-        ]
+        let recordingEventUri      = "/resource/RecordingEvent1"
+        let realisationActivityUri = "/resource/RecordingActivityDirector1-10"
+        let realisationActivityCarriedOutByUri =
+              "/resource/RecordingActivityCarriedOutByDirector1-10"
+        let personUri = "/resource/Person10"
+        let roleUri   = "/resource/Role1"
+        RDF.triplesOf graph `shouldContainElems` catMaybes
+          [ RDF.mkTriple recordingEventUri SW.crmP9 realisationActivityUri
+          , RDF.mkTriple realisationActivityCarriedOutByUri
+                         SW.crmP01
+                         realisationActivityUri
+          , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP02 personUri
+          , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP14_1 roleUri
+          ]
 
 emptyGraph :: RDF RDF.TList
 emptyGraph = RDF.mkRdf [] Nothing prefixMappings

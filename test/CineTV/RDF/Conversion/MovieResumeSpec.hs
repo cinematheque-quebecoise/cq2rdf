@@ -19,21 +19,22 @@ module CineTV.RDF.Conversion.MovieResumeSpec
   )
 where
 
-import           CineTV.RDF.Conversion.MovieResume    (convertMoviesResume)
-import qualified Data.RDF.Types.Extended          as RDF (mkTriple, mkTripleLit)
+import           CineTV.RDF.Conversion.MovieResume (convertMoviesResume)
+import qualified Data.RDF.Types.Extended           as RDF (mkTriple,
+                                                           mkTripleLit)
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                    as SW
+import qualified SW.Vocabulary                     as SW
 
-import           Control.Monad.State              (execStateT)
-import           Data.Pool                        (Pool)
-import           Data.RDF                         (RDF)
-import qualified Data.RDF                         as RDF
+import           Control.Monad.State               (execStateT)
+import           Data.Pool                         (Pool)
+import           Data.RDF                          (RDF)
+import qualified Data.RDF                          as RDF
 import           Database.CineTv.Public.Model
-import           Database.Esqueleto               hiding (get)
-import           Database.Persist.Sqlite          (SqliteConf (..))
+import           Database.Esqueleto                hiding (get)
+import           Database.Persist.Sqlite           (SqliteConf (..))
 import           Test.Hspec
-import           Test.Hspec.Expectations.Extended (shouldContainElems)
+import           Test.Hspec.Expectations.Extended  (shouldContainElems)
 
 spec :: Spec
 spec = do
@@ -46,22 +47,24 @@ spec = do
         let workUri            = "/resource/Work1"
         let synopsisFrenchUri  = "/resource/Synopsis50Language38"
         let synopsisEnglishUri = "/resource/Synopsis100Language8"
-        let synopsisTypeUri = "/resource/Synopsis"
+        let synopsisTypeUri    = "/resource/Synopsis"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
           [ RDF.mkTriple synopsisTypeUri SW.rdfType SW.crmE55
-
           , RDF.mkTriple synopsisFrenchUri SW.rdfType SW.crmE33
           , RDF.mkTriple synopsisFrenchUri SW.crmP67 workUri
           , RDF.mkTriple synopsisFrenchUri SW.crmP2 synopsisTypeUri
-          , RDF.mkTripleLit synopsisFrenchUri SW.crmP190 (RDF.PlainL "Résumé en français")
+          , RDF.mkTripleLit synopsisFrenchUri
+                            SW.crmP190
+                            (RDF.PlainL "Résumé en français")
           , RDF.mkTriple synopsisFrenchUri SW.crmP72 "/resource/Language38"
           , RDF.mkTriple synopsisFrenchUri SW.crmP73 synopsisEnglishUri
-
           , RDF.mkTriple workUri SW.crmP67 synopsisEnglishUri
           , RDF.mkTriple synopsisEnglishUri SW.rdfType SW.crmE33
           , RDF.mkTriple synopsisEnglishUri SW.crmP2 synopsisTypeUri
-          , RDF.mkTripleLit synopsisEnglishUri SW.crmP190 (RDF.PlainL "Resume in english")
+          , RDF.mkTripleLit synopsisEnglishUri
+                            SW.crmP190
+                            (RDF.PlainL "Resume in english")
           , RDF.mkTriple synopsisEnglishUri SW.crmP72 "/resource/Language8"
           , RDF.mkTriple synopsisEnglishUri SW.crmP73 synopsisFrenchUri
           ]

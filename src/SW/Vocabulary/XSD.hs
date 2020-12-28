@@ -17,7 +17,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SW.Vocabulary.XSD where
 
-import Import hiding ((^.))
+import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 

@@ -88,7 +88,8 @@ createTriplesFromPerson nomEntity = do
   mapM_ addTriple $ mkTriple personUri SW.crmP48 identifierUri
 
   mapM_ addTriple $ mkTriple identifierUri SW.rdfType SW.crmE42
-  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL personTextId)
+  mapM_ addTriple
+    $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL personTextId)
 
   forM_ nameOpt $ \name -> do
     mapM_ addTriple $ mkTripleLit personUri SW.rdfsLabel (RDF.PlainL name)
@@ -98,16 +99,16 @@ createTriplesFromPerson nomEntity = do
     mapM_ addTriple $ mkTriple appellationUri SW.rdfType SW.crmE41
     mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL name)
 
-  forM_ lastnameOpt $ \lastname ->
-    mapM_ addTriple $ mkTripleLit personUri SW.foafFamilyName (RDF.PlainL lastname)
+  forM_ lastnameOpt $ \lastname -> mapM_ addTriple
+    $ mkTripleLit personUri SW.foafFamilyName (RDF.PlainL lastname)
 
-  forM_ firstnameOpt $ \firstname ->
-    mapM_ addTriple $ mkTripleLit personUri SW.foafGivenName (RDF.PlainL firstname)
+  forM_ firstnameOpt $ \firstname -> mapM_ addTriple
+    $ mkTripleLit personUri SW.foafGivenName (RDF.PlainL firstname)
 
  where
   personTextId = sqlKeyToText $ entityKey nomEntity
-  firstnameOpt    = nomPrenom $ entityVal nomEntity
-  lastnameOpt     = nomNom $ entityVal nomEntity
+  firstnameOpt = nomPrenom $ entityVal nomEntity
+  lastnameOpt  = nomNom $ entityVal nomEntity
   nameOpt      = case (firstnameOpt, lastnameOpt) of
     (f@(Just _), l@(Just _)) -> f <> Just " " <> l
     (f@(Just _), Nothing   ) -> f
@@ -170,13 +171,16 @@ createTriplesFromOrganisme subjectEntity = do
   let appellationUri = baseUriPath <> "/AppellationLegalBody" <> legalBodyId
 
   mapM_ addTriple $ mkTriple legalBodyUri SW.rdfType SW.crmE40
-  mapM_ addTriple $ mkTripleLit legalBodyUri SW.rdfsLabel (RDF.PlainL legalBodyTerm)
+  mapM_ addTriple
+    $ mkTripleLit legalBodyUri SW.rdfsLabel (RDF.PlainL legalBodyTerm)
 
   mapM_ addTriple $ mkTriple legalBodyUri SW.crmP48 identifierUri
-  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL legalBodyId)
+  mapM_ addTriple
+    $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL legalBodyId)
 
   mapM_ addTriple $ mkTriple legalBodyUri SW.crmP1 appellationUri
-  mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL legalBodyTerm)
+  mapM_ addTriple
+    $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL legalBodyTerm)
 
  where
   legalBodyId   = sqlKeyToText $ entityKey subjectEntity

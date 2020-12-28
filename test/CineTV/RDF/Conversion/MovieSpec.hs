@@ -19,8 +19,8 @@ module CineTV.RDF.Conversion.MovieSpec
   )
 where
 
+import           CineTV.RDF.Conversion.Movie      (convertMovies)
 import           Control.Monad.State              (execStateT)
-import           CineTV.RDF.Conversion.Movie          (convertMovies)
 import           Import
 import           Namespaces
 import qualified SW.Vocabulary                    as SW
@@ -49,18 +49,20 @@ spec = do
         [RDF.mkTriple workUri SW.rdfType SW.frbrooF1]
 
     it "should create id, label and comment for work" $ do
-      let workUri            = "/resource/Work1"
-      let identifierWorkUri  = "/resource/IdentifierWork1"
+      let workUri              = "/resource/Work1"
+      let identifierWorkUri    = "/resource/IdentifierWork1"
       let originalTitleWorkUri = "/resource/OriginalTitleWork1"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTripleLit workUri SW.rdfsLabel (RDF.PlainL "LES INVASIONS BARBARES")
+        [ RDF.mkTripleLit workUri
+                          SW.rdfsLabel
+                          (RDF.PlainL "LES INVASIONS BARBARES")
         , RDF.mkTriple workUri SW.crmP102 originalTitleWorkUri
         , RDF.mkTriple workUri SW.crmP48 identifierWorkUri
-
         , RDF.mkTriple originalTitleWorkUri SW.rdfType SW.crmE35
-        , RDF.mkTripleLit originalTitleWorkUri SW.crmP190 (RDF.PlainL "LES INVASIONS BARBARES")
-
+        , RDF.mkTripleLit originalTitleWorkUri
+                          SW.crmP190
+                          (RDF.PlainL "LES INVASIONS BARBARES")
         , RDF.mkTriple identifierWorkUri SW.rdfType SW.crmE42
         , RDF.mkTripleLit identifierWorkUri SW.crmP190 (RDF.PlainL "1")
         ]
@@ -75,11 +77,17 @@ spec = do
         [ RDF.mkTriple workUri SW.crmP43 budgetWorkUri
         , RDF.mkTriple budgetWorkUri SW.rdfType SW.crmE54
         , RDF.mkTriple budgetWorkUri SW.crmP2 budgetUri
-        , RDF.mkTripleLit budgetWorkUri SW.rdfsLabel (RDF.PlainL "Dimension2300000CAD")
-        , RDF.mkTripleLit budgetWorkUri SW.crmP181 (RDF.TypedL "2300000" "xsd:double")
+        , RDF.mkTripleLit budgetWorkUri
+                          SW.rdfsLabel
+                          (RDF.PlainL "Dimension2300000CAD")
+        , RDF.mkTripleLit budgetWorkUri
+                          SW.crmP181
+                          (RDF.TypedL "2300000" "xsd:double")
         , RDF.mkTriple budgetWorkUri SW.crmP180 cadUri
         , RDF.mkTriple cadUri SW.rdfType SW.crmE98
-        , RDF.mkTripleLit cadUri SW.rdfsLabel (RDF.PlainLL "Dollar canadien" "fr")
+        , RDF.mkTripleLit cadUri
+                          SW.rdfsLabel
+                          (RDF.PlainLL "Dollar canadien" "fr")
         ]
 
     it "should associate triples related to recording of work" $ do
@@ -98,25 +106,24 @@ spec = do
         ]
 
     it "should create publication information" $ do
-      let publicationExprUri = "/resource/PublicationExpression1"
-      let publicationEventUri = "/resource/PublicationEvent1"
-      let recordingUri       = "/resource/Recording1"
-      let publicProjectionEventUri        = "/resource/PublicProjectionEvent1"
-      let timespanUri        = "/resource/Time-Span2003-01-01T00:00:00Z"
+      let publicationExprUri       = "/resource/PublicationExpression1"
+      let publicationEventUri      = "/resource/PublicationEvent1"
+      let recordingUri             = "/resource/Recording1"
+      let publicProjectionEventUri = "/resource/PublicProjectionEvent1"
+      let timespanUri              = "/resource/Time-Span2003-01-01T00:00:00Z"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
         [ RDF.mkTriple publicationExprUri SW.rdfType SW.frbrooF24
         , RDF.mkTriple publicationExprUri SW.crmP165 recordingUri
-
         , RDF.mkTriple publicationEventUri SW.rdfType SW.frbrooF30
         , RDF.mkTriple publicationEventUri SW.frbrooR24 publicationExprUri
         , RDF.mkTriple publicationEventUri SW.crmP183 publicProjectionEventUri
-
         , RDF.mkTriple publicProjectionEventUri SW.rdfType SW.crmE7
-        , RDF.mkTriple publicProjectionEventUri SW.crmP2 "/resource/PublicProjectionEvent"
+        , RDF.mkTriple publicProjectionEventUri
+                       SW.crmP2
+                       "/resource/PublicProjectionEvent"
         , RDF.mkTriple publicProjectionEventUri SW.crmP16 publicationExprUri
         , RDF.mkTriple publicProjectionEventUri SW.crmP4 timespanUri
-
         , RDF.mkTriple timespanUri
                        SW.crmP82a
                        "2003-01-01T00:00:00Z^^xsd:dateTime"
@@ -138,15 +145,16 @@ spec = do
         ]
 
     it "should handle apostrophe in title prefix" $ do
-      let workUri            = "/resource/Work2"
+      let workUri              = "/resource/Work2"
       let originalTitleWorkUri = "/resource/OriginalTitleWork2"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
         [ RDF.mkTripleLit workUri SW.rdfsLabel (RDF.PlainL "L'HOMME DE L'ISLE")
         , RDF.mkTriple workUri SW.crmP102 originalTitleWorkUri
-
         , RDF.mkTriple originalTitleWorkUri SW.rdfType SW.crmE35
-        , RDF.mkTripleLit originalTitleWorkUri SW.crmP190 (RDF.PlainL "L'HOMME DE L'ISLE")
+        , RDF.mkTripleLit originalTitleWorkUri
+                          SW.crmP190
+                          (RDF.PlainL "L'HOMME DE L'ISLE")
         ]
 
     it "should create a link to wikidata" $ do

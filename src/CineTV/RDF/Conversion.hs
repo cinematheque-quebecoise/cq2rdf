@@ -21,31 +21,29 @@ module CineTV.RDF.Conversion
   )
 where
 
-import Import hiding ((^.))
-import CineTV.RDF.Conversion.Role (convertRoles)
-import CineTV.RDF.Conversion.Person (convertPeople)
-import CineTV.RDF.Conversion.LegalBody (convertLegalBodies)
-import CineTV.RDF.Conversion.GenreCategory (convertGenreCategories)
-import CineTV.RDF.Conversion.Place (convertPlaces)
-import CineTV.RDF.Conversion.Language (convertLanguages)
-import CineTV.RDF.Conversion.Movie (convertMovies)
-import CineTV.RDF.Conversion.MovieLocation (convertMoviesLocation)
-import CineTV.RDF.Conversion.MovieCategory (convertMoviesCategory)
-import CineTV.RDF.Conversion.MovieDirector (convertMoviesDirector)
-import CineTV.RDF.Conversion.MovieGeneric (convertMoviesGeneric)
-import CineTV.RDF.Conversion.MovieLanguage (convertMoviesLanguage)
-import CineTV.RDF.Conversion.MovieResume (convertMoviesResume)
-import CineTV.RDF.Conversion.FilmoDureesOriginales (convertFilmoDureesOriginales)
-import CineTV.RDF.Conversion.FilmoTitres (convertFilmoTitres)
-import Data.RDF.State
+import           CineTV.RDF.Conversion.FilmoDureesOriginales (convertFilmoDureesOriginales)
+import           CineTV.RDF.Conversion.FilmoTitres           (convertFilmoTitres)
+import           CineTV.RDF.Conversion.GenreCategory         (convertGenreCategories)
+import           CineTV.RDF.Conversion.Language              (convertLanguages)
+import           CineTV.RDF.Conversion.LegalBody             (convertLegalBodies)
+import           CineTV.RDF.Conversion.Movie                 (convertMovies)
+import           CineTV.RDF.Conversion.MovieCategory         (convertMoviesCategory)
+import           CineTV.RDF.Conversion.MovieDirector         (convertMoviesDirector)
+import           CineTV.RDF.Conversion.MovieGeneric          (convertMoviesGeneric)
+import           CineTV.RDF.Conversion.MovieLanguage         (convertMoviesLanguage)
+import           CineTV.RDF.Conversion.MovieLocation         (convertMoviesLocation)
+import           CineTV.RDF.Conversion.MovieResume           (convertMoviesResume)
+import           CineTV.RDF.Conversion.Person                (convertPeople)
+import           CineTV.RDF.Conversion.Place                 (convertPlaces)
+import           CineTV.RDF.Conversion.Role                  (convertRoles)
+import           Data.RDF.State
+import           Import                                      hiding ((^.))
 
-import qualified Data.RDF as RDF
-import Database.Esqueleto hiding (get)
-import Data.Pool (Pool)
+import           Data.Pool                                   (Pool)
+import qualified Data.RDF                                    as RDF
+import           Database.Esqueleto                          hiding (get)
 
-convertToRdf :: (MonadIO m)
-           => Pool SqlBackend
-           -> RdfState RDF.TList m ()
+convertToRdf :: (MonadIO m) => Pool SqlBackend -> RdfState RDF.TList m ()
 convertToRdf pool = do
   convertRoles pool
   convertPeople pool

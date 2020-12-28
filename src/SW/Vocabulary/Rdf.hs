@@ -17,9 +17,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SW.Vocabulary.Rdf where
 
-import Import hiding ((^.))
+import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
 rdfType :: Text
-rdfType = RDF.mkUri RDF.rdf $ "type"
+rdfType = RDF.mkUri RDF.rdf "type"

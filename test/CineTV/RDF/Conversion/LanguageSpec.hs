@@ -19,27 +19,27 @@ module CineTV.RDF.Conversion.LanguageSpec
   )
 where
 
-import           Control.Monad.State          (execStateT)
 import           CineTV.RDF.Conversion.Language   (convertLanguages)
+import           Control.Monad.State              (execStateT)
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                as SW
+import qualified SW.Vocabulary                    as SW
 
-import           Data.Pool                    (Pool)
-import           Data.RDF                     (RDF)
-import qualified Data.RDF                     as RDF
-import qualified Data.RDF.Extended            as RDF (mkNode, mkTriple,
-                                                      mkTripleLit)
-import           Test.Hspec.Expectations.Extended (shouldContainElems)
-import qualified Data.RDF.Namespace           as RDF
+import           Data.Pool                        (Pool)
+import           Data.RDF                         (RDF)
+import qualified Data.RDF                         as RDF
+import qualified Data.RDF.Extended                as RDF (mkNode, mkTriple,
+                                                          mkTripleLit)
+import qualified Data.RDF.Namespace               as RDF
 import           Database.CineTv.Public.Model
-import           Database.Esqueleto           hiding (get)
-import           Database.Persist.Sqlite      (SqliteConf (..))
+import           Database.Esqueleto               hiding (get)
+import           Database.Persist.Sqlite          (SqliteConf (..))
 import           Test.Hspec
+import           Test.Hspec.Expectations.Extended (shouldContainElems)
 
 spec :: Spec
 spec = do
-  pool <- runIO dbSetup
+  pool  <- runIO dbSetup
   graph <- runIO $ execStateT (convertLanguages pool) emptyGraph
 
   describe "converting cinetv languages to RDF"
@@ -51,14 +51,14 @@ spec = do
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
           [ RDF.mkTriple languageUri SW.rdfType SW.crmE56
-          , RDF.mkTripleLit languageUri SW.rdfsLabel (RDF.PlainLL "français" "fr")
+          , RDF.mkTripleLit languageUri
+                            SW.rdfsLabel
+                            (RDF.PlainLL "français" "fr")
           , RDF.mkTriple languageUri SW.crmP1 appellationUri
           , RDF.mkTriple languageUri SW.crmP48 identifierUri
           , RDF.mkTriple languageUri SW.owlSameAs (RDF.mkUri wd "Q150")
-
           , RDF.mkTriple identifierUri SW.rdfType SW.crmE42
           , RDF.mkTripleLit identifierUri SW.crmP190 (RDF.PlainL "100")
-
           , RDF.mkTriple appellationUri SW.rdfType SW.crmE41
           , RDF.mkTripleLit appellationUri SW.crmP190 (RDF.PlainL "français")
           ]

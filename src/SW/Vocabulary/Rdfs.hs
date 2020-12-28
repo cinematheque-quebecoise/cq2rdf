@@ -17,12 +17,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SW.Vocabulary.Rdfs where
 
-import Import hiding ((^.))
+import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
 rdfsLabel :: Text
-rdfsLabel = RDF.mkUri RDF.rdfs $ "label"
+rdfsLabel = RDF.mkUri RDF.rdfs "label"
 
 rdfsComment :: Text
-rdfsComment = RDF.mkUri RDF.rdfs $ "comment"
+rdfsComment = RDF.mkUri RDF.rdfs "comment"

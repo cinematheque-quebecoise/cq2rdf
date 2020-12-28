@@ -18,35 +18,40 @@
 
 module Data.RDF.Void where
 
-import RIO
+import           RIO
 
 data DatasetStats = DatasetStats
-  { numTriples :: Int
-  , numEntities :: Int
-  , numClasses :: Int
-  , numProperties :: Int
-  , numDistinctSubjects :: Int
-  , numDistinctObjects :: Int
-  , classPartitions :: [ClassPartition]
-  , propPartitions :: [PropertyPartition]
-  -- , linksets :: [Linkset]
-  }
+    { numTriples          :: Int
+    , numEntities         :: Int
+    , numClasses          :: Int
+    , numProperties       :: Int
+    , numDistinctSubjects :: Int
+    , numDistinctObjects  :: Int
+    , classPartitions     :: [ClassPartition]
+    , propPartitions      :: [PropertyPartition]
+    -- , linksets :: [Linkset]
+    }
 
 data ClassPartition = ClassPartition
-  { classPartitionName :: Text
-  , classPartitionNumEntities :: Int
-  }
+    { classPartitionName        :: Text
+    , classPartitionNumEntities :: Int
+    }
 
 data PropertyPartition = PropertyPartition
-  { propertyPartitionName :: Text
-  , propertyPartitionNumEntities :: Int
-  }
+    { propertyPartitionName        :: Text
+    , propertyPartitionNumEntities :: Int
+    }
 
 data Linkset = Linkset
- { linksetExternalDomain :: Text
- , linksetPredicate :: Text
- , linsetNumTriples :: Int
- }
+    { linksetExternalDomain :: Text
+    , linksetPredicate      :: Text
+    , linsetNumTriples      :: Int
+    }
+
+-- RdfGraph to VoIDData
+-- VoIDData to RdfGraph
+-- Read void.base.ttl to RdfGraph
+-- Modify fields
 
 -- createDatasetStats :: RDF rdfImpl -> DatasetStats
 --
@@ -58,7 +63,6 @@ data Linkset = Linkset
 -- addCreationDate :: Date -> RdfState rdfImpl m ()
 -- addIssuedDate :: Date -> RdfState rdfImpl m ()
 -- addPrefixesAsVocab :: PrefixMappings -> RdfState rdfImpl m ()
--- addPrefixesAsVocab :: PrefixMappings -> RdfState rdfImpl m ()
 -- addNumOfTriples :: RDF rdfImpl -> RdfState rdfImpl m ()
 -- addNumOfEntities :: RDF rdfImpl -> RdfState rdfImpl m ()
 -- addNumOfClasses :: RDF rdfImpl -> RdfState rdfImpl m ()
@@ -68,4 +72,3 @@ data Linkset = Linkset
 -- addClassPartitions :: RDF rdfImpl -> RdfState rdfImpl m ()
 -- addPropertyPartitions :: RDF rdfImpl -> RdfState rdfImpl m ()
 -- addLinksetWikidata :: RDF rdfImpl -> RdfState rdfImpl m ()
-

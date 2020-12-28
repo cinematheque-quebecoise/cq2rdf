@@ -68,7 +68,8 @@ createGenreCategoryType :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createGenreCategoryType = do
   let genreTypeUri = baseUriPath <> "/GenreCategory"
   mapM_ addTriple $ mkTriple genreTypeUri SW.rdfType SW.crmE55
-  mapM_ addTriple $ mkTripleLit genreTypeUri SW.rdfsLabel (RDF.PlainL "GenreCategory")
+  mapM_ addTriple
+    $ mkTripleLit genreTypeUri SW.rdfsLabel (RDF.PlainL "GenreCategory")
   mapM_ addTriple $ mkTripleLit
     genreTypeUri
     SW.rdfsComment
@@ -104,9 +105,11 @@ createTriplesFromGenre sujetEntity = do
 
   mapM_ addTriple $ RDF.mkTriple genreUri SW.rdfType SW.crmE55
   mapM_ addTriple $ RDF.mkTriple genreUri SW.crmP2 "/resource/GenreCategory"
-  mapM_ addTriple $ RDF.mkTripleLit genreUri SW.rdfsLabel (RDF.PlainLL genreLabel "fr")
+  mapM_ addTriple
+    $ RDF.mkTripleLit genreUri SW.rdfsLabel (RDF.PlainLL genreLabel "fr")
   mapM_ addTriple $ RDF.mkTriple genreUri SW.crmP48 identifierGenreUri
-  mapM_ addTriple $ RDF.mkTripleLit identifierGenreUri SW.crmP190 (RDF.PlainL genreId)
+  mapM_ addTriple
+    $ RDF.mkTripleLit identifierGenreUri SW.crmP190 (RDF.PlainL genreId)
 
  where
   genreId    = sqlKeyToText $ entityKey sujetEntity
@@ -134,8 +137,10 @@ createTriplesFromGenresCategoriesLienWikidata genresLienWdEntity = do
   case wikidataUriMaybe of
     Just wikidataUri -> do
       let genresCategoriesId =
-            sqlKeyToText $ genresCategories_LienWikidataSujetId $ entityVal genresLienWdEntity
-      let genresCategoryUri = baseUriPath <> "/GenreCategory" <> genresCategoriesId
+            sqlKeyToText $ genresCategories_LienWikidataSujetId $ entityVal
+              genresLienWdEntity
+      let genresCategoryUri =
+            baseUriPath <> "/GenreCategory" <> genresCategoriesId
       mapM_ addTriple $ mkTriple genresCategoryUri SW.owlSameAs wikidataUri
     Nothing -> return ()
 

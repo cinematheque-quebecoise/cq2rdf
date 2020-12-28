@@ -27,10 +27,10 @@ import           Import                       hiding ((^.))
 import qualified SW.Vocabulary                as SW
 import           Util                         (sqlKeyToText)
 
-import qualified Data.Text as Text
 import           Data.Pool                    (Pool)
 import qualified Data.RDF                     as RDF
 import           Data.RDF.State
+import qualified Data.Text                    as Text
 import           Database.Esqueleto           hiding (get)
 
 baseUriPath :: Text
@@ -64,7 +64,8 @@ createTriplesFromMoviesDirector pool = do
   filmoRealisationEntities <- getFilmoRealisationEntities pool
   mapM_ createTriplesFromFilmoRealisation filmoRealisationEntities
 
-getFilmoRealisationEntities :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo_Realisation]
+getFilmoRealisationEntities
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo_Realisation]
 getFilmoRealisationEntities pool =
   liftIO
     $ flip liftSqlPersistMPool pool
@@ -74,21 +75,33 @@ getFilmoRealisationEntities pool =
     $ \(filmo, filmoRealisation, nom) -> do
         where_
           (   (nom ^. NomId ==. filmoRealisation ^. Filmo_RealisationNomId)
-          &&. (filmo ^. FilmoId ==. filmoRealisation ^. Filmo_RealisationFilmoId)
+          &&. (   filmo
+              ^.  FilmoId
+              ==. filmoRealisation
+              ^.  Filmo_RealisationFilmoId
+              )
           )
         return filmoRealisation
 
 createTriplesFromFilmoRealisation
-  :: (RDF.Rdf rdfImpl, Monad m) => Entity Filmo_Realisation -> RdfState rdfImpl m ()
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Filmo_Realisation
+  -> RdfState rdfImpl m ()
 createTriplesFromFilmoRealisation filmoRealisationEntity = do
-  let filmoId =
-        (sqlKeyToText . filmo_RealisationFilmoId . entityVal) filmoRealisationEntity
-  let nomId = (sqlKeyToText . filmo_RealisationNomId . entityVal) filmoRealisationEntity
+  let filmoId = (sqlKeyToText . filmo_RealisationFilmoId . entityVal)
+        filmoRealisationEntity
+  let nomId = (sqlKeyToText . filmo_RealisationNomId . entityVal)
+        filmoRealisationEntity
 
   let recordingEventUri = baseUriPath <> "/RecordingEvent" <> filmoId
-  let roleActivityUri   = baseUriPath <> "/RecordingActivityDirector" <> filmoId <> "-" <> nomId
+  let roleActivityUri =
+        baseUriPath <> "/RecordingActivityDirector" <> filmoId <> "-" <> nomId
   let roleActivityCarriedOutByUri =
-        baseUriPath <> "/RecordingActivityCarriedOutByDirector" <> filmoId <> "-" <> nomId
+        baseUriPath
+          <> "/RecordingActivityCarriedOutByDirector"
+          <> filmoId
+          <> "-"
+          <> nomId
   let roleUri = baseUriPath <> "/Role" <> Text.pack (show customDirectorRoleId)
   let personUri = baseUriPath <> "/Person" <> nomId
 

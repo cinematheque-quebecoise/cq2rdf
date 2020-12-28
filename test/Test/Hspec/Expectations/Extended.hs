@@ -6,7 +6,7 @@ module Test.Hspec.Expectations.Extended
 where
 
 import           Import
-import Test.Hspec.Expectations (Expectation, shouldContain)
+import           Test.Hspec.Expectations (Expectation, shouldContain)
 
 shouldContainElems :: (HasCallStack, Show a, Eq a) => [a] -> [a] -> Expectation
 shouldContainElems actual expectedElems =

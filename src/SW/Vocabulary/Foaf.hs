@@ -17,15 +17,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SW.Vocabulary.Foaf where
 
-import Import hiding ((^.))
+import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
 foafName :: Text
-foafName = RDF.mkUri RDF.foaf $ "name"
+foafName = RDF.mkUri RDF.foaf "name"
 
 foafFamilyName :: Text
-foafFamilyName = RDF.mkUri RDF.foaf $ "familyName"
+foafFamilyName = RDF.mkUri RDF.foaf "familyName"
 
 foafGivenName :: Text
-foafGivenName = RDF.mkUri RDF.foaf $ "givenName"
+foafGivenName = RDF.mkUri RDF.foaf "givenName"

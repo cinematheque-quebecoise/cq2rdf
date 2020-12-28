@@ -13,50 +13,59 @@
 -- You should have received a copy of the GNU General Public License
 -- along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
 
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE DeriveGeneric #-}
-module Runv1 (run) where
+{-# LANGUAGE NoImplicitPrelude          #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+module Runv1
+  ( run
+  )
+where
 
-import Import hiding ((^.))
-import Namespaces
-import Util (sqlKeyToText, getCurrentDayText)
-import qualified SW.Vocabulary as SW
-import Data.RDF.State
-import Database.CineTv.Public.Model
+import           Data.RDF.State
+import           Database.CineTv.Public.Model
+import           Import                            hiding ((^.))
+import           Namespaces
+import qualified SW.Vocabulary                     as SW
+import           Util                              (getCurrentDayText,
+                                                    sqlKeyToText)
 
-import qualified RIO.Text as Text
-import qualified Data.Text.Lazy.IO as TextL
-import Control.Monad.State (execStateT)
-import Data.RDF (RDF)
-import qualified Data.RDF as RDF
-import qualified Data.RDF.Namespace as RDF
-import Text.RDF.RDF4H.TurtleSerializer
-import Text.RDF.RDF4H.NTriplesSerializer
-import Data.Pool (Pool)
-import Database.Esqueleto hiding (get)
-import Database.Persist.Sqlite (SqliteConf(..))
-import Data.Time.Clock (UTCTime(..), getCurrentTime)
-import Data.Time.Format (parseTimeM, defaultTimeLocale)
-import Data.Aeson (ToJSON(..))
-import Data.Aeson.Text (encodeToLazyText)
-import Codec.Compression.GZip (compress)
-import qualified Data.ByteString.Lazy as BS
-import System.Directory (doesFileExist, removeFile, createDirectoryIfMissing)
-import Text.XML.XSD (fromUTCTime)
-import System.FilePath (joinPath)
-import Text.RE.TDFA.Text
-import System.Process (callCommand)
+import           Codec.Compression.GZip            (compress)
+import           Control.Monad.State               (execStateT)
+import           Data.Aeson                        (ToJSON (..))
+import           Data.Aeson.Text                   (encodeToLazyText)
+import qualified Data.ByteString.Lazy              as BS
+import           Data.Pool                         (Pool)
+import           Data.RDF                          (RDF)
+import qualified Data.RDF                          as RDF
+import qualified Data.RDF.Namespace                as RDF
+import qualified Data.Text.Lazy.IO                 as TextL
+import           Data.Time.Clock                   (UTCTime (..),
+                                                    getCurrentTime)
+import           Data.Time.Format                  (defaultTimeLocale,
+                                                    parseTimeM)
+import           Database.Esqueleto                hiding (get)
+import           Database.Persist.Sqlite           (SqliteConf (..))
+import qualified RIO.Text                          as Text
+import           System.Directory                  (createDirectoryIfMissing,
+                                                    doesFileExist, removeFile)
+import           System.FilePath                   (joinPath)
+import           System.Process                    (callCommand)
+import           Text.RDF.RDF4H.NTriplesSerializer
+import           Text.RDF.RDF4H.TurtleSerializer
+import           Text.RE.TDFA.Text
+import           Text.XML.XSD                      (fromUTCTime)
 
 -- Used for converting the prefix mappings in JSON format
 instance ToJSON RDF.PrefixMappings
 
-data Metadata = Metadata { metadataOriginalDate :: Text
-                         , metadataCreationDate :: Text
-                         } deriving (Generic)
+data Metadata = Metadata
+    { metadataOriginalDate :: Text
+    , metadataCreationDate :: Text
+    }
+    deriving (Generic)
 instance ToJSON Metadata
 
 -- run :: RIO App ()
@@ -91,40 +100,58 @@ run = do
   creationDate <- liftIO $ fmap getCurrentDayText getCurrentTime
 
   -- let emptyRdf = RDF.empty :: RDF RDF.TList
-  let baseUri = optionsBaseUri $ appOptions env
+  let baseUri  = optionsBaseUri $ appOptions env
   -- let baseUriJust = Just $ RDF.BaseUrl baseUri
   let emptyRdf = RDF.mkRdf [] Nothing prefixMappings :: RDF RDF.TList
   graph <- liftIO $ execStateT (cinetv2rdf pool) emptyRdf
 
-  let outputDir = Text.pack $ joinPath [ Text.unpack $ optionsOutputDir $ appOptions env
-                                       , "cmtq-dataset"
-                                       ]
+  let outputDir = Text.pack $ joinPath
+        [Text.unpack $ optionsOutputDir $ appOptions env, "cmtq-dataset"]
   liftIO $ createDirectoryIfMissing True $ Text.unpack outputDir
 
   -- let prefixesFpath = Text.unpack $ outputDir <> "/prefixes.json"
   -- liftIO $ TextL.writeFile prefixesFpath $ encodeToLazyText $ RDF.prefixMappings graph
 
   let metadataFpath = Text.unpack $ outputDir <> "/metadata.json"
-  liftIO $ TextL.writeFile metadataFpath $ encodeToLazyText $ Metadata originalDate creationDate
+  liftIO $ TextL.writeFile metadataFpath $ encodeToLazyText $ Metadata
+    originalDate
+    creationDate
 
   let cmtqTurtleFpath = Text.unpack $ outputDir <> "/cmtq-dataset.ttl"
-  liftIO $ withFile cmtqTurtleFpath WriteMode (\h -> RDF.hWriteRdf (TurtleSerializer Nothing prefixMappings) h graph)
+  liftIO $ withFile
+    cmtqTurtleFpath
+    WriteMode
+    (\h -> RDF.hWriteRdf (TurtleSerializer Nothing prefixMappings) h graph)
 
   let cmtqNtriplesFpath = Text.unpack $ outputDir <> "/cmtq-dataset.nt"
-  liftIO $ withFile cmtqNtriplesFpath WriteMode (\h -> RDF.hWriteRdf NTriplesSerializer h graph)
+  liftIO $ withFile cmtqNtriplesFpath
+                    WriteMode
+                    (\h -> RDF.hWriteRdf NTriplesSerializer h graph)
 
   -- Compress output Turtle file
   let cmtqTurtleFpathCompressed = cmtqTurtleFpath <> ".gz"
-  liftIO $ BS.readFile cmtqTurtleFpath >>= (return . compress) >>= BS.writeFile cmtqTurtleFpathCompressed
+  liftIO
+    $   BS.readFile cmtqTurtleFpath
+    >>= (return . compress)
+    >>= BS.writeFile cmtqTurtleFpathCompressed
   liftIO $ removeFile cmtqTurtleFpath
 
   -- Compress output N-triples file
   let cmtqNtriplesFpathCompressed = cmtqNtriplesFpath <> ".gz"
-  liftIO $ BS.readFile cmtqNtriplesFpath >>= (return . compress) >>= BS.writeFile cmtqNtriplesFpathCompressed
+  liftIO
+    $   BS.readFile cmtqNtriplesFpath
+    >>= (return . compress)
+    >>= BS.writeFile cmtqNtriplesFpathCompressed
   liftIO $ removeFile cmtqNtriplesFpath
 
   let cmtqHdtFpath = Text.unpack $ outputDir <> "/cmtq-dataset.hdt"
-  let rdf2hdtCmd = "rdf2hdt -B " <> Text.unpack baseUri <> "/resource -f ttl " <> cmtqNtriplesFpathCompressed <> " " <> cmtqHdtFpath
+  let rdf2hdtCmd =
+        "rdf2hdt -B "
+          <> Text.unpack baseUri
+          <> "/resource -f ttl "
+          <> cmtqNtriplesFpathCompressed
+          <> " "
+          <> cmtqHdtFpath
   liftIO $ callCommand rdf2hdtCmd
 
   logInfo "Finished!"
@@ -134,13 +161,11 @@ getSqliteDbDate = do
   sqliteDbPath <- fmap (optionsSqlitePath . appOptions) ask
   case matchedText $ sqliteDbPath ?=~ [re|[0-9]+-[0-9]+-[0-9]+|] of
     Just date -> return date
-    Nothing -> do
+    Nothing   -> do
       logError "The SQLite file must contain a date in the format YYYY-MM-DD"
       exitFailure
 
-cinetv2rdf :: (MonadIO m)
-           => Pool SqlBackend
-           -> RdfState RDF.TList m ()
+cinetv2rdf :: (MonadIO m) => Pool SqlBackend -> RdfState RDF.TList m ()
 cinetv2rdf pool = do
   fonctionEntities <- getFonctionEntities pool
   createRolesTriples fonctionEntities
@@ -199,12 +224,10 @@ cinetv2rdf pool = do
   return ()
 
 -- |Get all rows from Nom table in database.
-getNomEntities :: (MonadIO m)
-               => Pool SqlBackend
-               -> m [Entity Nom]
+getNomEntities :: (MonadIO m) => Pool SqlBackend -> m [Entity Nom]
 getNomEntities pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from $ \nom -> return nom
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from $ \nom ->
+    return nom
 
 -- | Create all triples for representing the Person concept for all row in
 -- table Nom.
@@ -216,15 +239,13 @@ getNomEntities pool =
 --   cmtq:Person{Nom.NomID} rdfs:label {Nom.Prenom + Nom.Nom}
 --   cmtq:Person{Nom.NomID} foaf:familyName {Nom.Nom}
 --   cmtq:Person{Nom.NomID} foaf:givenName {Nom.Prenom}
-createPeopleTriples :: (RDF.Rdf rdfImpl, Monad m)
-                    => [Entity Nom]
-                    -> RdfState rdfImpl m ()
+createPeopleTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => [Entity Nom] -> RdfState rdfImpl m ()
 createPeopleTriples = mapM_ createPersonTriples
 
 -- | Create all triples for representing the Person concept.
-createPersonTriples :: (RDF.Rdf rdfImpl, Monad m)
-                    => Entity Nom
-                    -> RdfState rdfImpl m ()
+createPersonTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Nom -> RdfState rdfImpl m ()
 createPersonTriples nomEntity = do
   let personUri = baseUriPath <> "/Person" <> personTextId
 
@@ -258,23 +279,25 @@ createPersonTriples nomEntity = do
                                      (RDF.lnode $ RDF.PlainL f)
     Nothing -> return ()
 
-  where
-    personTextId = sqlKeyToText $ entityKey nomEntity
-    firstname = nomPrenom $ entityVal nomEntity
-    lastname = nomNom $ entityVal nomEntity
-    nameOpt = case (firstname, lastname) of
-      (f@(Just _), l@(Just _)) -> f <> Just " " <> l
-      (f@(Just _), Nothing) -> f
-      (Nothing, l@(Just _)) -> l
-      (Nothing, Nothing) -> Nothing
+ where
+  personTextId = sqlKeyToText $ entityKey nomEntity
+  firstname    = nomPrenom $ entityVal nomEntity
+  lastname     = nomNom $ entityVal nomEntity
+  nameOpt      = case (firstname, lastname) of
+    (f@(Just _), l@(Just _)) -> f <> Just " " <> l
+    (f@(Just _), Nothing   ) -> f
+    (Nothing   , l@(Just _)) -> l
+    (Nothing   , Nothing   ) -> Nothing
 
 -- | Get all rows from Nom table in database.
-getFonctionEntities :: (MonadIO m)
-                    => Pool SqlBackend
-                    -> m [Entity Fonction]
+getFonctionEntities :: (MonadIO m) => Pool SqlBackend -> m [Entity Fonction]
 getFonctionEntities pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from $ \fonction -> return fonction
+  liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \fonction -> return fonction
 
 -- | Create all triples for representing the Role concept for all rows in
 -- table Fonction.
@@ -283,21 +306,19 @@ getFonctionEntities pool =
 --   cmtq:Fonction{Fonction.FonctionID} rdf:type cmtqo:Role
 --   cmtq:Fonction{Fonction.FonctionID} cmtqo:cmtq_id {Fonction.FonctionID}
 --   cmtq:Fonction{Fonction.FonctionID} rdfs:label {Fonction.Terme}
-createRolesTriples :: (RDF.Rdf rdfImpl, Monad m)
-                   => [Entity Fonction]
-                   -> RdfState rdfImpl m ()
+createRolesTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => [Entity Fonction] -> RdfState rdfImpl m ()
 createRolesTriples fonctionEntities = do
   mapM_ createRoleTriples fonctionEntities
 
   -- The director role does not exist in CineTV database.
   -- Has to be manually created.
-  createRoleTriples $ Entity (toSqlKey customDirectorRoleId)
-                             (Fonction "Réalisation")
+  createRoleTriples
+    $ Entity (toSqlKey customDirectorRoleId) (Fonction "Réalisation")
 
 -- | Create all triples for representing the Role concept.
-createRoleTriples :: (RDF.Rdf rdfImpl, Monad m)
-                  => Entity Fonction
-                  -> RdfState rdfImpl m ()
+createRoleTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Fonction -> RdfState rdfImpl m ()
 createRoleTriples fonctionEntity = do
   let roleUri = baseUriPath <> "/Role" <> roleTextId
 
@@ -313,22 +334,24 @@ createRoleTriples fonctionEntity = do
                          (RDF.unode SW.rdfsLabel)
                          (RDF.lnode $ RDF.PlainL roleLabel)
 
-  where
-    roleTextId = (sqlKeyToText . entityKey) fonctionEntity
-    roleLabel = (fonctionTerme . entityVal) fonctionEntity
+ where
+  roleTextId = (sqlKeyToText . entityKey) fonctionEntity
+  roleLabel  = (fonctionTerme . entityVal) fonctionEntity
 
 -- | Get all rows from Sujet table in database that are potentially a legal
 -- body.
-getLegalBodies :: (MonadIO m)
-               => Pool SqlBackend
-               -> m [Entity Sujet]
+getLegalBodies :: (MonadIO m) => Pool SqlBackend -> m [Entity Sujet]
 getLegalBodies pool = do
-  results <- liftIO $ flip liftSqlPersistMPool pool $
-    select $
-      distinct $
-      from $ \(filmoGenerique, sujet) -> do
-      where_ ( sujet ?. SujetId ==. filmoGenerique ^. Filmo_GeneriqueOrganismeId )
-      return sujet
+  results <-
+    liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \(filmoGenerique, sujet) -> do
+        where_
+          (sujet ?. SujetId ==. filmoGenerique ^. Filmo_GeneriqueOrganismeId)
+        return sujet
 
   return $ catMaybes results
 
@@ -339,18 +362,16 @@ getLegalBodies pool = do
 -- Each row in table Sujet where Sujet.SujetId appears in Filmo_Generique.OrganismeID
 --   cmtq:LegalBody{Sujet.SujetID} rdf:type crm:E40_Legal_Body
 --   cmtq:LegalBody{Sujet.SujetID} rdfs:label {Sujet.Terme}
-createLegalBodiesTriples :: (RDF.Rdf rdfImpl, Monad m)
-                         => [Entity Sujet]
-                         -> RdfState rdfImpl m ()
+createLegalBodiesTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => [Entity Sujet] -> RdfState rdfImpl m ()
 createLegalBodiesTriples = mapM_ createLegalBodyTriples
 
 -- | Create all triples for representing the Legal Body concept.
 -- The following roles are found in table Sujet: Financement, Laboratoire,
 -- Maison de services, Personnages, Société d'exportation, Société de
 -- distribution, société de production, télédiffuseur.
-createLegalBodyTriples :: (RDF.Rdf rdfImpl, Monad m)
-                       => Entity Sujet
-                       -> RdfState rdfImpl m ()
+createLegalBodyTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Sujet -> RdfState rdfImpl m ()
 createLegalBodyTriples subjectEntity = do
   let legalBodyUri = baseUriPath <> "/LegalBody" <> legalBodyId
 
@@ -362,21 +383,26 @@ createLegalBodyTriples subjectEntity = do
                          (RDF.unode SW.rdfsLabel)
                          (RDF.lnode $ RDF.PlainL legalBodyTerm)
 
-  where
-    legalBodyId = sqlKeyToText $ entityKey subjectEntity
-    legalBodyTerm = sujetTerme $ entityVal subjectEntity
+ where
+  legalBodyId   = sqlKeyToText $ entityKey subjectEntity
+  legalBodyTerm = sujetTerme $ entityVal subjectEntity
 
 -- | Get all rows from Sujet table in database linked with
 -- Filmo_GenresCategories table.
-getMovieCategories :: (MonadIO m)
-                   => Pool SqlBackend
-                   -> m [Entity Sujet]
+getMovieCategories :: (MonadIO m) => Pool SqlBackend -> m [Entity Sujet]
 getMovieCategories pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $
-      distinct $
-      from $ \(filmoGenresCategories, sujet) -> do
-        where_ ( sujet ^. SujetId ==. filmoGenresCategories ^. Filmo_GenresCategoriesSujetId )
+  liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \(filmoGenresCategories, sujet) -> do
+        where_
+          (   sujet
+          ^.  SujetId
+          ==. filmoGenresCategories
+          ^.  Filmo_GenresCategoriesSujetId
+          )
         return sujet
 
 -- | Create all triples for representing the Genre concept for all rows in
@@ -386,15 +412,13 @@ getMovieCategories pool =
 -- Each row in table Sujet where Sujet.SujetId appears in Filmo_GenresCategories.SujetId
 --   cmtq:Subject{Sujet.SujetID} rdf:type crm:E40_Legal_Body
 --   cmtq:Subject{Sujet.SujetID} rdfs:label {Sujet.Terme}
-createMovieCategoriesTriples :: (RDF.Rdf rdfImpl, Monad m)
-                             => [Entity Sujet]
-                             -> RdfState rdfImpl m ()
+createMovieCategoriesTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => [Entity Sujet] -> RdfState rdfImpl m ()
 createMovieCategoriesTriples = mapM_ createMovieCategoryTriples
 
 -- | Create all triples for representing the Genre concept.
-createMovieCategoryTriples :: (RDF.Rdf rdfImpl, Monad m)
-                           => Entity Sujet
-                           -> RdfState rdfImpl m ()
+createMovieCategoryTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Sujet -> RdfState rdfImpl m ()
 createMovieCategoryTriples subjectEntity = do
   let subjectUri = baseUriPath <> "/Genre" <> subjectId
 
@@ -406,17 +430,15 @@ createMovieCategoryTriples subjectEntity = do
                          (RDF.unode SW.rdfsLabel)
                          (RDF.lnode $ RDF.PlainL $ sujetTerme subject)
 
-  where
-    subjectId = sqlKeyToText $ entityKey subjectEntity
-    subject = entityVal subjectEntity
+ where
+  subjectId = sqlKeyToText $ entityKey subjectEntity
+  subject   = entityVal subjectEntity
 
 -- | Get all rows from Filmo table in database.
-getFilmos :: (MonadIO m)
-          => Pool SqlBackend
-          -> m [Entity Filmo]
+getFilmos :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo]
 getFilmos pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from $ \filmo -> return filmo
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from $ \filmo ->
+    return filmo
 
 -- | Create all triples for representing the Recording Work concept for all
 -- rows in table Filmo.
@@ -435,15 +457,13 @@ getFilmos pool =
 --   cmtq:RecordingEvent{Filmo.FilmoID} crm:P4_has_time-span cmtq:Time-Span{Filmo.AnneeDebProd ou Filmo.DateDebProd + Filmo.AnneeFinProd ou Filmo.DateFinProd}
 --   cmtq:Time-Span{Filmo.AnneeDebProd ou Filmo.DateDebProd + Filmo.AnneeFinProd ou Filmo.DateFinProd}la crm:P79_beginning_is_qualified_by {Filmo.AnneeDebProd ou Filmo.DateDebProd}
 --   cmtq:Time-Span{Filmo.AnneeDebProd ou Filmo.DateDebProd + Filmo.AnneeFinProd ou Filmo.DateFinProd}la crm:P80_end_is_qualified_by {Filmo.AnneeFinProd ou Filmo.DateFinProd}
-createFilmosTriples :: (RDF.Rdf rdfImpl, Monad m)
-                    => [Entity Filmo]
-                    -> RdfState rdfImpl m ()
+createFilmosTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => [Entity Filmo] -> RdfState rdfImpl m ()
 createFilmosTriples = mapM_ createFilmoTriples
 
 -- | Create all triples for representing the Role concept.
-createFilmoTriples :: (RDF.Rdf rdfImpl, Monad m)
-                   => Entity Filmo
-                   -> RdfState rdfImpl m ()
+createFilmoTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Filmo -> RdfState rdfImpl m ()
 createFilmoTriples filmoEntity = do
   let filmoUri = baseUriPath <> "/RecordingWork" <> filmoId
 
@@ -463,10 +483,10 @@ createFilmoTriples filmoEntity = do
     Nothing -> return ()
 
   case filmoCout filmo of
-    Just movieCost ->
-      addTriple $ RDF.triple (RDF.unode filmoUri)
-                             (RDF.unode SW.dboBudget)
-                             (RDF.lnode $ RDF.TypedL (Text.pack $ show movieCost) SW.xsdDouble)
+    Just movieCost -> addTriple $ RDF.triple
+      (RDF.unode filmoUri)
+      (RDF.unode SW.dboBudget)
+      (RDF.lnode $ RDF.TypedL (Text.pack $ show movieCost) SW.xsdDouble)
     Nothing -> return ()
 
 
@@ -503,46 +523,50 @@ createFilmoTriples filmoEntity = do
   -- Create triples which indicate when the production event occured.
   createProdEventTimeSpanTriples filmoEntity
 
-  where
-    filmoId = sqlKeyToText $ entityKey filmoEntity
-    filmo = entityVal filmoEntity
+ where
+  filmoId = sqlKeyToText $ entityKey filmoEntity
+  filmo   = entityVal filmoEntity
 
-    titleMaybe = case (filmoPrefixeTitreOriginal filmo, filmoTitreOriginal filmo) of
-                   (Just prefixTitle, Just restTitle) -> Just $ prefixTitle <> " " <> restTitle
-                   (Nothing, Just restTitle) -> Just restTitle
-                   _ -> Nothing
+  titleMaybe =
+    case (filmoPrefixeTitreOriginal filmo, filmoTitreOriginal filmo) of
+      (Just prefixTitle, Just restTitle) ->
+        Just $ prefixTitle <> " " <> restTitle
+      (Nothing, Just restTitle) -> Just restTitle
+      _                         -> Nothing
 
-    releaseYearMaybe = filmoAnneeSortie filmo >>= parseYearField
+  releaseYearMaybe = filmoAnneeSortie filmo >>= parseYearField
 
-createProdEventTimeSpanTriples :: (RDF.Rdf rdfImpl, Monad m)
-                               => Entity Filmo
-                               -> RdfState rdfImpl m ()
+createProdEventTimeSpanTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Filmo -> RdfState rdfImpl m ()
 createProdEventTimeSpanTriples filmoEntity = do
   let beginDateTimeMaybe = dateBeginMaybe <|> yearBeginMaybe
-  let endDateTimeMaybe = dateEndMaybe <|> yearEndMaybe
+  let endDateTimeMaybe   = dateEndMaybe <|> yearEndMaybe
 
   createResourceTimeSpanTriples (baseUriPath <> "/RecordingEvent" <> filmoId)
                                 beginDateTimeMaybe
                                 endDateTimeMaybe
 
-  where
-    filmoId = sqlKeyToText $ entityKey filmoEntity
-    filmo = entityVal filmoEntity
+ where
+  filmoId        = sqlKeyToText $ entityKey filmoEntity
+  filmo          = entityVal filmoEntity
 
-    -- parseTimeM False defaultTimeLocale "%d-%-m-%-y" "09-09-89" :: Maybe UTCTime
-    dateBeginMaybe = filmoDateDebProd filmo >>= parseDateField
-    dateEndMaybe = filmoDateFinProd filmo >>= parseDateField
+  -- parseTimeM False defaultTimeLocale "%d-%-m-%-y" "09-09-89" :: Maybe UTCTime
+  dateBeginMaybe = filmoDateDebProd filmo >>= parseDateField
+  dateEndMaybe   = filmoDateFinProd filmo >>= parseDateField
 
-    yearBeginMaybe = filmoAnneeDebProd filmo >>= parseYearField
-    yearEndMaybe = filmoAnneeFinProd filmo >>= parseYearField
+  yearBeginMaybe = filmoAnneeDebProd filmo >>= parseYearField
+  yearEndMaybe   = filmoAnneeFinProd filmo >>= parseYearField
 
 -- | Get all rows from Filmo_Generique table in database.
-getRecordingRoleActivities :: (MonadIO m)
-                           => Pool SqlBackend
-                           -> m [Entity Filmo_Generique]
+getRecordingRoleActivities
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo_Generique]
 getRecordingRoleActivities pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from $ \filmoGenerique -> return filmoGenerique
+  liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \filmoGenerique -> return filmoGenerique
 
 -- | Create all triples for representing the recording event concept for all
 -- rows in table Filmo_Generique.
@@ -560,119 +584,135 @@ getRecordingRoleActivities pool =
 --     cmtq:RecordingEvent{Filmo_Generique.FilmoID} crm:P9_consists_of cmtq:RecordingRoleActivity{Filmo_Generique.FilmoID}
 --     cmtq:RecordingRoleActivity{Filmo_Generique.FilmoID} cmtqo:in_the_role_of cmtq:Fonction{Filmo_Generique.FonctionID}
 --     cmtq:RecordingRoleActivity{Filmo_Generique.FilmoID} crm:P14_carried_out_by cmtq:Person{Filmo_Generique.NomID} ou cmtq:LegalBody{Filmo_Generique.OrganismeId}
-createRecordingRoleActivitiesTriples :: (RDF.Rdf rdfImpl, Monad m)
-                                     => [Entity Filmo_Generique]
-                                     -> RdfState rdfImpl m ()
-createRecordingRoleActivitiesTriples =
-  mapM_ createRecordingRoleActivityTriples . filter (\p -> getRoleId p /= 13)
-
-  where
-    getRoleId = fromSqlKey . filmo_GeneriqueFonctionId . entityVal
+createRecordingRoleActivitiesTriples
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity Filmo_Generique]
+  -> RdfState rdfImpl m ()
+createRecordingRoleActivitiesTriples = mapM_ createRecordingRoleActivityTriples
+  . filter (\p -> getRoleId p /= 13)
+  where getRoleId = fromSqlKey . filmo_GeneriqueFonctionId . entityVal
 
 -- | Create all triples for representing the roles/functions an agent held in
 -- a production event.
-createRecordingRoleActivityTriples :: (RDF.Rdf rdfImpl, Monad m)
-                                   => Entity Filmo_Generique
-                                   -> RdfState rdfImpl m ()
+createRecordingRoleActivityTriples
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Filmo_Generique
+  -> RdfState rdfImpl m ()
 createRecordingRoleActivityTriples filmoGeneriqueEntity =
   -- One of legal body or person must be defined in a row
-  when (isJust $ recordingActivityPersonUriMaybe <|> recordingActivityLegalBodyUriMaybe) $
-    if recordingActivityRoleTextId == "33"
-    then do
-      case recordingActivityPersonUriMaybe <|> recordingActivityLegalBodyUriMaybe of
-        Just recordingActivityAgentUri -> do
-          let recordingWorkUri = baseUriPath <> "/RecordingWork" <> recordingActivityWorkTextId
-          let workUri = baseUriPath <> "/Work" <> recordingActivityWorkTextId <> "d"
-          let workConceptionUri = baseUriPath <> "/WorkConception" <> recordingActivityWorkTextId <> "d"
+  when
+      (   isJust
+      $   recordingActivityPersonUriMaybe
+      <|> recordingActivityLegalBodyUriMaybe
+      )
+    $ if recordingActivityRoleTextId == "33"
+        then do
+          case
+              recordingActivityPersonUriMaybe
+                <|> recordingActivityLegalBodyUriMaybe
+            of
+              Just recordingActivityAgentUri -> do
+                let recordingWorkUri =
+                      baseUriPath
+                        <> "/RecordingWork"
+                        <> recordingActivityWorkTextId
+                let
+                  workUri =
+                    baseUriPath <> "/Work" <> recordingActivityWorkTextId <> "d"
+                let workConceptionUri =
+                      baseUriPath
+                        <> "/WorkConception"
+                        <> recordingActivityWorkTextId
+                        <> "d"
 
-          addTriple $ RDF.triple (RDF.unode recordingWorkUri)
-                                 (RDF.unode SW.frbrooR2)
-                                 (RDF.unode workUri)
-          addTriple $ RDF.triple (RDF.unode workUri)
-                                 (RDF.unode SW.frbrooR2i)
-                                 (RDF.unode recordingWorkUri)
+                addTriple $ RDF.triple (RDF.unode recordingWorkUri)
+                                       (RDF.unode SW.frbrooR2)
+                                       (RDF.unode workUri)
+                addTriple $ RDF.triple (RDF.unode workUri)
+                                       (RDF.unode SW.frbrooR2i)
+                                       (RDF.unode recordingWorkUri)
 
-          addTriple $ RDF.triple (RDF.unode workConceptionUri)
-                                 (RDF.unode SW.frbrooR16)
-                                 (RDF.unode workUri)
-          addTriple $ RDF.triple (RDF.unode workUri)
-                                 (RDF.unode SW.frbrooR16i)
-                                 (RDF.unode workConceptionUri)
+                addTriple $ RDF.triple (RDF.unode workConceptionUri)
+                                       (RDF.unode SW.frbrooR16)
+                                       (RDF.unode workUri)
+                addTriple $ RDF.triple (RDF.unode workUri)
+                                       (RDF.unode SW.frbrooR16i)
+                                       (RDF.unode workConceptionUri)
 
-          addTriple $ RDF.triple (RDF.unode workConceptionUri)
-                                 (RDF.unode SW.crmP14)
-                                 (RDF.unode recordingActivityAgentUri)
-          addTriple $ RDF.triple (RDF.unode recordingActivityAgentUri)
-                                 (RDF.unode SW.crmP14i)
-                                 (RDF.unode workConceptionUri)
-        Nothing -> return ()
+                addTriple $ RDF.triple (RDF.unode workConceptionUri)
+                                       (RDF.unode SW.crmP14)
+                                       (RDF.unode recordingActivityAgentUri)
+                addTriple $ RDF.triple (RDF.unode recordingActivityAgentUri)
+                                       (RDF.unode SW.crmP14i)
+                                       (RDF.unode workConceptionUri)
+              Nothing -> return ()
 
-      return ()
+          return ()
+        else do
+          let recordingEventUri =
+                baseUriPath <> "/RecordingEvent" <> recordingActivityWorkTextId
+          let recordingActivityUri =
+                baseUriPath
+                  <> "/RecordingRoleActivity"
+                  <> recordingActivityTextId
+          let recordingActivityRoleUri =
+                baseUriPath <> "/Role" <> recordingActivityRoleTextId
 
-    else do
-      let recordingEventUri = baseUriPath <> "/RecordingEvent" <> recordingActivityWorkTextId
-      let recordingActivityUri = baseUriPath <> "/RecordingRoleActivity" <> recordingActivityTextId
-      let recordingActivityRoleUri = baseUriPath <> "/Role" <> recordingActivityRoleTextId
-
-      addTriple $ RDF.triple (RDF.unode recordingEventUri)
-                             (RDF.unode SW.crmP9)
-                             (RDF.unode recordingActivityUri)
-      addTriple $ RDF.triple (RDF.unode recordingActivityUri)
-                             (RDF.unode SW.crmP9i)
-                             (RDF.unode recordingEventUri)
-
-      addTriple $ RDF.triple (RDF.unode recordingActivityUri)
-                             (RDF.unode SW.rdfType)
-                             (RDF.unode $ RDF.mkUri cmtqo "Recording_Role_Activity")
-
-      addTriple $ RDF.triple (RDF.unode recordingActivityUri)
-                             (RDF.unode $ RDF.mkUri cmtqo "in_the_role_of")
-                             (RDF.unode recordingActivityRoleUri)
-
-      case recordingActivityPersonUriMaybe of
-        Just recordingActivityPersonUri -> do
-          addTriple $ RDF.triple (RDF.unode recordingActivityUri)
-                                 (RDF.unode SW.crmP14)
-                                 (RDF.unode recordingActivityPersonUri)
-          addTriple $ RDF.triple (RDF.unode recordingActivityPersonUri)
-                                 (RDF.unode SW.crmP14i)
+          addTriple $ RDF.triple (RDF.unode recordingEventUri)
+                                 (RDF.unode SW.crmP9)
                                  (RDF.unode recordingActivityUri)
-        Nothing -> return ()
-
-      case recordingActivityLegalBodyUriMaybe of
-        Just recordingActivityLegalBodyUri -> do
           addTriple $ RDF.triple (RDF.unode recordingActivityUri)
-                                 (RDF.unode SW.crmP14)
-                                 (RDF.unode recordingActivityLegalBodyUri)
-          addTriple $ RDF.triple (RDF.unode recordingActivityLegalBodyUri)
-                                 (RDF.unode SW.crmP14i)
-                                 (RDF.unode recordingActivityUri)
-        Nothing -> return ()
+                                 (RDF.unode SW.crmP9i)
+                                 (RDF.unode recordingEventUri)
 
-  where
-    recordingActivityTextId = ( sqlKeyToText
-                              . entityKey
-                              ) filmoGeneriqueEntity
-    recordingActivityWorkTextId = ( sqlKeyToText
-                                  . filmo_GeneriqueFilmoId
-                                  . entityVal
-                                  ) filmoGeneriqueEntity
-    recordingActivityRoleTextId = ( sqlKeyToText
-                                  . filmo_GeneriqueFonctionId
-                                  . entityVal
-                                  ) filmoGeneriqueEntity
+          addTriple $ RDF.triple
+            (RDF.unode recordingActivityUri)
+            (RDF.unode SW.rdfType)
+            (RDF.unode $ RDF.mkUri cmtqo "Recording_Role_Activity")
 
-    recordingActivityPersonUriMaybe = fmap ((baseUriPath <> "/Person") <>) recordingActivityPersonTextIdMaybe
-    recordingActivityPersonTextIdMaybe = ( fmap sqlKeyToText
-                                         . filmo_GeneriqueNomId
-                                         . entityVal
-                                         ) filmoGeneriqueEntity
+          addTriple $ RDF.triple
+            (RDF.unode recordingActivityUri)
+            (RDF.unode $ RDF.mkUri cmtqo "in_the_role_of")
+            (RDF.unode recordingActivityRoleUri)
 
-    recordingActivityLegalBodyUriMaybe = fmap ((baseUriPath <> "/LegalBody") <>) recordingActivityLegalBodyTextIdMaybe
-    recordingActivityLegalBodyTextIdMaybe = ( fmap sqlKeyToText
-                                            . filmo_GeneriqueOrganismeId
-                                            . entityVal
-                                            ) filmoGeneriqueEntity
+          case recordingActivityPersonUriMaybe of
+            Just recordingActivityPersonUri -> do
+              addTriple $ RDF.triple (RDF.unode recordingActivityUri)
+                                     (RDF.unode SW.crmP14)
+                                     (RDF.unode recordingActivityPersonUri)
+              addTriple $ RDF.triple (RDF.unode recordingActivityPersonUri)
+                                     (RDF.unode SW.crmP14i)
+                                     (RDF.unode recordingActivityUri)
+            Nothing -> return ()
+
+          case recordingActivityLegalBodyUriMaybe of
+            Just recordingActivityLegalBodyUri -> do
+              addTriple $ RDF.triple (RDF.unode recordingActivityUri)
+                                     (RDF.unode SW.crmP14)
+                                     (RDF.unode recordingActivityLegalBodyUri)
+              addTriple $ RDF.triple (RDF.unode recordingActivityLegalBodyUri)
+                                     (RDF.unode SW.crmP14i)
+                                     (RDF.unode recordingActivityUri)
+            Nothing -> return ()
+
+ where
+  recordingActivityTextId = (sqlKeyToText . entityKey) filmoGeneriqueEntity
+  recordingActivityWorkTextId =
+    (sqlKeyToText . filmo_GeneriqueFilmoId . entityVal) filmoGeneriqueEntity
+  recordingActivityRoleTextId =
+    (sqlKeyToText . filmo_GeneriqueFonctionId . entityVal) filmoGeneriqueEntity
+
+  recordingActivityPersonUriMaybe =
+    fmap ((baseUriPath <> "/Person") <>) recordingActivityPersonTextIdMaybe
+  recordingActivityPersonTextIdMaybe =
+    (fmap sqlKeyToText . filmo_GeneriqueNomId . entityVal) filmoGeneriqueEntity
+
+  recordingActivityLegalBodyUriMaybe = fmap
+    ((baseUriPath <> "/LegalBody") <>)
+    recordingActivityLegalBodyTextIdMaybe
+  recordingActivityLegalBodyTextIdMaybe =
+    (fmap sqlKeyToText . filmo_GeneriqueOrganismeId . entityVal)
+      filmoGeneriqueEntity
 
 -- | Create all triples for representing derivative work from a work using
 -- the role "Source Originale" in the database.
@@ -685,14 +725,16 @@ createRecordingRoleActivityTriples filmoGeneriqueEntity =
 
 -- | From a given resource, create a time-span concept using given begin and
 -- end dates (optional values).
-createResourceTimeSpanTriples :: (RDF.Rdf rdfImpl, Monad m)
-                              => Text -- ^ Resource URI
-                              -> Maybe UTCTime -- ^ Optional begin date in UTCTime format
-                              -> Maybe UTCTime -- ^ Optional end date in UTCTime format
-                              -> RdfState rdfImpl m ()
+createResourceTimeSpanTriples
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Text -- ^ Resource URI
+  -> Maybe UTCTime -- ^ Optional begin date in UTCTime format
+  -> Maybe UTCTime -- ^ Optional end date in UTCTime format
+  -> RdfState rdfImpl m ()
 createResourceTimeSpanTriples resourceUri beginDateMaybe endDateMaybe =
   when (isJust $ beginDateMaybe <|> endDateMaybe) $ do
-    let lit = Text.intercalate "-" $ utcTimeToText <$> catMaybes [beginDateMaybe, endDateMaybe]
+    let lit = Text.intercalate "-" $ utcTimeToText <$> catMaybes
+          [beginDateMaybe, endDateMaybe]
     let resourceTimeSpanUri = baseUriPath <> "/Time-Span" <> lit
     -- let resourceTimePrimitiveUri = baseUriPath <> "/Time_Primitive" <> lit
 
@@ -704,26 +746,29 @@ createResourceTimeSpanTriples resourceUri beginDateMaybe endDateMaybe =
                            (RDF.unode resourceUri)
 
     case beginDateMaybe of
-      Just beginDate ->
-        addTriple $ RDF.triple (RDF.unode resourceTimeSpanUri)
-                               (RDF.unode SW.crmP79)
-                               (RDF.lnode $ RDF.TypedL (utcTimeToText beginDate) SW.xsdDateTime)
+      Just beginDate -> addTriple $ RDF.triple
+        (RDF.unode resourceTimeSpanUri)
+        (RDF.unode SW.crmP79)
+        (RDF.lnode $ RDF.TypedL (utcTimeToText beginDate) SW.xsdDateTime)
       Nothing -> return ()
 
     case endDateMaybe of
-      Just endDate ->
-        addTriple $ RDF.triple (RDF.unode resourceTimeSpanUri)
-                               (RDF.unode SW.crmP80)
-                               (RDF.lnode $ RDF.TypedL (utcTimeToText endDate) SW.xsdDateTime)
+      Just endDate -> addTriple $ RDF.triple
+        (RDF.unode resourceTimeSpanUri)
+        (RDF.unode SW.crmP80)
+        (RDF.lnode $ RDF.TypedL (utcTimeToText endDate) SW.xsdDateTime)
       Nothing -> return ()
 
 -- | Get all rows from Filmo_GenresCategories table in database.
-getFilmosSubject :: (MonadIO m)
-                 => Pool SqlBackend
-                 -> m [Entity Filmo_GenresCategories]
+getFilmosSubject
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo_GenresCategories]
 getFilmosSubject pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from $ \filmoGenresCategories -> return filmoGenresCategories
+  liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \filmoGenresCategories -> return filmoGenresCategories
 
 -- | Create all triples for linking subjects and recording works for all rows
 -- in table Filmo_GenresCategories.
@@ -731,33 +776,40 @@ getFilmosSubject pool =
 -- Generated triples:
 -- Each row in table Filmo_Generique
 --   cmtq:RecordingWork{Filmo_GenresCategories.FilmoID} cmtqo:work_subject cmtq:Subject{Filmo_GenresCategories.SujetID}
-createFilmosSubjectTriples :: (RDF.Rdf rdfImpl, Monad m)
-                           => [Entity Filmo_GenresCategories]
-                           -> RdfState rdfImpl m ()
+createFilmosSubjectTriples
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity Filmo_GenresCategories]
+  -> RdfState rdfImpl m ()
 createFilmosSubjectTriples = mapM_ createFilmoSubjectTriples
 
-createFilmoSubjectTriples :: (RDF.Rdf rdfImpl, Monad m)
-                          => Entity Filmo_GenresCategories
-                          -> RdfState rdfImpl m ()
+createFilmoSubjectTriples
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Filmo_GenresCategories
+  -> RdfState rdfImpl m ()
 createFilmoSubjectTriples filmoSubject = do
-  let filmoUri = baseUriPath <> "/RecordingWork" <> filmoId
+  let filmoUri   = baseUriPath <> "/RecordingWork" <> filmoId
   let subjectUri = baseUriPath <> "/Genre" <> subjectId
 
   addTriple $ RDF.triple (RDF.unode filmoUri)
                          (RDF.unode SW.wdtP136)
                          (RDF.unode subjectUri)
 
-  where
-    filmoId = sqlKeyToText $ filmo_GenresCategoriesFilmoId $ entityVal filmoSubject
-    subjectId = sqlKeyToText $ filmo_GenresCategoriesSujetId $ entityVal filmoSubject
+ where
+  filmoId =
+    sqlKeyToText $ filmo_GenresCategoriesFilmoId $ entityVal filmoSubject
+  subjectId =
+    sqlKeyToText $ filmo_GenresCategoriesSujetId $ entityVal filmoSubject
 
 -- | Get all rows from Filmo_Realisation table in database.
-getFilmosDirector :: (MonadIO m)
-                  => Pool SqlBackend
-                  -> m [Entity Filmo_Realisation]
+getFilmosDirector
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo_Realisation]
 getFilmosDirector pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from $ \filmoRealisation -> return filmoRealisation
+  liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \filmoRealisation -> return filmoRealisation
 
 -- | Create all triples for linking recording works and directors for all rows
 -- in table Filmo_Realisation.
@@ -767,21 +819,25 @@ getFilmosDirector pool =
 --   cmtq:RecordingEvent{Filmo_Realisation.FilmoID} crm:P9_consists_of cmtq:RecordingRoleActivity{Filmo_Realisation.FilmoID + Filmo_Realisation.NomID + 1}
 --   cmtq:RecordingRoleActivity{Filmo_Realisation.FilmoID} cmtqo:in_the_role_of cmtq:Fonction1
 --   cmtq:RecordingRoleActivity{Filmo_Realisation.FilmoID} crm:P14_carried_out_by cmtq:Person{Filmo_Realisation.NomID}
-createFilmosDirectorTriples :: (RDF.Rdf rdfImpl, Monad m)
-                            => [Entity Filmo_Realisation]
-                            -> RdfState rdfImpl m ()
+createFilmosDirectorTriples
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity Filmo_Realisation]
+  -> RdfState rdfImpl m ()
 createFilmosDirectorTriples = mapM_ createFilmoDirectorTriples
 
 -- | Create all triples for representing the link between a recording work and
 -- the directory.
-createFilmoDirectorTriples :: (RDF.Rdf rdfImpl, Monad m)
-                           => Entity Filmo_Realisation
-                           -> RdfState rdfImpl m ()
+createFilmoDirectorTriples
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Filmo_Realisation
+  -> RdfState rdfImpl m ()
 createFilmoDirectorTriples filmoRealisationEntity = do
-  let recordingActivityUri = baseUriPath <> "/RecordingRoleActivity" <> filmoDirectorId
-  let recordingActivityRoleUri = baseUriPath <> "/Role" <> Text.pack (show customDirectorRoleId)
+  let recordingActivityUri =
+        baseUriPath <> "/RecordingRoleActivity" <> filmoDirectorId
+  let recordingActivityRoleUri =
+        baseUriPath <> "/Role" <> Text.pack (show customDirectorRoleId)
   let recordingActivityPersonUri = baseUriPath <> "/Person" <> directorId
-  let recordingEventUri = baseUriPath <> "/RecordingEvent" <> filmoId
+  let recordingEventUri          = baseUriPath <> "/RecordingEvent" <> filmoId
 
   addTriple $ RDF.triple (RDF.unode recordingEventUri)
                          (RDF.unode SW.crmP9)
@@ -790,9 +846,10 @@ createFilmoDirectorTriples filmoRealisationEntity = do
                          (RDF.unode SW.crmP9i)
                          (RDF.unode recordingEventUri)
 
-  addTriple $ RDF.triple (RDF.unode recordingActivityUri)
-                         (RDF.unode SW.rdfType)
-                         (RDF.unode $ RDF.mkUri cmtqo "Recording_Role_Activity")
+  addTriple $ RDF.triple
+    (RDF.unode recordingActivityUri)
+    (RDF.unode SW.rdfType)
+    (RDF.unode $ RDF.mkUri cmtqo "Recording_Role_Activity")
 
   addTriple $ RDF.triple (RDF.unode recordingActivityUri)
                          (RDF.unode $ RDF.mkUri cmtqo "in_the_role_of")
@@ -806,28 +863,18 @@ createFilmoDirectorTriples filmoRealisationEntity = do
                          (RDF.unode recordingActivityUri)
   return ()
 
-  where
-    filmoId = ( sqlKeyToText
-              . filmo_RealisationFilmoId
-              . entityVal
-              ) filmoRealisationEntity
-    directorId = ( sqlKeyToText
-                 . filmo_RealisationNomId
-                 . entityVal
-                 ) filmoRealisationEntity
-    filmoDirectorId = filmoId
-                   <> "-"
-                   <> directorId
-                   <> "-"
-                   <> Text.pack (show customDirectorRoleId)
+ where
+  filmoId =
+    (sqlKeyToText . filmo_RealisationFilmoId . entityVal) filmoRealisationEntity
+  directorId =
+    (sqlKeyToText . filmo_RealisationNomId . entityVal) filmoRealisationEntity
+  filmoDirectorId =
+    filmoId <> "-" <> directorId <> "-" <> Text.pack (show customDirectorRoleId)
 
 -- | Get all rows from Pays table in database.
-getPlaces :: (MonadIO m)
-          => Pool SqlBackend
-          -> m [Entity Pays]
+getPlaces :: (MonadIO m) => Pool SqlBackend -> m [Entity Pays]
 getPlaces pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for representing the Place concept from all rows in
 -- table Pays. Even though the table is called 'Pays', the instances it
@@ -837,18 +884,16 @@ getPlaces pool =
 -- Each row in table Pays
 --   cmtq:Place{Pays.PaysID} rdf:type crm:E53_Place
 --   cmtq:Place{Pays.PaysID} rdfs:label {Pays.Terme}
-createPlacesTriples :: (RDF.Rdf rdfImpl, Monad m)
-                    => [Entity Pays]
-                    -> RdfState rdfImpl m ()
+createPlacesTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => [Entity Pays] -> RdfState rdfImpl m ()
 createPlacesTriples = mapM_ createPlaceTriples
 
 -- | Create all triples for representing the Place concept.
-createPlaceTriples :: (RDF.Rdf rdfImpl, Monad m)
-                   => Entity Pays
-                   -> RdfState rdfImpl m ()
+createPlaceTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Pays -> RdfState rdfImpl m ()
 createPlaceTriples placeEntity = do
-  let placeId = sqlKeyToText $ entityKey placeEntity
-  let place = entityVal placeEntity
+  let placeId  = sqlKeyToText $ entityKey placeEntity
+  let place    = entityVal placeEntity
   let placeUri = baseUriPath <> "/Place" <> placeId
 
   addTriple $ RDF.triple (RDF.unode placeUri)
@@ -860,12 +905,14 @@ createPlaceTriples placeEntity = do
                          (RDF.lnode $ RDF.PlainL $ paysTerme place)
 
 -- | Get all rows from Filmo_Pays table in database.
-getFilmosPlaces :: (MonadIO m)
-                => Pool SqlBackend
-                -> m [Entity Filmo_Pays]
+getFilmosPlaces :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo_Pays]
 getFilmosPlaces pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from $ \filmoPays -> return filmoPays
+  liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \filmoPays -> return filmoPays
 
 -- | Create all triples for linking recording works and places for all rows
 -- in table Filmo_Pays.
@@ -873,21 +920,19 @@ getFilmosPlaces pool =
 -- Generated triples:
 -- Each row in table Filmo_Pays
 --   cmtq:RecordingEvent{Filmo_Pays.FilmoID} crm:P7_took_place_at cmtq:Place{Filmo_Pays.PaysID}
-createFilmosPlacesTriples :: (RDF.Rdf rdfImpl, Monad m)
-                          => [Entity Filmo_Pays]
-                          -> RdfState rdfImpl m ()
+createFilmosPlacesTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => [Entity Filmo_Pays] -> RdfState rdfImpl m ()
 createFilmosPlacesTriples = mapM_ createFilmoPlaceTriples
 
 -- | Create all triples for representing the link between a recording work and
 -- a place.
-createFilmoPlaceTriples :: (RDF.Rdf rdfImpl, Monad m)
-                        => Entity Filmo_Pays
-                        -> RdfState rdfImpl m ()
+createFilmoPlaceTriples
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Filmo_Pays -> RdfState rdfImpl m ()
 createFilmoPlaceTriples filmoPaysEntity = do
   let filmoId = sqlKeyToText $ filmo_PaysFilmoId $ entityVal filmoPaysEntity
-  let placeId = sqlKeyToText $ filmo_PaysPaysId $ entityVal filmoPaysEntity
+  let placeId      = sqlKeyToText $ filmo_PaysPaysId $ entityVal filmoPaysEntity
   let prodEventUri = baseUriPath <> "/RecordingEvent" <> filmoId
-  let placeUri = baseUriPath <> "/Place" <> placeId
+  let placeUri     = baseUriPath <> "/Place" <> placeId
 
   addTriple $ RDF.triple (RDF.unode prodEventUri)
                          (RDF.unode SW.crmP7)
@@ -897,12 +942,10 @@ createFilmoPlaceTriples filmoPaysEntity = do
                          (RDF.unode prodEventUri)
 
 -- | Get all rows from Pays_LienWikidata table in database.
-getPaysLienWikidata :: (MonadIO m)
-                    => Pool SqlBackend
-                    -> m [Entity Pays_LienWikidata]
+getPaysLienWikidata
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity Pays_LienWikidata]
 getPaysLienWikidata pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for representing the link between the Place concept from all rows in
 -- table Pays_LienWikidata and Wikidata.
@@ -910,35 +953,36 @@ getPaysLienWikidata pool =
 -- Generated triples:
 -- Each row in table Pays_LienWikidata
 --   cmtq:Place{Pays_LienWikidata.PaysID} owl:sameAs {Pays_LienWikidata.LienWikidata}
-mkAllPaysLienWikidataRdf :: (RDF.Rdf rdfImpl, Monad m)
-                         => [Entity Pays_LienWikidata]
-                         -> RdfState rdfImpl m ()
+mkAllPaysLienWikidataRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity Pays_LienWikidata]
+  -> RdfState rdfImpl m ()
 mkAllPaysLienWikidataRdf = mapM_ mkPaysLienWikidataRdf
 
 -- | Create triples for representing owl:sameAs between the Place concept and
 -- a Wikidata entity.
-mkPaysLienWikidataRdf :: (RDF.Rdf rdfImpl, Monad m)
-                      => Entity Pays_LienWikidata
-                      -> RdfState rdfImpl m ()
+mkPaysLienWikidataRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Pays_LienWikidata
+  -> RdfState rdfImpl m ()
 mkPaysLienWikidataRdf paysLienWdEntity = do
-  let placeId = sqlKeyToText $ pays_LienWikidataPaysId $ entityVal paysLienWdEntity
+  let placeId =
+        sqlKeyToText $ pays_LienWikidataPaysId $ entityVal paysLienWdEntity
   let placeUri = baseUriPath <> "/Place" <> placeId
-  let wikidataUriMaybe = pays_LienWikidataLienWikidata $ entityVal paysLienWdEntity
+  let wikidataUriMaybe =
+        pays_LienWikidataLienWikidata $ entityVal paysLienWdEntity
 
   case wikidataUriMaybe of
-    Just wikidataUri ->
-      addTriple $ RDF.triple (RDF.unode placeUri)
-                             (RDF.unode SW.owlSameAs)
-                             (RDF.unode wikidataUri)
+    Just wikidataUri -> addTriple $ RDF.triple (RDF.unode placeUri)
+                                               (RDF.unode SW.owlSameAs)
+                                               (RDF.unode wikidataUri)
     Nothing -> return ()
 
 -- | Get all rows from Filmo_LienWikidata table in database.
-getFilmoLienWikidata :: (MonadIO m)
-                     => Pool SqlBackend
-                     -> m [Entity Filmo_LienWikidata]
+getFilmoLienWikidata
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo_LienWikidata]
 getFilmoLienWikidata pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for representing the link between the Recording work
 -- concept and a Wikidata entity from all rows in table Pays_LienWikidata.
@@ -946,35 +990,36 @@ getFilmoLienWikidata pool =
 -- Generated triples:
 -- Each row in table Filmo_LienWikidata
 --   cmtq:RecordingWork{Filmo_LienWikidata.FilmoID} owl:sameAs {Filmo_LienWikidata.LienWikidata}
-mkAllFilmoLienWikidataRdf :: (RDF.Rdf rdfImpl, Monad m)
-                          => [Entity Filmo_LienWikidata]
-                          -> RdfState rdfImpl m ()
+mkAllFilmoLienWikidataRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity Filmo_LienWikidata]
+  -> RdfState rdfImpl m ()
 mkAllFilmoLienWikidataRdf = mapM_ mkFilmoLienWikidataRdf
 
 -- | Create triples for representing owl:sameAs between the Recording work
 -- concept and a Wikidata entity.
-mkFilmoLienWikidataRdf :: (RDF.Rdf rdfImpl, Monad m)
-                       => Entity Filmo_LienWikidata
-                       -> RdfState rdfImpl m ()
+mkFilmoLienWikidataRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Filmo_LienWikidata
+  -> RdfState rdfImpl m ()
 mkFilmoLienWikidataRdf filmoLienWdEntity = do
-  let filmoId = sqlKeyToText $ filmo_LienWikidataFilmoId $ entityVal filmoLienWdEntity
+  let filmoId =
+        sqlKeyToText $ filmo_LienWikidataFilmoId $ entityVal filmoLienWdEntity
   let filmoUri = baseUriPath <> "/RecordingWork" <> filmoId
-  let wikidataUriMaybe = filmo_LienWikidataLienWikidata $ entityVal filmoLienWdEntity
+  let wikidataUriMaybe =
+        filmo_LienWikidataLienWikidata $ entityVal filmoLienWdEntity
 
   case wikidataUriMaybe of
-    Just wikidataUri ->
-      addTriple $ RDF.triple (RDF.unode filmoUri)
-                             (RDF.unode SW.owlSameAs)
-                             (RDF.unode wikidataUri)
+    Just wikidataUri -> addTriple $ RDF.triple (RDF.unode filmoUri)
+                                               (RDF.unode SW.owlSameAs)
+                                               (RDF.unode wikidataUri)
     Nothing -> return ()
 
 -- | Get all rows from Nom_LienWikidata table in database.
-getNomLienWikidata :: (MonadIO m)
-                   => Pool SqlBackend
-                   -> m [Entity Nom_LienWikidata]
+getNomLienWikidata
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity Nom_LienWikidata]
 getNomLienWikidata pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for representing the link between the Person concept
 -- and a Wikidata entity from all rows in table Nom_LienWikidata.
@@ -982,22 +1027,26 @@ getNomLienWikidata pool =
 -- Generated triples:
 -- Each row in table Nom_LienWikidata
 --   cmtq:Person{Nom_LienWikidata.NomID} owl:sameAs {Nom_LienWikidata.LienWikidata}
-mkAllNomLienWikidataRdf :: (RDF.Rdf rdfImpl, Monad m)
-                        => [Entity Nom_LienWikidata]
-                        -> RdfState rdfImpl m ()
+mkAllNomLienWikidataRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity Nom_LienWikidata]
+  -> RdfState rdfImpl m ()
 mkAllNomLienWikidataRdf = mapM_ mkNomLienWikidataRdf
 
 -- | Create triples for representing owl:sameAs between the Person concept and
 -- a Wikidata entity.
-mkNomLienWikidataRdf :: (RDF.Rdf rdfImpl, Monad m)
-                      => Entity Nom_LienWikidata
-                      -> RdfState rdfImpl m ()
+mkNomLienWikidataRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Nom_LienWikidata
+  -> RdfState rdfImpl m ()
 mkNomLienWikidataRdf nomLienWdEntity = do
-  let wikidataUriMaybe = nom_LienWikidataLienWikidata $ entityVal nomLienWdEntity
+  let wikidataUriMaybe =
+        nom_LienWikidataLienWikidata $ entityVal nomLienWdEntity
 
   case wikidataUriMaybe of
     Just wikidataUri -> do
-      let nomId = sqlKeyToText $ nom_LienWikidataNomId $ entityVal nomLienWdEntity
+      let nomId =
+            sqlKeyToText $ nom_LienWikidataNomId $ entityVal nomLienWdEntity
       let nomUri = baseUriPath <> "/Person" <> nomId
       addTriple $ RDF.triple (RDF.unode nomUri)
                              (RDF.unode SW.owlSameAs)
@@ -1005,12 +1054,9 @@ mkNomLienWikidataRdf nomLienWdEntity = do
     Nothing -> return ()
 
 -- | Get all rows from Nom_LienWikidata table in database.
-getFilmoResumes :: (MonadIO m)
-                => Pool SqlBackend
-                -> m [Entity FilmoResumes]
+getFilmoResumes :: (MonadIO m) => Pool SqlBackend -> m [Entity FilmoResumes]
 getFilmoResumes pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for representing the link between the RecordingWor concept
 -- and a synopsis in french.
@@ -1018,33 +1064,32 @@ getFilmoResumes pool =
 -- Generated triples:
 -- Each row in table FilmoResumes
 --   cmtq:RecordingWork{FilmoResumes.FilmoID} cmtqo:synopsis {FilmoResumes.Resume}@fr
-mkAllFilmoResumesRdf :: (RDF.Rdf rdfImpl, Monad m)
-                     => [Entity FilmoResumes]
-                     -> RdfState rdfImpl m ()
+mkAllFilmoResumesRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity FilmoResumes]
+  -> RdfState rdfImpl m ()
 mkAllFilmoResumesRdf = mapM_ mkFilmoResumesRdf
 
 -- | Create triples for representing the link between the RecordingWork concept and
 -- a synopsis.
-mkFilmoResumesRdf :: (RDF.Rdf rdfImpl, Monad m)
-                  => Entity FilmoResumes
-                  -> RdfState rdfImpl m ()
+mkFilmoResumesRdf
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity FilmoResumes -> RdfState rdfImpl m ()
 mkFilmoResumesRdf filmoResumeEntity = do
-  let filmoId = sqlKeyToText $ filmoResumesFilmoId $ entityVal filmoResumeEntity
-  let filmoUri = baseUriPath <> "/RecordingWork" <> filmoId
+  let filmoId =
+        sqlKeyToText $ filmoResumesFilmoId $ entityVal filmoResumeEntity
+  let filmoUri    = baseUriPath <> "/RecordingWork" <> filmoId
 
   let resumeMaybe = filmoResumesResume $ entityVal filmoResumeEntity
-  forM_ resumeMaybe $ \resume ->
-    addTriple $ RDF.triple (RDF.unode filmoUri)
-                           (RDF.unode $ RDF.mkUri cmtqo "synopsis")
-                           (RDF.lnode $ RDF.PlainLL resume "fr")
+  forM_ resumeMaybe $ \resume -> addTriple $ RDF.triple
+    (RDF.unode filmoUri)
+    (RDF.unode $ RDF.mkUri cmtqo "synopsis")
+    (RDF.lnode $ RDF.PlainLL resume "fr")
 
 -- | Get all rows from FilmoResumesAnglais table in database.
-getFilmoResumesAnglais :: (MonadIO m)
-                       => Pool SqlBackend
-                       -> m [Entity FilmoResumesAnglais]
+getFilmoResumesAnglais
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity FilmoResumesAnglais]
 getFilmoResumesAnglais pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for representing the link between the RecordingWork
 -- concept and an english synopsis.
@@ -1052,33 +1097,34 @@ getFilmoResumesAnglais pool =
 -- Generated triples:
 -- Each row in table FilmoResumesAnglais
 --   cmtq:RecordingWork{FilmoResumesAnglais.FilmoID} cmtqo:synopsis {FilmoResumesAnglais.ResumeAnglais}@en
-mkAllFilmoResumesAnglaisRdf :: (RDF.Rdf rdfImpl, Monad m)
-                            => [Entity FilmoResumesAnglais]
-                            -> RdfState rdfImpl m ()
+mkAllFilmoResumesAnglaisRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity FilmoResumesAnglais]
+  -> RdfState rdfImpl m ()
 mkAllFilmoResumesAnglaisRdf = mapM_ mkFilmoResumesAnglaisRdf
 
 -- | Create triples for representing the link between the RecordingWork concept and
 -- an english synopsis.
-mkFilmoResumesAnglaisRdf :: (RDF.Rdf rdfImpl, Monad m)
-                         => Entity FilmoResumesAnglais
-                         -> RdfState rdfImpl m ()
+mkFilmoResumesAnglaisRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity FilmoResumesAnglais
+  -> RdfState rdfImpl m ()
 mkFilmoResumesAnglaisRdf filmoResumeEntity = do
-  let filmoId = sqlKeyToText $ filmoResumesAnglaisFilmoId $ entityVal filmoResumeEntity
+  let filmoId =
+        sqlKeyToText $ filmoResumesAnglaisFilmoId $ entityVal filmoResumeEntity
   let filmoUri = baseUriPath <> "/RecordingWork" <> filmoId
 
-  let resumeMaybe = filmoResumesAnglaisResumeAnglais $ entityVal filmoResumeEntity
-  forM_ resumeMaybe $ \resume ->
-    addTriple $ RDF.triple (RDF.unode filmoUri)
-                           (RDF.unode $ RDF.mkUri cmtqo "synopsis")
-                           (RDF.lnode $ RDF.PlainLL resume "en")
+  let resumeMaybe =
+        filmoResumesAnglaisResumeAnglais $ entityVal filmoResumeEntity
+  forM_ resumeMaybe $ \resume -> addTriple $ RDF.triple
+    (RDF.unode filmoUri)
+    (RDF.unode $ RDF.mkUri cmtqo "synopsis")
+    (RDF.lnode $ RDF.PlainLL resume "en")
 
 -- | Get all rows from Langue table in database.
-getLangue :: (MonadIO m)
-          => Pool SqlBackend
-          -> m [Entity Langue]
+getLangue :: (MonadIO m) => Pool SqlBackend -> m [Entity Langue]
 getLangue pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for representing the link between the Language concept.
 --
@@ -1086,18 +1132,15 @@ getLangue pool =
 -- Each row in table Langue
 --   cmtq:Language{Langue.LangueID} rdf:type cmtqo:Language
 --   cmtq:Language{Langue.LangueID} rdfs:label {Langue.Terme}
-mkAllLangueRdf :: (RDF.Rdf rdfImpl, Monad m)
-               => [Entity Langue]
-               -> RdfState rdfImpl m ()
+mkAllLangueRdf
+  :: (RDF.Rdf rdfImpl, Monad m) => [Entity Langue] -> RdfState rdfImpl m ()
 mkAllLangueRdf = mapM_ mkLangue
 
 -- | Create all triples for representing the Language concept.
-mkLangue :: (RDF.Rdf rdfImpl, Monad m)
-         => Entity Langue
-         -> RdfState rdfImpl m ()
+mkLangue :: (RDF.Rdf rdfImpl, Monad m) => Entity Langue -> RdfState rdfImpl m ()
 mkLangue langueEntity = do
-  let languageId = sqlKeyToText $ entityKey langueEntity
-  let languageUri = baseUriPath <> "/Language" <> languageId
+  let languageId    = sqlKeyToText $ entityKey langueEntity
+  let languageUri   = baseUriPath <> "/Language" <> languageId
   let languageLabel = (langueTerme . entityVal) langueEntity
 
   addTriple $ RDF.triple (RDF.unode languageUri)
@@ -1109,12 +1152,10 @@ mkLangue langueEntity = do
                          (RDF.lnode $ RDF.PlainL languageLabel)
 
 -- | Get all rows from Langue_LienWikidata table in database.
-getLangueLienWikidata :: (MonadIO m)
-                      => Pool SqlBackend
-                      -> m [Entity Langue_LienWikidata]
+getLangueLienWikidata
+  :: (MonadIO m) => Pool SqlBackend -> m [Entity Langue_LienWikidata]
 getLangueLienWikidata pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for representing the link between the Language concept
 -- and the equivalent concept in Wikidata.
@@ -1122,35 +1163,35 @@ getLangueLienWikidata pool =
 -- Generated triples:
 -- Each row in table Langue_LienWikidata
 --   cmtq:Place{Langue_LienWikidata.LangueID} owl:sameAs {Langue_LienWikidata.LienWikidata}
-mkAllLangueLienWikidataRdf :: (RDF.Rdf rdfImpl, Monad m)
-                           => [Entity Langue_LienWikidata]
-                           -> RdfState rdfImpl m ()
+mkAllLangueLienWikidataRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity Langue_LienWikidata]
+  -> RdfState rdfImpl m ()
 mkAllLangueLienWikidataRdf = mapM_ mkLangueLienWikidata
 
 -- | Create all triples for representing the link between the Language concept
 -- and the equivalent concept in Wikidata.
-mkLangueLienWikidata :: (RDF.Rdf rdfImpl, Monad m)
-                     => Entity Langue_LienWikidata
-                     -> RdfState rdfImpl m ()
+mkLangueLienWikidata
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Entity Langue_LienWikidata
+  -> RdfState rdfImpl m ()
 mkLangueLienWikidata langueLienWikidataEntity = do
-  let languageId = sqlKeyToText $ langue_LienWikidataLangueId $ entityVal langueLienWikidataEntity
+  let languageId = sqlKeyToText $ langue_LienWikidataLangueId $ entityVal
+        langueLienWikidataEntity
   let languageUri = baseUriPath <> "/Language" <> languageId
-  let wikidataUriMaybe = langue_LienWikidataLienWikidata $ entityVal langueLienWikidataEntity
+  let wikidataUriMaybe =
+        langue_LienWikidataLienWikidata $ entityVal langueLienWikidataEntity
 
   case wikidataUriMaybe of
-    Just wikidataUri ->
-      addTriple $ RDF.triple (RDF.unode languageUri)
-                             (RDF.unode SW.owlSameAs)
-                             (RDF.unode wikidataUri)
+    Just wikidataUri -> addTriple $ RDF.triple (RDF.unode languageUri)
+                                               (RDF.unode SW.owlSameAs)
+                                               (RDF.unode wikidataUri)
     Nothing -> return ()
 
 -- | Get all rows from Filmo_Langue table in database.
-getFilmoLangue :: (MonadIO m)
-               => Pool SqlBackend
-               -> m [Entity Filmo_Langue]
+getFilmoLangue :: (MonadIO m) => Pool SqlBackend -> m [Entity Filmo_Langue]
 getFilmoLangue pool =
-  liftIO $ flip liftSqlPersistMPool pool $
-    select $ distinct $ from return
+  liftIO $ flip liftSqlPersistMPool pool $ select $ distinct $ from return
 
 -- | Create all triples for linking recording works and languages for all rows
 -- in table Filmo_Langue.
@@ -1158,36 +1199,41 @@ getFilmoLangue pool =
 -- Generated triples:
 -- Each row in table Filmo_Langue
 --   cmtq:RecordingWor{Filmo_Langue.FilmoID} wdt:P407 cmtq:Language{Filmo_Langue.LangueID}
-mkAllFilmoLangueRdf :: (RDF.Rdf rdfImpl, Monad m)
-                    => [Entity Filmo_Langue]
-                    -> RdfState rdfImpl m ()
+mkAllFilmoLangueRdf
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => [Entity Filmo_Langue]
+  -> RdfState rdfImpl m ()
 mkAllFilmoLangueRdf = mapM_ mkFilmoLangueRdf
 
 -- | Create all triples for representing the link between a recording work and
 -- a place.
-mkFilmoLangueRdf :: (RDF.Rdf rdfImpl, Monad m)
-                 => Entity Filmo_Langue
-                 -> RdfState rdfImpl m ()
+mkFilmoLangueRdf
+  :: (RDF.Rdf rdfImpl, Monad m) => Entity Filmo_Langue -> RdfState rdfImpl m ()
 mkFilmoLangueRdf filmoLangueEntity = do
-  let filmoId = sqlKeyToText $ filmo_LangueFilmoId $ entityVal filmoLangueEntity
-  let langueId = sqlKeyToText $ filmo_LangueLangueId $ entityVal filmoLangueEntity
+  let filmoId =
+        sqlKeyToText $ filmo_LangueFilmoId $ entityVal filmoLangueEntity
+  let langueId =
+        sqlKeyToText $ filmo_LangueLangueId $ entityVal filmoLangueEntity
   let recordWorkUri = baseUriPath <> "/RecordingWork" <> filmoId
-  let langueUri = baseUriPath <> "/Language" <> langueId
+  let langueUri     = baseUriPath <> "/Language" <> langueId
 
   addTriple $ RDF.triple (RDF.unode recordWorkUri)
                          (RDF.unode SW.wdtP407)
                          (RDF.unode langueUri)
 
 -- | Parses a DATE field in the database.
-parseDateField :: Text -- ^ Date field in the format DD-MM-YY
-               -> Maybe UTCTime
+parseDateField
+  :: Text -- ^ Date field in the format DD-MM-YY
+  -> Maybe UTCTime
 parseDateField date =
-  parseTimeM False defaultTimeLocale "%d-%-m-%-y" (Text.unpack date) :: Maybe UTCTime
+  parseTimeM False defaultTimeLocale "%d-%-m-%-y" (Text.unpack date) :: Maybe
+      UTCTime
 
 -- | Parses a YEAR field in the database.
-parseYearField :: (Show a)
-               => a -- ^ Year field in the format YYYY
-               -> Maybe UTCTime
+parseYearField
+  :: (Show a)
+  => a -- ^ Year field in the format YYYY
+  -> Maybe UTCTime
 parseYearField year =
   parseTimeM False defaultTimeLocale "%-Y" (show year) :: Maybe UTCTime
 

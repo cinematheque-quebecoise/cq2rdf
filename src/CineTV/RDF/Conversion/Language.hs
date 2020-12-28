@@ -83,15 +83,18 @@ createTriplesFromLangue langueEntity = do
         baseUriPath <> "/AppellationLanguage" <> langueTextId
 
   mapM_ addTriple $ mkTriple langueUri SW.rdfType SW.crmE56
-  mapM_ addTriple $ mkTripleLit langueUri SW.rdfsLabel (RDF.PlainLL langueLabel "fr")
+  mapM_ addTriple
+    $ mkTripleLit langueUri SW.rdfsLabel (RDF.PlainLL langueLabel "fr")
   mapM_ addTriple $ mkTriple langueUri SW.crmP1 langueAppellationUri
   mapM_ addTriple $ mkTriple langueUri SW.crmP48 langueIdentifierUri
 
   mapM_ addTriple $ mkTriple langueAppellationUri SW.rdfType SW.crmE41
-  mapM_ addTriple $ mkTripleLit langueAppellationUri SW.crmP190 (RDF.PlainL langueLabel)
+  mapM_ addTriple
+    $ mkTripleLit langueAppellationUri SW.crmP190 (RDF.PlainL langueLabel)
 
   mapM_ addTriple $ mkTriple langueIdentifierUri SW.rdfType SW.crmE42
-  mapM_ addTriple $ mkTripleLit langueIdentifierUri SW.crmP190 (RDF.PlainL langueTextId)
+  mapM_ addTriple
+    $ mkTripleLit langueIdentifierUri SW.crmP190 (RDF.PlainL langueTextId)
 
 {-|
 Create all triples for representing the link between the Language concept and a Wikidata entity from all rows in table Langue_LienWikidata.

@@ -83,12 +83,14 @@ createTriplesFromPlace paysEntity = do
   let identifierUri  = baseUriPath <> "/IdentifierPlace" <> placeId
 
   mapM_ addTriple $ mkTriple placeUri SW.rdfType SW.crmE53
-  mapM_ addTriple $ mkTripleLit placeUri SW.rdfsLabel (RDF.PlainLL placeLabel "fr")
+  mapM_ addTriple
+    $ mkTripleLit placeUri SW.rdfsLabel (RDF.PlainLL placeLabel "fr")
   mapM_ addTriple $ mkTriple placeUri SW.crmP1 appellationUri
   mapM_ addTriple $ mkTriple placeUri SW.crmP48 identifierUri
 
   mapM_ addTriple $ mkTriple appellationUri SW.rdfType SW.crmE41
-  mapM_ addTriple $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL placeLabel)
+  mapM_ addTriple
+    $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL placeLabel)
 
   mapM_ addTriple $ mkTriple identifierUri SW.rdfType SW.crmE42
   mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL placeId)

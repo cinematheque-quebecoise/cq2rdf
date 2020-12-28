@@ -83,8 +83,9 @@ literalValueParser =
 
 literalValuePlainParser :: Parsec Text () LValue
 literalValuePlainParser = PlainL . pack <$> labelParser
-  where labelParser = unwords <$> P.sepBy wordParser P.space
-        wordParser = P.many P.anyChar
+ where
+  labelParser = unwords <$> P.sepBy wordParser P.space
+  wordParser  = P.many P.anyChar
 
 literalValuePlainLangParser :: Parsec Text () LValue
 literalValuePlainLangParser = do
