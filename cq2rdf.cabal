@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a7e9f427863af728f51ec3e14978c4a7ce00cf310dbcd7e9c0dcff0ddf5f05c8
+-- hash: 3c0b3efe0979b3cb9b6f0effcd321e965786f8906377a45ea0184d78dd195135
 
 name:           cq2rdf
-version:        0.1
+version:        0.1.0
 description:    Please see the README on Gitlab at <https://gitlab.com/cinematheque-quebecoise/cq2rdf#readme>
 author:         Konstantinos Lambrou-Latreille
 maintainer:     klambroulatreille@cinematheque.qc.ca
@@ -21,26 +21,27 @@ extra-source-files:
 
 library
   exposed-modules:
-      Conversion.CineTV
-      Conversion.CineTV.FilmoDureesOriginales
-      Conversion.CineTV.FilmoTitres
-      Conversion.CineTV.GenreCategory
-      Conversion.CineTV.Language
-      Conversion.CineTV.LegalBody
-      Conversion.CineTV.Movie
-      Conversion.CineTV.MovieCategory
-      Conversion.CineTV.MovieDirector
-      Conversion.CineTV.MovieGeneric
-      Conversion.CineTV.MovieLanguage
-      Conversion.CineTV.MovieLocation
-      Conversion.CineTV.MovieResume
-      Conversion.CineTV.Person
-      Conversion.CineTV.Place
-      Conversion.CineTV.Role
+      CineTV.RDF.Conversion
+      CineTV.RDF.Conversion.FilmoDureesOriginales
+      CineTV.RDF.Conversion.FilmoTitres
+      CineTV.RDF.Conversion.GenreCategory
+      CineTV.RDF.Conversion.Language
+      CineTV.RDF.Conversion.LegalBody
+      CineTV.RDF.Conversion.Movie
+      CineTV.RDF.Conversion.MovieCategory
+      CineTV.RDF.Conversion.MovieDirector
+      CineTV.RDF.Conversion.MovieGeneric
+      CineTV.RDF.Conversion.MovieLanguage
+      CineTV.RDF.Conversion.MovieLocation
+      CineTV.RDF.Conversion.MovieResume
+      CineTV.RDF.Conversion.Person
+      CineTV.RDF.Conversion.Place
+      CineTV.RDF.Conversion.Role
       Data.RDF.Extended
       Data.RDF.Query.Extended
       Data.RDF.State
       Data.RDF.Types.Extended
+      Data.RDF.Void
       Import
       Namespaces
       Run
@@ -127,21 +128,21 @@ test-suite cq2rdf-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Conversion.CineTV.FilmoDureesOriginalesSpec
-      Conversion.CineTV.FilmoTitresSpec
-      Conversion.CineTV.GenreCategorySpec
-      Conversion.CineTV.LanguageSpec
-      Conversion.CineTV.LegalBodySpec
-      Conversion.CineTV.MovieCategorySpec
-      Conversion.CineTV.MovieDirectorSpec
-      Conversion.CineTV.MovieGenericSpec
-      Conversion.CineTV.MovieLanguageSpec
-      Conversion.CineTV.MovieLocationSpec
-      Conversion.CineTV.MovieResumeSpec
-      Conversion.CineTV.MovieSpec
-      Conversion.CineTV.PersonSpec
-      Conversion.CineTV.PlaceSpec
-      Conversion.CineTV.RoleSpec
+      CineTV.RDF.Conversion.FilmoDureesOriginalesSpec
+      CineTV.RDF.Conversion.FilmoTitresSpec
+      CineTV.RDF.Conversion.GenreCategorySpec
+      CineTV.RDF.Conversion.LanguageSpec
+      CineTV.RDF.Conversion.LegalBodySpec
+      CineTV.RDF.Conversion.MovieCategorySpec
+      CineTV.RDF.Conversion.MovieDirectorSpec
+      CineTV.RDF.Conversion.MovieGenericSpec
+      CineTV.RDF.Conversion.MovieLanguageSpec
+      CineTV.RDF.Conversion.MovieLocationSpec
+      CineTV.RDF.Conversion.MovieResumeSpec
+      CineTV.RDF.Conversion.MovieSpec
+      CineTV.RDF.Conversion.PersonSpec
+      CineTV.RDF.Conversion.PlaceSpec
+      CineTV.RDF.Conversion.RoleSpec
       Data.RDF.Types.ExtendedSpec
       Test.Hspec.Expectations.Extended
       UtilSpec

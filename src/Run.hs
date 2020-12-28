@@ -24,7 +24,7 @@ module Run (run) where
 import Import hiding ((^.))
 import Namespaces
 import Util (getCurrentDayText)
-import Conversion.CineTV (convertToRdf)
+import CineTV.RDF.Conversion (convertToRdf)
 
 import qualified RIO.Text as Text
 import qualified Data.Text.Lazy.IO as TextL
