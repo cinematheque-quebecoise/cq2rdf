@@ -39,7 +39,7 @@ dependencies:
 - rio >= 0.1.12.0
 - cinetv4h
 # - rdf4h >= 4 && < 5
-- rdf4h == 4.0.1
+- rdf4h >= 4.0.0 && < 4.0.2
 - hsparql
 - mtl >= 2.2 && < 2.3
 - containers

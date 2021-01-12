@@ -23,7 +23,8 @@ let
   rdf4hPackage = pkgs.haskellPackages.callCabal2nix "rdf4h" (builtins.fetchGit {
     url = "https://github.com/robstewart57/rdf4h.git";
     ref = "refs/heads/master";
-    rev = "018755800c6503ddebe27efb7261be1c95ee2f12";
+    # rev = "018755800c6503ddebe27efb7261be1c95ee2f12";
+    rev = "c71bca655508f9bedc6b9dd804994c866f17587b";
   }) {};
 
   hsparqlPackage = pkgs.haskellPackages.callCabal2nix "hsparql" (builtins.fetchGit {
