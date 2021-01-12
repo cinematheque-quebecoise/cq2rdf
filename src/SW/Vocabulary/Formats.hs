@@ -15,17 +15,17 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.Rdfs where
+module SW.Vocabulary.Formats where
 
 import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
-rdfsLabel :: Text
-rdfsLabel = RDF.mkUri RDF.rdfs "label"
+formats :: RDF.Namespace
+formats = RDF.mkPrefixedNS' "formats" "http://www.w3.org/ns/formats/"
 
-rdfsComment :: Text
-rdfsComment = RDF.mkUri RDF.rdfs "comment"
+formatsFormat :: Text
+formatsFormat = RDF.mkUri formats "name"
 
-rdfsSeeAlso :: Text
-rdfsSeeAlso = RDF.mkUri RDF.rdfs "seeAlso"
+formatsPreferredSuffix :: Text
+formatsPreferredSuffix = RDF.mkUri formats "preferred_suffix"

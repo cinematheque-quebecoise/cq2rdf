@@ -9,17 +9,26 @@ EXEC := $(shell grep "name:\s*" package.yaml | sed "s/name:\s*\(.*\)\s*/\1/")-ex
 GITLAB_PROJECT_ID=18031890
 VERSION := $(shell grep "version:\s*" package.yaml | sed "s/version:\s*\(.*\)\s*/\1/")
 GITLAB_TOKEN := $(shell cat .gitlab-token)
+HASKELL_FILES := $(shell find app src -name "*.hs" -print)
 
-build: $(EXEC)
+build:
+	cabal build
 
-$(EXEC): release.nix
-	nix-build $< && rm -f $(EXEC) && cp result/bin/$(EXEC) .
+cinetv-to-rdf: $(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz $(DESTDIR)/cmtq-dataset/cmtq-dataset.ttl.gz $(DESTDIR)/cmtq-dataset/cmtq-dataset.hdt
 
-run: $(EXEC) $(CINETV_PUBLIC_SQLITE) $(DESTDIR)
-	./$(EXEC) -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
+generate-void: $(DESTDIR)/cmtq-dataset/void.ttl
 
-run-dev: $(CINETV_PUBLIC_SQLITE) $(DESTDIR)
-	cabal run $(EXEC) -- -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz: $(HASKELL_FILES)
+	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
+
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.ttl.gz: $(HASKELL_FILES)
+	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
+
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.hdt: $(HASKELL_FILES)
+	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
+
+$(DESTDIR)/cmtq-dataset/void.ttl: blazegraph.jnl # $(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz
+	generateVoidDataset $(CINETV_PUBLIC_SQLITE) $(DESTDIR)
 
 # If release tag does not exist on Gitlab server, it returns a 403 Forbidden HTTP code.
 # @param token - Private Gitlab token
@@ -34,11 +43,12 @@ release: $(DESTDIR)/cmtq-dataset $(DESTDIR)/example-queries.yaml .gitlab-token
 		$(GITLAB_TOKEN) \
 		$<
 
-bootstrap-blazegraph:
-	bootstrapBlazegraph cmtq-dataset/cmtq-dataset.ttl.gz
-
-test-sparql-queries:
+test-sparql-queries: blazegraph.jnl
 	test_sparql_queries example-queries.yaml
 
+blazegraph.jnl: cmtq-dataset/cmtq-dataset.ttl.gz
+	rm blazegraph.jnl
+	bootstrapBlazegraph cmtq-dataset/cmtq-dataset.ttl.gz
+
 clean:
-	rm $(EXEC)
+	rm $(EXEC) blazegraph.jnl

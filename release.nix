@@ -20,13 +20,26 @@ let
     # rev = "7df9ff12f7d94791d631ccf19cf1c4d6146db616";
   };
 
+  rdf4hPackage = pkgs.haskellPackages.callCabal2nix "rdf4h" (builtins.fetchGit {
+    url = "https://github.com/robstewart57/rdf4h.git";
+    ref = "refs/heads/master";
+    rev = "018755800c6503ddebe27efb7261be1c95ee2f12";
+  }) {};
+
+  hsparqlPackage = pkgs.haskellPackages.callCabal2nix "hsparql" (builtins.fetchGit {
+    url = "https://github.com/robstewart57/hsparql.git";
+    ref = "refs/heads/master";
+    rev = "ac11fa787aa4317675d34ccb0009b7cda8b87550";
+  }) {
+    rdf4h = pkgs.haskell.lib.dontCheck rdf4hPackage;
+  };
+
   haskellPackages = pkgs.haskell.packages.${compiler}.override {
     overrides = self: upser: rec {
-      rdf4h = self.callCabal2nix "rdf4h" (builtins.fetchGit {
-        url = "https://github.com/robstewart57/rdf4h.git";
-        ref = "refs/heads/master";
-        rev = "9658c9c361fb175f614a127c96da8ec42665334a";
-      }) {};
+      rdf4h = rdf4hPackage;
+
+      hsparql = pkgs.haskell.lib.dontCheck hsparqlPackage;
+
       xsd = self.callCabal2nix "xsd" (builtins.fetchGit {
         url = "https://github.com/data61/xsd.git";
         ref = "refs/heads/master";
@@ -38,6 +51,7 @@ let
 
   cq2rdf = haskellPackages.callCabal2nix "cq2rdf" (./.) {
     rdf4h = pkgs.haskell.lib.dontCheck haskellPackages.rdf4h;
+    hsparql = pkgs.haskell.lib.dontCheck haskellPackages.hsparql;
     xsd = pkgs.haskell.lib.dontCheck haskellPackages.xsd;
     # esqueleto = haskellPackages.callHackage "esqueleto" "3.0.0" {};
   };

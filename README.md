@@ -17,8 +17,9 @@ cq2rdf Copyright (C) 2020 Cinemathèque québécoise This program comes with
 ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to
 redistribute it under certain conditions.
 
-Usage: cq2rdf-exe [--version] [--help] [-v|--verbose] (-b|--baseuri BASEURI)
-                  (-s|--sqlitedb SQLITEDBFILE) (-o|--outputdir OUTPUTDIR)
+Usage: cq2rdf-exe [--version] [--help] [-v|--verbose] COMMAND
+                  (-b|--baseuri BASEURI) (-s|--sqlitedb SQLITEDBFILE)
+                  (-o|--outputdir OUTPUTDIR)
   cq2rdf is a tool to convert the database of Cinemathèque québécoise in multple
   RDF formats.
 
@@ -30,6 +31,10 @@ Available options:
   -s,--sqlitedb SQLITEDBFILE
                            File path of the Sqlite database file
   -o,--outputdir OUTPUTDIR Output directory of result
+
+Available commands:
+  cinetv-to-rdf            Convert CineTV to RDF
+  generate-void            Generate a VoID dataset from SPARQL endpoint
 ```
 
 ## Environnement de développement avec Nix
@@ -57,12 +62,14 @@ $ cabal run cq2rdf-exe -- --help
 Predefined commands are available in the `Makefile` such as:
 
 ```
-$ make run-dev
+$ make build
+$ make cinetv-to-rdf
+$ make generate-void
 ```
 
 ### Generating executable with Nix
 
-Generate executable with:
+Generate an executable file with:
 
 ```
 $ make build
@@ -70,11 +77,6 @@ $ make build
 
 Which will be available in `./result/bin/cq2rdf-exe`.
 
-To run the generated executable:
-
-```
-$ make run
-```
 
 ### Unit tests
 

@@ -58,3 +58,13 @@ addPrefixMappings mappings replaceOldMapping = do
 
 empty :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 empty = put RDF.empty
+
+query
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => Maybe RDF.Node
+  -> Maybe RDF.Node
+  -> Maybe RDF.Node
+  -> RdfState rdfImpl m RDF.Triples
+query s p o = do
+  graph <- get
+  return $ RDF.query graph s p o

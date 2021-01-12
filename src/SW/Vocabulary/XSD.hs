@@ -21,6 +21,9 @@ import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
+xsdDate :: Text
+xsdDate = RDF.mkUri RDF.xsd "date"
+
 xsdDateTime :: Text
 xsdDateTime = RDF.mkUri RDF.xsd "dateTime"
 

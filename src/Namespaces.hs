@@ -34,9 +34,6 @@ frbroo = mkPrefixedNS' "frbroo" "http://iflastandards.info/ns/fr/frbr/frbroo/"
 dbo :: Namespace
 dbo = mkPrefixedNS' "dbo" "http://dbpedia.org/ontology/"
 
-schema :: Namespace
-schema = mkPrefixedNS' "schema" "http://schema.org/"
-
 rdac :: Namespace
 rdac = mkPrefixedNS' "rdac" "http://rdaregistry.info/Elements/c/"
 
@@ -48,6 +45,9 @@ wd = mkPrefixedNS' "wd" "http://www.wikidata.org/entity/"
 
 wdt :: Namespace
 wdt = mkPrefixedNS' "wdt" "http://www.wikidata.org/prop/direct/"
+
+schema :: Namespace
+schema = mkPrefixedNS' "schema" "http://schema.org/"
 
 prefixMappings :: PrefixMappings
 prefixMappings = ns_mappings
@@ -64,5 +64,5 @@ prefixMappings = ns_mappings
   , owl
   , wd
   , wdt
-                             -- , cmtqo
+  -- , cmtqo
   ]

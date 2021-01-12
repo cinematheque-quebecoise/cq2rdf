@@ -17,10 +17,11 @@ let
   };
 
   bootstrapBlazegraph  = import ./scripts/bootstrapBlazegraph.nix { inherit pkgs; };
+  startBlazegraph  = import ./scripts/startBlazegraph.nix { inherit pkgs; };
   testSparqlQueries  = import ./scripts/test_sparql_queries.nix { inherit pkgs; };
+  generateVoidDataset  = import ./scripts/generateVoidDataset.nix { inherit pkgs; };
 in
-pkgs.stdenv.mkDerivation {
-  name = "shell";
+pkgs.mkShell {
   buildInputs = project.env.nativeBuildInputs ++ [
     haskellPackages.cabal-install
     haskellPackages.shelltestrunner
@@ -35,6 +36,7 @@ pkgs.stdenv.mkDerivation {
     pkgs.zlib
     pkgs.glibcLocales
 
+    python38Packages.requests
     python38Packages.pyyaml
     python38Packages.tabulate
 
@@ -42,7 +44,9 @@ pkgs.stdenv.mkDerivation {
     rdflib-hdt
 
     bootstrapBlazegraph
+    startBlazegraph
     testSparqlQueries
+    generateVoidDataset
   ];
 
   LANG = "en_US.UTF-8";

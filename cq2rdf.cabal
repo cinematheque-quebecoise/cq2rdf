@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3c0b3efe0979b3cb9b6f0effcd321e965786f8906377a45ea0184d78dd195135
+-- hash: 8b00fea8b789b7d14029712a01a98fb8a80b813df484e1446ffc42299939dc12
 
 name:           cq2rdf
 version:        0.1.0
@@ -37,11 +37,11 @@ library
       CineTV.RDF.Conversion.Person
       CineTV.RDF.Conversion.Place
       CineTV.RDF.Conversion.Role
+      CineTV.RDF.Void
       Data.RDF.Extended
       Data.RDF.Query.Extended
       Data.RDF.State
       Data.RDF.Types.Extended
-      Data.RDF.Void
       Import
       Namespaces
       Run
@@ -49,11 +49,14 @@ library
       SW.Vocabulary
       SW.Vocabulary.CRM
       SW.Vocabulary.DBpedia
+      SW.Vocabulary.DCTerms
       SW.Vocabulary.Foaf
+      SW.Vocabulary.Formats
       SW.Vocabulary.FRBRoo
       SW.Vocabulary.OWL
       SW.Vocabulary.Rdf
       SW.Vocabulary.Rdfs
+      SW.Vocabulary.Void
       SW.Vocabulary.Wikidata
       SW.Vocabulary.XSD
       Types
@@ -69,9 +72,12 @@ library
     , bytestring >=0.9 && <0.11
     , cinetv4h
     , conduit >=1.3 && <1.4
+    , containers
     , directory >=1.3 && <1.4
     , esqueleto >=3 && <3.4
     , filepath
+    , hashable
+    , hsparql
     , mtl >=2.2 && <2.3
     , network-uri
     , parsec
@@ -79,7 +85,7 @@ library
     , persistent-sqlite
     , persistent-template
     , process
-    , rdf4h >=4 && <5
+    , rdf4h ==4.0.1
     , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
@@ -102,10 +108,13 @@ executable cq2rdf-exe
     , bytestring >=0.9 && <0.11
     , cinetv4h
     , conduit >=1.3 && <1.4
+    , containers
     , cq2rdf
     , directory >=1.3 && <1.4
     , esqueleto >=3 && <3.4
     , filepath
+    , hashable
+    , hsparql
     , mtl >=2.2 && <2.3
     , network-uri
     , optparse-simple
@@ -114,7 +123,7 @@ executable cq2rdf-exe
     , persistent-sqlite
     , persistent-template
     , process
-    , rdf4h >=4 && <5
+    , rdf4h ==4.0.1
     , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
@@ -143,6 +152,7 @@ test-suite cq2rdf-test
       CineTV.RDF.Conversion.PersonSpec
       CineTV.RDF.Conversion.PlaceSpec
       CineTV.RDF.Conversion.RoleSpec
+      CineTV.RDF.VoidSpec
       Data.RDF.Types.ExtendedSpec
       Test.Hspec.Expectations.Extended
       UtilSpec
@@ -156,10 +166,13 @@ test-suite cq2rdf-test
     , bytestring >=0.9 && <0.11
     , cinetv4h
     , conduit >=1.3 && <1.4
+    , containers
     , cq2rdf
     , directory >=1.3 && <1.4
     , esqueleto >=3 && <3.4
     , filepath
+    , hashable
+    , hsparql
     , hspec
     , hspec-expectations
     , mtl >=2.2 && <2.3
@@ -169,7 +182,7 @@ test-suite cq2rdf-test
     , persistent-sqlite
     , persistent-template
     , process
-    , rdf4h >=4 && <5
+    , rdf4h ==4.0.1
     , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0

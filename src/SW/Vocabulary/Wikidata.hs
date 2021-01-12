@@ -18,9 +18,14 @@
 module SW.Vocabulary.Wikidata where
 
 import           Import             hiding ((^.))
-import           Namespaces
 
 import qualified Data.RDF.Namespace as RDF
+
+wd :: RDF.Namespace
+wd = RDF.mkPrefixedNS' "wd" "http://www.wikidata.org/entity/"
+
+wdt :: RDF.Namespace
+wdt = RDF.mkPrefixedNS' "wdt" "http://www.wikidata.org/prop/direct/"
 
 wdQ483394 :: Text
 wdQ483394 = RDF.mkUri wd "Q483394"

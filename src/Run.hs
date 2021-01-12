@@ -25,22 +25,23 @@ module Run
 where
 
 import           CineTV.RDF.Conversion             (convertToRdf)
+import           CineTV.RDF.Void                   (CinetvRdf(..), createVoidGraph)
 import           Import                            hiding ((^.))
 import           Namespaces
-import           Util                              (getCurrentDayText)
 
 import           Codec.Compression.GZip            (compress)
 import           Control.Monad.State               (execStateT)
-import           Data.Aeson                        (ToJSON (..))
-import           Data.Aeson.Text                   (encodeToLazyText)
+-- import           Data.Aeson                        (ToJSON (..))
+-- import           Data.Aeson.Text                   (encodeToLazyText)
 import qualified Data.ByteString.Lazy              as BS
-import           Data.RDF                          (RDF)
+import           Data.RDF                          (RDF, Rdf)
 import qualified Data.RDF                          as RDF
-import qualified Data.Text.Lazy.IO                 as TextL
-import           Data.Time.Clock                   (getCurrentTime)
+import           Data.Time.Clock                   (UTCTime, getCurrentTime, diffUTCTime)
+import           Data.Time.Format                  (defaultTimeLocale,
+                                                    parseTimeM)
 import           Database.Esqueleto                hiding (get)
 import           Database.Persist.Sqlite           (SqliteConf (..))
-import qualified RIO.Text                          as Text
+import qualified RIO.Text                          as T
 import           System.Directory                  (createDirectoryIfMissing,
                                                     doesFileExist, removeFile)
 import           System.FilePath                   (joinPath)
@@ -49,75 +50,138 @@ import           Text.RDF.RDF4H.NTriplesSerializer
 import           Text.RDF.RDF4H.TurtleSerializer
 import           Text.RE.TDFA.Text
 
--- Used for converting the prefix mappings in JSON format
-instance ToJSON RDF.PrefixMappings
-
-data Metadata = Metadata
-    { metadataOriginalDate :: Text
-    , metadataCreationDate :: Text
-    }
-    deriving (Generic)
-instance ToJSON Metadata
-
--- run :: RIO App ()
--- run = do
---   let emptyRdf = RDF.empty :: RDF RDF.TList
---   let mappings = RDF.PrefixMappings $ Map.fromList [ ("mo", "http://purl.org/ontology/mo/") ]
---   let baseUrl = Just $ "http://example.org/resource"
---   liftIO $ RDF.writeRdf (TurtleSerializer baseUrl mappings) emptyRdf
+-- import qualified Data.Text.Lazy.Encoding as TL
+-- import qualified Data.Text.Lazy as TL
 
 run :: RIO App ()
 run = do
-  env <- ask
+  startTime  <- liftIO getCurrentTime
 
-  let sqliteDbPath = optionsSqlitePath $ appOptions env
-  doesSqlitePathExist <- liftIO $ doesFileExist $ Text.unpack sqliteDbPath
+  command <- fmap (optionsCommand . appOptions) ask
+  case command of
+    CinetvToRdf -> convertCinetvToRdf
+    GenerateVoid -> generateVoid
+
+  endTime <- liftIO getCurrentTime
+  logInfo $ display $ "Finished in " <> T.pack (show $ diffUTCTimeSec endTime startTime) <> "s!"
+
+ where
+   diffUTCTimeSec :: UTCTime -> UTCTime -> Double
+   diffUTCTimeSec endTime startTime = realToFrac $ diffUTCTime endTime startTime
+
+convertCinetvToRdf :: RIO App ()
+convertCinetvToRdf = do
+  verifySqliteFileExists
+
+  outputDir <- createOutputDirIfMissing
+
+  -- Generate RDF graph from CineTV
+  graph <- convertCinetv2RdfGraph
+
+  writeRdfGraphToRdfFormats graph outputDir
+
+generateVoid :: RIO App ()
+generateVoid = do
+  outputDir <- createOutputDirIfMissing
+
+  -- Generate VoID RDF graph
+  logInfo "Generating VoID data from RDF data..."
+
+  -- parseFile (T.unpack $ outputDir <> "/cmtq-dataset.ttl.gz")
+  -- content <- liftIO $ BS.readFile (T.unpack $ outputDir <> "/cmtq-dataset.ttl.gz") >>= (return . TL.toStrict . TL.decodeUtf8 . decompress)
+  -- graph <- case (RDF.parseString (RDF.TurtleParser (Just $ RDF.BaseUrl "http://data.cinematheque.qc.ca") Nothing) content :: Either RDF.ParseFailure (RDF RDF.TList)) of
+  --   Left err -> do
+  --     logError $ displayShow err
+  --     exitFailure
+  --   Right g -> return g
+
+  originalDate <- getSqliteDbDate
+  currentTime  <- liftIO getCurrentTime
+
+  let sparqlEndpoint = "http://localhost:9999/blazegraph/sparql"
+  let cinetvRdf = CinetvRdf originalDate currentTime sparqlEndpoint
+  voidGraph <- liftIO (createVoidGraph cinetvRdf :: IO (RDF RDF.AlgebraicGraph))
+
+  -- Write VoID RDF graph
+  logInfo "Writing VoID data to file..."
+  let voidGraphFpath = T.unpack $ outputDir <> "/void.ttl"
+  liftIO $ withFile
+    voidGraphFpath
+    WriteMode
+    (\h -> RDF.hWriteRdf
+      (TurtleSerializer Nothing (RDF.prefixMappings voidGraph))
+      h
+      voidGraph
+    )
+
+-- |Verify if the SQLite specified in the application datatype exists.
+--
+-- If not, the program terminates.
+verifySqliteFileExists :: RIO App ()
+verifySqliteFileExists = do
+  sqliteDbPath <- fmap (optionsSqlitePath . appOptions) ask
+  doesSqlitePathExist <- liftIO $ doesFileExist $ T.unpack sqliteDbPath
   unless doesSqlitePathExist $ do
     logError $ display $ "Can't find SQLite database at: " <> sqliteDbPath
     exitFailure
-  pool <- liftIO $ createPoolConfig (SqliteConf sqliteDbPath 1)
 
+-- |Create output directory if missing.
+createOutputDirIfMissing :: RIO App Text
+createOutputDirIfMissing = do
+  env <- ask
+  let outputDir = T.pack $ joinPath
+        [T.unpack $ optionsOutputDir $ appOptions env, "cmtq-dataset"]
+  liftIO $ createDirectoryIfMissing True $ T.unpack outputDir
+  return outputDir
+
+-- |Convert CineTV database in the SQLite file in a RDF graph.
+convertCinetv2RdfGraph :: RIO App (RDF RDF.AdjHashMap)
+convertCinetv2RdfGraph = do
   logInfo "Converting CineTV in RDF..."
+  env <- ask
+  let sqliteDbPath = optionsSqlitePath $ appOptions env
 
-  originalDate <- getSqliteDbDate
-  creationDate <- liftIO $ fmap getCurrentDayText getCurrentTime
+  pool <- liftIO $ createPoolConfig (SqliteConf sqliteDbPath 1)
+  let emptyRdf = RDF.mkRdf [] Nothing prefixMappings :: RDF RDF.AdjHashMap
+  liftIO $ execStateT (convertToRdf pool) emptyRdf
 
-  -- let emptyRdf = RDF.empty :: RDF RDF.TList
-  let baseUri  = optionsBaseUri $ appOptions env
-  -- let baseUriJust = Just $ RDF.BaseUrl baseUri
-  let emptyRdf = RDF.mkRdf [] Nothing prefixMappings :: RDF RDF.TList
-  graph <- liftIO $ execStateT (convertToRdf pool) emptyRdf
+-- |
+writeRdfGraphToRdfFormats :: (Rdf a) => RDF a -> Text -> RIO App ()
+writeRdfGraphToRdfFormats graph outputDir = do
+  -- Write RDF graph to compressed Turtle file
+  writeRdfGraphToTurtleFile graph outputDir
 
-  let outputDir = Text.pack $ joinPath
-        [Text.unpack $ optionsOutputDir $ appOptions env, "cmtq-dataset"]
-  liftIO $ createDirectoryIfMissing True $ Text.unpack outputDir
+  -- Write RDF graph to N-Triples file
+  writeRdfGraphToNTriplesFile graph outputDir
 
-  -- let prefixesFpath = Text.unpack $ outputDir <> "/prefixes.json"
-  -- liftIO $ TextL.writeFile prefixesFpath $ encodeToLazyText $ RDF.prefixMappings graph
+  -- Write RDF data to HDT file"
+  writeRdfGraphToHdtFile outputDir
 
-  let metadataFpath = Text.unpack $ outputDir <> "/metadata.json"
-  liftIO $ TextL.writeFile metadataFpath $ encodeToLazyText $ Metadata
-    originalDate
-    creationDate
 
-  let cmtqTurtleFpath = Text.unpack $ outputDir <> "/cmtq-dataset.ttl"
+writeRdfGraphToTurtleFile :: (Rdf a) => RDF a -> Text -> RIO App ()
+writeRdfGraphToTurtleFile graph outputDir = do
+  logInfo "Write RDF data to compressed Turtle file"
+  let cmtqTurtleFpath = T.unpack $ outputDir <> "/cmtq-dataset.ttl"
   liftIO $ withFile
     cmtqTurtleFpath
     WriteMode
     (\h -> RDF.hWriteRdf (TurtleSerializer Nothing prefixMappings) h graph)
 
-  let cmtqNtriplesFpath = Text.unpack $ outputDir <> "/cmtq-dataset.nt"
-  liftIO $ withFile cmtqNtriplesFpath
-                    WriteMode
-                    (\h -> RDF.hWriteRdf NTriplesSerializer h graph)
-
-  -- Compress output Turtle file
   let cmtqTurtleFpathCompressed = cmtqTurtleFpath <> ".gz"
   liftIO
     $   BS.readFile cmtqTurtleFpath
     >>= (return . compress)
     >>= BS.writeFile cmtqTurtleFpathCompressed
+
   liftIO $ removeFile cmtqTurtleFpath
+
+writeRdfGraphToNTriplesFile :: (Rdf a) => RDF a -> Text -> RIO App ()
+writeRdfGraphToNTriplesFile graph outputDir = do
+  logInfo "Write RDF data to compressed N-Triples file"
+  let cmtqNtriplesFpath = T.unpack $ outputDir <> "/cmtq-dataset.nt"
+  liftIO $ withFile cmtqNtriplesFpath
+                    WriteMode
+                    (\h -> RDF.hWriteRdf NTriplesSerializer h graph)
 
   -- Compress output N-triples file
   let cmtqNtriplesFpathCompressed = cmtqNtriplesFpath <> ".gz"
@@ -125,25 +189,37 @@ run = do
     $   BS.readFile cmtqNtriplesFpath
     >>= (return . compress)
     >>= BS.writeFile cmtqNtriplesFpathCompressed
+
   liftIO $ removeFile cmtqNtriplesFpath
 
-  let cmtqHdtFpath = Text.unpack $ outputDir <> "/cmtq-dataset.hdt"
+writeRdfGraphToHdtFile :: Text -> RIO App ()
+writeRdfGraphToHdtFile outputDir = do
+  logInfo "Write RDF data to HDT file"
+  let cmtqHdtFpath = T.unpack $ outputDir <> "/cmtq-dataset.hdt"
+  let cmtqNtriplesFpathCompressed = T.unpack $ outputDir <> "/cmtq-dataset.nt.gz"
+
+  env <- ask
+  let baseUri = optionsBaseUri $ appOptions env
   let rdf2hdtCmd =
         "rdf2hdt -B "
-          <> Text.unpack baseUri
+          <> T.unpack baseUri
           <> "/resource -f ttl "
           <> cmtqNtriplesFpathCompressed
           <> " "
           <> cmtqHdtFpath
   liftIO $ callCommand rdf2hdtCmd
 
-  logInfo "Finished!"
-
-getSqliteDbDate :: RIO App Text
+getSqliteDbDate :: RIO App UTCTime
 getSqliteDbDate = do
   sqliteDbPath <- fmap (optionsSqlitePath . appOptions) ask
-  case matchedText $ sqliteDbPath ?=~ [re|[0-9]+-[0-9]+-[0-9]+|] of
-    Just date -> return date
-    Nothing   -> do
+  let utcTimeM = getUtcTimeFromDbFile sqliteDbPath
+  case utcTimeM of
+    Just utcTime -> return utcTime
+    Nothing      -> do
       logError "The SQLite file must contain a date in the format YYYY-MM-DD"
       exitFailure
+ where
+  getUtcTimeFromDbFile :: Text -> Maybe UTCTime
+  getUtcTimeFromDbFile fname = do
+    date <- matchedText $ fname ?=~ [re|[0-9]+-[0-9]+-[0-9]+|]
+    parseTimeM False defaultTimeLocale "%Y-%-m-%-d" (T.unpack date)

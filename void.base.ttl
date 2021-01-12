@@ -8,7 +8,6 @@
 @prefix wd: <http://www.wikidata.org/entity/> .
 @prefix formats: <http://www.w3.org/ns/formats/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix : <#> .
 
 </void/Dataset> a void:DatasetDescription ;
     dcterms:title "A VoID Description of the Cinémathèque québécoise Linked Open Dataset" ;
@@ -17,7 +16,7 @@
     .
 
 </void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> a void:Dataset ;
-  foaf:homepage </> ;
+  foaf:homepage <> ;
   dcterms:creator wd:Q2973248 ;
   dcterms:publisher wd:Q2973248 ;
   #dcterms:created "2020-01-01"^^xsd:date ;
@@ -86,7 +85,7 @@
   dcterms:created "2012-10-30"^^xsd:date ;
   dcterms:license <https://creativecommons.org/publicdomain/zero/1.0/> ;
 
-  void:sparqlEndpoint <https://query.wikidta.org/sparql> ;
+  void:sparqlEndpoint <https://query.wikidata.org/sparql> ;
 .
 
 wd:Q56655440 a formats:Format ;

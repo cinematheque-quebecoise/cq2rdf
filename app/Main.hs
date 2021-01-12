@@ -34,6 +34,7 @@ main = do
                  <> short 'v'
                  <> help "Verbose output?"
                   )
+       <*> parseCommand
        <*> strOption ( long "baseuri"
                     <> short 'b'
                     <> metavar "BASEURI"
@@ -60,3 +61,20 @@ main = do
           , appOptions = options
           }
      in runRIO app run
+
+parseCommand :: Parser Command
+parseCommand = subparser $
+     command "cinetv-to-rdf" (parseCinetvToRdfCommand `withInfo` "Convert CineTV to RDF")
+  <> command "generate-void" (parseVoidGenerationCommand `withInfo` "Generate a VoID dataset from SPARQL endpoint")
+
+parseCinetvToRdfCommand :: Parser Command
+parseCinetvToRdfCommand = pure CinetvToRdf
+
+parseVoidGenerationCommand :: Parser Command
+parseVoidGenerationCommand = pure GenerateVoid
+
+-- Where withInfo is just a convenience function to add --help support given
+-- a parser and description
+withInfo :: Parser a -> String -> ParserInfo a
+withInfo opts desc = info (helper <*> opts) $ progDesc desc
+

@@ -24,6 +24,9 @@ module SW.Vocabulary
 , module SW.Vocabulary.XSD
 , module SW.Vocabulary.DBpedia
 , module SW.Vocabulary.Foaf
+, module SW.Vocabulary.Void
+, module SW.Vocabulary.DCTerms
+, module SW.Vocabulary.Formats
 ) where
 
 import SW.Vocabulary.Rdf
@@ -35,3 +38,6 @@ import SW.Vocabulary.Wikidata
 import SW.Vocabulary.XSD
 import SW.Vocabulary.DBpedia
 import SW.Vocabulary.Foaf
+import SW.Vocabulary.Void
+import SW.Vocabulary.DCTerms
+import SW.Vocabulary.Formats

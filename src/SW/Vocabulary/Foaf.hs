@@ -21,6 +21,9 @@ import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
+foafPerson :: Text
+foafPerson = RDF.mkUri RDF.foaf "Person"
+
 foafName :: Text
 foafName = RDF.mkUri RDF.foaf "name"
 
@@ -29,3 +32,9 @@ foafFamilyName = RDF.mkUri RDF.foaf "familyName"
 
 foafGivenName :: Text
 foafGivenName = RDF.mkUri RDF.foaf "givenName"
+
+foafHomepage :: Text
+foafHomepage =  RDF.mkUri RDF.foaf "homepage"
+
+foafPrimaryTopic :: Text
+foafPrimaryTopic = RDF.mkUri RDF.foaf "primaryTopic"

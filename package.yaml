@@ -38,8 +38,11 @@ dependencies:
 - base >= 4.11 && < 10
 - rio >= 0.1.12.0
 - cinetv4h
-- rdf4h >= 4 && < 5
+# - rdf4h >= 4 && < 5
+- rdf4h == 4.0.1
+- hsparql
 - mtl >= 2.2 && < 2.3
+- containers
 - xsd
 - persistent >= 2.8 && < 2.11
 - persistent-template
@@ -58,6 +61,7 @@ dependencies:
 - process
 - network-uri
 - parsec
+- hashable
 
 ghc-options:
 - -Wall

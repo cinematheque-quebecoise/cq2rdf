@@ -19,9 +19,13 @@ module Types where
 import           RIO
 import           RIO.Process
 
+data Command = CinetvToRdf
+             | GenerateVoid
+
 -- | Command line arguments
 data Options = Options
     { optionsVerbose    :: !Bool
+    , optionsCommand :: !Command
     , optionsBaseUri    :: !Text
     , optionsSqlitePath :: !Text
     , optionsOutputDir  :: !Text

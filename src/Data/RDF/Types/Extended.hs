@@ -21,6 +21,11 @@ module Data.RDF.Types.Extended
   , mkTripleLit
   , mkNode
   , mkNodeLit
+  , subject
+  , predicate
+  , object
+  , bnodeGen
+  , getUNode
   )
 where
 
@@ -32,6 +37,25 @@ import           Text.Parsec      (Parsec)
 import qualified Text.Parsec      as P (many, parse, sepBy, try)
 import qualified Text.Parsec.Char as P (alphaNum, anyChar, char, noneOf, space,
                                         string)
+
+-- |Get subject of triple
+subject :: Triple -> Node
+subject (Triple s _ _) = s
+
+-- |Get predicate of triple
+predicate :: Triple -> Node
+predicate (Triple _ p _) = p
+
+-- |Get object of triple
+object :: Triple -> Node
+object (Triple _ _ o) = o
+
+getUNode :: Node -> Maybe Text
+getUNode (UNode uri) = Just uri
+getUNode _ = Nothing
+
+bnodeGen :: Int -> Node
+bnodeGen h = bnode $ "_:" <> pack (show $ abs h)
 
 mkTriple :: Text -> Text -> Text -> Maybe Triple
 mkTriple subject predicate object = do

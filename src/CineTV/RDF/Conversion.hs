@@ -40,10 +40,11 @@ import           Data.RDF.State
 import           Import                                      hiding ((^.))
 
 import           Data.Pool                                   (Pool)
-import qualified Data.RDF                                    as RDF
+import           Data.RDF                                    (Rdf)
 import           Database.Esqueleto                          hiding (get)
 
-convertToRdf :: (MonadIO m) => Pool SqlBackend -> RdfState RDF.TList m ()
+convertToRdf
+  :: (MonadIO m, Rdf rdfImpl) => Pool SqlBackend -> RdfState rdfImpl m ()
 convertToRdf pool = do
   convertRoles pool
   convertPeople pool

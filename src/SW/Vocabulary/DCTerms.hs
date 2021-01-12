@@ -15,17 +15,36 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.Rdfs where
+module SW.Vocabulary.DCTerms where
 
 import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
-rdfsLabel :: Text
-rdfsLabel = RDF.mkUri RDF.rdfs "label"
+dcterms :: RDF.Namespace
+dcterms = RDF.mkPrefixedNS' "dcterms" "http://purl.org/dc/terms/"
 
-rdfsComment :: Text
-rdfsComment = RDF.mkUri RDF.rdfs "comment"
+dctermsTitle :: Text
+dctermsTitle = RDF.mkUri dcterms "title"
 
-rdfsSeeAlso :: Text
-rdfsSeeAlso = RDF.mkUri RDF.rdfs "seeAlso"
+dctermsCreator :: Text
+dctermsCreator = RDF.mkUri dcterms "creator"
+
+dctermsPublisher :: Text
+dctermsPublisher = RDF.mkUri dcterms "publisher"
+
+dctermsCreated :: Text
+dctermsCreated = RDF.mkUri dcterms "created"
+
+dctermsIssued :: Text
+dctermsIssued = RDF.mkUri dcterms "issued"
+
+dctermsModified :: Text
+dctermsModified = RDF.mkUri dcterms "modified"
+
+dctermsLicense :: Text
+dctermsLicense = RDF.mkUri dcterms "license"
+
+dctermsSubject :: Text
+dctermsSubject = RDF.mkUri dcterms "subject"
+
