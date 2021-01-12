@@ -100,9 +100,9 @@ Other statements, such as number of triples with `void:triples`, are automatical
 
 Be sure to upgrade the version inside `package.yaml`.
 
-Before publishing the RDF data, you need to generate a token from Gitlab's web interface. This token is called a [Personal Access Token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Put the new token in the hidden file `.gitlab-token`.
+Before publishing the RDF data, you need to generate a token from Gitlab's web interface. This token is called a [Personal Access Token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Choose a name, an expiration date and the "api" scope. Put the generated token in the hidden local file `.gitlab-token`.
 
-To publish the data the generated data, simply run:
+To publish the data in the folder `cmtq-dataset`, simply run:
 
 ```
 $ make release

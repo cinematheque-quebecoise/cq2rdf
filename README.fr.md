@@ -90,10 +90,10 @@ Tout d'abord, exécutez la commande `make bootstrap-blazegraph` pour migrer les 
 
 Assurez-vous de modifier la version du logiciel dans le fichier `package.yaml`.
 
-Pour publier une nouvelle version des données, vous devez générer un jeton à partir de l'interface web de Gitlab. Ce jeton est appellé un « [Personal Access Token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) ».
+Pour publier une nouvelle version des données, vous devez générer un jeton à partir de l'interface web de Gitlab. Ce jeton est appellé un « [Personal Access Token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) ». Choisissez un nom, une date d'expiration et l'option « api ».
 Mettez ce jeton dans le fichier caché `.gitlab-token` à la racine du projet.
 
-La commande suivante va téléverser le dossier qui a été généré par la commande `make run` ou `make run-dev`:
+La commande suivante va téléverser le dossier `cmtq-dataset`:
 
 ```
 $ make release
