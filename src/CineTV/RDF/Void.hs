@@ -42,7 +42,7 @@ import Database.HSparql.QueryGenerator (Query, SelectQuery, SelectExpr(..), var,
 data CinetvRdf = CinetvRdf
   { cinetvSnapshotTime :: UTCTime
   , cinetvIssuedTime   :: UTCTime
-  , cinetvRdfSparqlEndpoint :: Text
+  , cinetvRdfSparqlEndpoint :: EndPoint
   }
 
 class (Monad m) => MonadSparqlQuery m where
@@ -55,14 +55,14 @@ datasetDescUri :: Text
 datasetDescUri = "/void/Dataset"
 
 datasetUri :: Text
-datasetUri = datasetDescUri <> "#CinemathequeQuebecoiseLinkedOpenDatabase"
+datasetUri = datasetDescUri <> "/CinemathequeQuebecoiseLinkedOpenDatabase"
 
 wikidataDatasetUri :: Text
-wikidataDatasetUri = datasetDescUri <> "#Wikidata"
+wikidataDatasetUri = datasetDescUri <> "/Wikidata"
 
 wikidataLinksetUri :: Text
 wikidataLinksetUri =
-  datasetDescUri <> "#Wikidata_CinemathequeQuebecoiseLinkedOpenDatabase"
+  datasetDescUri <> "/Wikidata_CinemathequeQuebecoiseLinkedOpenDatabase"
 
 createVoidGraph :: (MonadSparqlQuery m, Rdf a) => CinetvRdf -> m (RDF a)
 createVoidGraph cinetvRdf = do
@@ -113,7 +113,7 @@ addIssuedDateTime time = do
 -- |Add different statistics extracted from the dataset's SPARQL endpoint.
 addVoidStats
   :: (Rdf a, MonadSparqlQuery m)
-  => Text
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addVoidStats sparqlEndpoint = do
   addNumTriples sparqlEndpoint
@@ -129,7 +129,7 @@ addVoidStats sparqlEndpoint = do
 -- |Add the void:triples triple in the VoID dataset.
 addNumTriples
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ Sparql endpoint
+  => EndPoint -- ^ Sparql endpoint
   -> RdfState a m ()
 addNumTriples sparqlEndpoint = do
   numTriples <- lift $ countTriples sparqlEndpoint -- length $ RDF.query graph Nothing Nothing Nothing
@@ -145,7 +145,7 @@ addNumTriples sparqlEndpoint = do
 -- }
 -- @
 countTriples :: (MonadSparqlQuery m)
-             => Text -- ^ SPARQL endpoint
+             => EndPoint -- ^ SPARQL endpoint
              -> m Integer
 countTriples sparqlEndpoint = do
   getCountQueryResult sparqlEndpoint countTriplesQuery
@@ -166,7 +166,7 @@ countTriples sparqlEndpoint = do
 -- |Add the void:entities triple in the VoID dataset.
 addNumEntities
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ SPARQL endpoint
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addNumEntities sparqlEndpoint = do
   numEntities <- lift $ countNumEntities sparqlEndpoint
@@ -189,7 +189,7 @@ addNumEntities sparqlEndpoint = do
 -- }
 -- @
 countNumEntities :: (MonadSparqlQuery m)
-                 => Text -- ^ Sparql endpoint
+                 => EndPoint -- ^ Sparql endpoint
                  -> m Integer
 countNumEntities sparqlEndpoint = do
   getCountQueryResult sparqlEndpoint countEntitiesQuery
@@ -216,7 +216,7 @@ countNumEntities sparqlEndpoint = do
 -- |Add the void:classes triple in the VoID dataset.
 addNumClasses
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ SPARQL endpoint
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addNumClasses sparqlEndpoint = do
   numClasses <- lift $ countNumClasses sparqlEndpoint
@@ -237,7 +237,7 @@ addNumClasses sparqlEndpoint = do
 -- }
 -- @
 countNumClasses :: (MonadSparqlQuery m)
-                => Text -- ^ Sparql endpoint
+                => EndPoint -- ^ Sparql endpoint
                 -> m Integer
 countNumClasses sparqlEndpoint = do
   getCountQueryResult sparqlEndpoint countClassesQuery
@@ -259,7 +259,7 @@ countNumClasses sparqlEndpoint = do
 -- |Add the void:properties triple in the VoID dataset.
 addNumProperties
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ SPARQL endpoint
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addNumProperties sparqlEndpoint = do
   numProperties <- lift $ countNumProperties sparqlEndpoint
@@ -281,7 +281,7 @@ addNumProperties sparqlEndpoint = do
 -- }
 -- @
 countNumProperties :: (MonadSparqlQuery m)
-                   => Text -- ^ Sparql endpoint
+                   => EndPoint -- ^ Sparql endpoint
                    -> m Integer
 countNumProperties sparqlEndpoint = do
   getCountQueryResult sparqlEndpoint countPropertiesQuery
@@ -304,7 +304,7 @@ countNumProperties sparqlEndpoint = do
 -- |Add the void:distinctSubjects triple in the VoID dataset.
 addNumDistinctSubjects
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ SPARQL endpoint
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addNumDistinctSubjects sparqlEndpoint = do
   numDistinctSubjects <- lift $ countNumDistinctSubjs sparqlEndpoint
@@ -324,7 +324,7 @@ addNumDistinctSubjects sparqlEndpoint = do
 -- }
 -- @
 countNumDistinctSubjs :: (MonadSparqlQuery m)
-                   => Text -- ^ Sparql endpoint
+                   => EndPoint -- ^ Sparql endpoint
                    -> m Integer
 countNumDistinctSubjs sparqlEndpoint = do
   getCountQueryResult sparqlEndpoint countDistinctSubjsQuery
@@ -347,7 +347,7 @@ countNumDistinctSubjs sparqlEndpoint = do
 -- |Add the void:distinctObjects triple in the VoID dataset.
 addNumDistinctObjects
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ SPARQL endpoint
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addNumDistinctObjects sparqlEndpoint = do
   numDistinctObjects <- lift $ countNumDistinctObjs sparqlEndpoint
@@ -367,7 +367,7 @@ addNumDistinctObjects sparqlEndpoint = do
 -- }
 -- @
 countNumDistinctObjs :: (MonadSparqlQuery m)
-                     => Text -- ^ Sparql endpoint
+                     => EndPoint -- ^ Sparql endpoint
                      -> m Integer
 countNumDistinctObjs sparqlEndpoint = do
   getCountQueryResult sparqlEndpoint countDistinctObjsQuery
@@ -390,7 +390,7 @@ countNumDistinctObjs sparqlEndpoint = do
 -- |Add all void:classPartition triples in the VoID dataset.
 addClassPartitions
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ SPARQL endpoint
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addClassPartitions sparqlEndpoint = do
   classPartitions <- lift $ selectClassPartitions sparqlEndpoint
@@ -418,7 +418,7 @@ addClassPartitions sparqlEndpoint = do
 -- } GROUPBY ?o
 -- @
 selectClassPartitions :: (MonadSparqlQuery m)
-                      => Text -- ^ Sparql endpoint
+                      => EndPoint -- ^ Sparql endpoint
                       -> m [(Text, Integer)]
 selectClassPartitions sparqlEndpoint = do
   getGroupByCountQueryResult sparqlEndpoint selectClassPartitionsQuery
@@ -439,7 +439,7 @@ selectClassPartitions sparqlEndpoint = do
 -- |Add all void:propertyPartition triples in the VoID dataset.
 addPropertyPartitions
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ SPARQL endpoint
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addPropertyPartitions sparqlEndpoint = do
   propPartitions <- lift $ selectPropPartitions sparqlEndpoint
@@ -467,7 +467,7 @@ addPropertyPartitions sparqlEndpoint = do
 -- } GROUPBY ?p
 -- @
 selectPropPartitions :: (MonadSparqlQuery m)
-                      => Text -- ^ Sparql endpoint
+                      => EndPoint -- ^ Sparql endpoint
                       -> m [(Text, Integer)]
 selectPropPartitions sparqlEndpoint = do
   getGroupByCountQueryResult sparqlEndpoint selectPropPartitionsQuery
@@ -489,7 +489,7 @@ selectPropPartitions sparqlEndpoint = do
 -- |Add all triples related to data linked to Wikidata in the VoID dataset.
 addWikidataLinkset
   :: (Rdf a, MonadSparqlQuery m)
-  => Text -- ^ SPARQL endpoint
+  => EndPoint -- ^ SPARQL endpoint
   -> RdfState a m ()
 addWikidataLinkset sparqlEndpoint = do
   numOwlSameAsTriples <- lift $ countNumOwlSameAsWikidataTriples sparqlEndpoint
@@ -514,7 +514,7 @@ addWikidataLinkset sparqlEndpoint = do
 -- }
 -- @
 countNumOwlSameAsWikidataTriples :: (MonadSparqlQuery m)
-                                 => Text -- ^ Sparql endpoint
+                                 => EndPoint -- ^ Sparql endpoint
                                  -> m Integer
 countNumOwlSameAsWikidataTriples sparqlEndpoint = do
   getCountQueryResult sparqlEndpoint countNumOwlSameAsWikidataTriplesQuery
@@ -538,11 +538,11 @@ countNumOwlSameAsWikidataTriplesQuery = do
 --
 -- Expects the SPARQL select response to contain a single literal typed as a xsd:integer.
 getCountQueryResult :: (MonadSparqlQuery m)
-                    => Text -- ^ SPARQL endpoint
+                    => EndPoint -- ^ SPARQL endpoint
                     -> Query SelectQuery
                     -> m Integer
 getCountQueryResult sparqlEndpoint query = do
-  resultsMaybe <- selectQuery (T.unpack sparqlEndpoint) query
+  resultsMaybe <- selectQuery sparqlEndpoint query
   return $ fromMaybe 0 $ getCountFromResults resultsMaybe
 
  where
@@ -565,11 +565,11 @@ getCountQueryResult sparqlEndpoint query = do
 -- Expects the SPARQL select response to contain 2 columns. The 1st represents
 -- the grouped element and the 2nd represent the count as a xsd:integer.
 getGroupByCountQueryResult :: (MonadSparqlQuery m)
-                           => Text -- ^ SPARQL endpoint
+                           => EndPoint -- ^ SPARQL endpoint
                            -> Query SelectQuery
                            -> m [(Text, Integer)]
 getGroupByCountQueryResult sparqlEndpoint query = do
-  resultsMaybe <- selectQuery (T.unpack sparqlEndpoint) query
+  resultsMaybe <- selectQuery sparqlEndpoint query
   return $ fromMaybe [] $ getCountFromResults resultsMaybe
 
  where

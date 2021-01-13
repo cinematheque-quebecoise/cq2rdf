@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8b00fea8b789b7d14029712a01a98fb8a80b813df484e1446ffc42299939dc12
+-- hash: 87a057b06dce8e5d4e9ff5609e013d566508ab8a0971f34962a03974a1ac9111
 
 name:           cq2rdf
 version:        0.1.0
@@ -45,6 +45,8 @@ library
       Import
       Namespaces
       Run
+      Run.CinetvToRdf
+      Run.GenerateVoid
       Runv1
       SW.Vocabulary
       SW.Vocabulary.CRM
@@ -85,7 +87,7 @@ library
     , persistent-sqlite
     , persistent-template
     , process
-    , rdf4h ==4.0.1
+    , rdf4h >=4.0.0 && <4.0.2
     , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
@@ -123,7 +125,7 @@ executable cq2rdf-exe
     , persistent-sqlite
     , persistent-template
     , process
-    , rdf4h ==4.0.1
+    , rdf4h >=4.0.0 && <4.0.2
     , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0
@@ -182,7 +184,7 @@ test-suite cq2rdf-test
     , persistent-sqlite
     , persistent-template
     , process
-    , rdf4h ==4.0.1
+    , rdf4h >=4.0.0 && <4.0.2
     , regex
     , resource-pool >=0.2 && <0.3
     , rio >=0.1.12.0

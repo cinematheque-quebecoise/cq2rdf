@@ -47,17 +47,17 @@ convertToRdf
   :: (MonadIO m, Rdf rdfImpl) => Pool SqlBackend -> RdfState rdfImpl m ()
 convertToRdf pool = do
   convertRoles pool
-  convertPeople pool
-  convertLegalBodies pool
-  convertGenreCategories pool
-  convertPlaces pool
-  convertLanguages pool
-  convertMovies pool
-  convertMoviesLocation pool
-  convertMoviesCategory pool
-  convertMoviesDirector pool
-  convertMoviesGeneric pool
-  convertMoviesLanguage pool
-  convertMoviesResume pool
-  convertFilmoTitres pool
-  convertFilmoDureesOriginales pool
+  -- convertPeople pool
+  -- convertLegalBodies pool
+  -- convertGenreCategories pool
+  -- convertPlaces pool
+  -- convertLanguages pool
+  -- convertMovies pool
+  -- convertMoviesLocation pool
+  -- convertMoviesCategory pool
+  -- convertMoviesDirector pool
+  -- convertMoviesGeneric pool
+  -- convertMoviesLanguage pool
+  -- convertMoviesResume pool
+  -- convertFilmoTitres pool
+  -- convertFilmoDureesOriginales pool

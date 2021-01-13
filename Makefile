@@ -9,7 +9,10 @@ EXEC := $(shell grep "name:\s*" package.yaml | sed "s/name:\s*\(.*\)\s*/\1/")-ex
 GITLAB_PROJECT_ID=18031890
 VERSION := $(shell grep "version:\s*" package.yaml | sed "s/version:\s*\(.*\)\s*/\1/")
 GITLAB_TOKEN := $(shell cat .gitlab-token)
-HASKELL_FILES := $(shell find app src -name "*.hs" -print)
+
+CONVERSION_MODULES := $(shell find src/CineTV/RDF/Conversion -name "*.hs" -print)
+DATA_RDF_MODULES := $(shell find src/Data/RDF -name "*.hs" -print)
+VOCAB_HASKELL_MODULES := $(shell find src/SW -name "*.hs" -print)
 
 build:
 	cabal build
@@ -18,16 +21,16 @@ cinetv-to-rdf: $(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz $(DESTDIR)/cmtq-datase
 
 generate-void: $(DESTDIR)/cmtq-dataset/void.ttl
 
-$(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz: $(HASKELL_FILES)
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs src/CineTV/RDF/Conversion.hs $(CONVERSION_MODULES) $(DATA_RDF_MODULES) $(VOCAB_HASKELL_MODULES)
 	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
-$(DESTDIR)/cmtq-dataset/cmtq-dataset.ttl.gz: $(HASKELL_FILES)
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.ttl.gz: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs src/CineTV/RDF/Conversion.hs $(CONVERSION_MODULES) $(DATA_RDF_MODULES) $(VOCAB_HASKELL_MODULES)
 	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
-$(DESTDIR)/cmtq-dataset/cmtq-dataset.hdt: $(HASKELL_FILES)
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.hdt: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs src/CineTV/RDF/Conversion.hs $(CONVERSION_MODULES) $(DATA_RDF_MODULES) $(VOCAB_HASKELL_MODULES)
 	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
-$(DESTDIR)/cmtq-dataset/void.ttl: blazegraph.jnl # $(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz
+$(DESTDIR)/cmtq-dataset/void.ttl: app/Main.hs src/Run.hs src/Run/GenerateVoid.hs src/CineTV/RDF/Void.hs $(CONVERSION_MODULES) $(DATA_RDF_MODULES) $(VOCAB_HASKELL_MODULES) blazegraph.jnl
 	generateVoidDataset $(CINETV_PUBLIC_SQLITE) $(DESTDIR)
 
 # If release tag does not exist on Gitlab server, it returns a 403 Forbidden HTTP code.

@@ -12,10 +12,10 @@
 </void/Dataset> a void:DatasetDescription ;
     dcterms:title "A VoID Description of the Cinémathèque québécoise Linked Open Dataset" ;
     dcterms:creator wd:Q2973248 ;
-    foaf:primaryTopic </void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> ;
+    foaf:primaryTopic </void/Dataset/CinemathequeQuebecoiseLinkedOpenData> ;
     .
 
-</void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> a void:Dataset ;
+</void/Dataset/CinemathequeQuebecoiseLinkedOpenData> a void:Dataset ;
   foaf:homepage <> ;
   dcterms:creator wd:Q2973248 ;
   dcterms:publisher wd:Q2973248 ;
@@ -71,15 +71,15 @@
   #];
 .
 
-#</void/Dataset#Wikidata_CinemathequeQuebecoiseLinkedOpenDatabase> a void:Linkset ;
+#</void/Dataset/Wikidata_CinemathequeQuebecoiseLinkedOpenData> a void:Linkset ;
 #  void:target :Wikidata ;
-#  void:target </void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> ;
-#  void:subset </void/Dataset#CinemathequeQuebecoiseLinkedOpenDatabase> ;
+#  void:target </void/Dataset/CinemathequeQuebecoiseLinkedOpenData> ;
+#  void:subset </void/Dataset/CinemathequeQuebecoiseLinkedOpenData> ;
 #  void:triples 25200 ;
 #  void:linkPredicate owl:sameAs;
 #.
 
-</void/Dataset#Wikidata> a void:Dataset ;
+</void/Dataset/Wikidata> a void:Dataset ;
   foaf:homepage <http://www.wikidata.org> ;
   dcterms:creator wd:Q8288 ;
   dcterms:created "2012-10-30"^^xsd:date ;

@@ -19,6 +19,7 @@
 -- case.
 module Util
   ( plus2
+  , createOutputDirIfMissing
   , getCurrentDayText
   , sqlKeyToText
   , parseDateField
@@ -27,16 +28,29 @@ module Util
   )
 where
 
+import Import
+
 import qualified Data.Text          as Text
 import           Data.Time.Clock    (UTCTime (..))
 import           Data.Time.Format   (defaultTimeLocale, formatTime,
                                      iso8601DateFormat, parseTimeM)
 import           Database.Esqueleto (Key, SqlBackend, ToBackendKey, fromSqlKey)
-import           RIO
+import qualified Data.Text as T
 import           Text.XML.XSD       (fromUTCTime)
+import           System.FilePath                   (joinPath)
+import           System.Directory                  (createDirectoryIfMissing)
 
 plus2 :: Int -> Int
 plus2 = (+ 2)
+
+-- |Create output directory if missing.
+createOutputDirIfMissing :: RIO App Text
+createOutputDirIfMissing = do
+  env <- ask
+  let outputDir = T.pack $ joinPath
+        [T.unpack $ optionsOutputDir $ appOptions env, "cmtq-dataset"]
+  liftIO $ createDirectoryIfMissing True $ T.unpack outputDir
+  return outputDir
 
 getCurrentDayText :: UTCTime -> Text
 getCurrentDayText =

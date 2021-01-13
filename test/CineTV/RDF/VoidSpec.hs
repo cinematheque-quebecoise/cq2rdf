@@ -12,47 +12,44 @@
 
 -- You should have received a copy of the GNU General Public License
 -- along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleInstances #-}
 module CineTV.RDF.VoidSpec
   ( spec
   )
 where
 
-import           CineTV.RDF.Void                  (MonadSparqlQuery(..),CinetvRdf (..),
-                                                   createVoidGraph)
-import           Data.RDF.Types.Extended          (bnodeGen)
+-- import           CineTV.RDF.Void                  (MonadSparqlQuery(..),CinetvRdf (..))
+-- import           Data.RDF.Types.Extended          (bnodeGen)
 import           Import
 
-import           Control.Monad.State              (State, execStateT, get)
-import           Data.Hashable                    (Hashable (..))
-import qualified Data.Map                         as M
-import           Data.RDF                         (AlgebraicGraph, LValue (..),
-                                                   PrefixMappings (..), RDF,
-                                                   Rdf (..), TList, Triple (..),
-                                                   lnode, prefixMappings, unode)
-import           Data.RDF.State                   (RdfState)
-import qualified Data.RDF.State                   as RS
-import qualified Data.Set                         as S
-import           Data.Time                        (UTCTime)
-import           Data.Time.Format.ISO8601         (iso8601ParseM)
-import           SW.Vocabulary
+import           Control.Monad.State (execStateT)
+-- import           Data.Hashable                    (Hashable (..))
+-- import qualified Data.Map                         as M
+import           Data.RDF            (LValue (..), TList, Triple (..), empty,
+                                      lnode, unode)
+import           Data.RDF.State      (RdfState)
+import qualified Data.RDF.State      as RS
+-- import qualified Data.Set                         as S
+-- import           Data.Time                        (UTCTime)
+-- import           Data.Time.Format.ISO8601         (iso8601ParseM)
+-- import           SW.Vocabulary
 import           Test.Hspec
-import           Test.Hspec.Expectations.Extended (shouldContainElems)
-import Database.HSparql.QueryGenerator (Query, SelectQuery)
+-- import           Test.Hspec.Expectations.Extended (shouldContainElems)
+-- import Database.HSparql.QueryGenerator (Query, SelectQuery)
 
-instance MonadSparqlQuery (State (RDF TList)) where
-  selectQuery endpoint query = do
-    graph <- get
-    return Nothing
+-- instance MonadSparqlQuery (State (RDF TList)) where
+--   selectQuery endpoint query = do
+--     graph <- get
+--     return Nothing
 
 spec :: Spec
 spec = do
-  graph        <- execStateT mkCinetvRdfGraph empty
-  snapshotTime <- runIO (iso8601ParseM "2019-07-25T00:00:00Z" :: IO UTCTime)
-  issuedTime   <- runIO (iso8601ParseM "2021-01-04T10:30:00Z" :: IO UTCTime)
-  let cinetvRdf  = CinetvRdf snapshotTime issuedTime "http://localhost:9999/sparql"
+  _ <- execStateT mkCinetvRdfGraph empty
+  -- snapshotTime <- runIO (iso8601ParseM "2019-07-25T00:00:00Z" :: IO UTCTime)
+  -- issuedTime   <- runIO (iso8601ParseM "2021-01-04T10:30:00Z" :: IO UTCTime)
+  -- let cinetvRdf  = CinetvRdf snapshotTime issuedTime "http://localhost:9999/sparql"
 
   return ()
   -- voidGraph <- (createVoidGraph cinetvRdf :: m (RDF AlgebraicGraph))

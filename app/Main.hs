@@ -77,4 +77,3 @@ parseVoidGenerationCommand = pure GenerateVoid
 -- a parser and description
 withInfo :: Parser a -> String -> ParserInfo a
 withInfo opts desc = info (helper <*> opts) $ progDesc desc
-
