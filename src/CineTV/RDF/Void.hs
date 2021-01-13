@@ -20,7 +20,7 @@ module CineTV.RDF.Void where
 
 import           Data.RDF.State          (RdfState, addPrefixMappings,
                                           addTriple)
-import           Data.RDF.Types.Extended (bnodeGen, mkTriple, mkTripleLit)
+import           Data.RDF.Types.Extended (mkTriple, mkTripleLit)
 import           Import                  hiding (void)
 import           SW.Vocabulary
 import           Util                    (utcTimeToText)
@@ -399,7 +399,7 @@ addClassPartitions sparqlEndpoint = do
  where
    addClassPartition :: (Rdf a, Monad m) => (Text, Integer) -> RdfState a m ()
    addClassPartition (classUri, numEntities) = do
-     let classPartitionNode = bnodeGen $ hash classUri
+     let classPartitionNode = RDF.unode $ datasetUri <> "/ClassPartition" <> T.pack (show $ abs $ hash classUri)
      addTriple $ Triple (RDF.unode datasetUri)
                         (RDF.unode voidClassPartition)
                         classPartitionNode
@@ -448,7 +448,7 @@ addPropertyPartitions sparqlEndpoint = do
  where
    addPropPartition :: (Rdf a, Monad m) => (Text, Integer) -> RdfState a m ()
    addPropPartition (propUri, numTriples) = do
-     let propPartitionNode = bnodeGen $ hash propUri
+     let propPartitionNode = RDF.unode $ datasetUri <> "/PropertyPartition" <> T.pack (show $ abs $ hash propUri)
      addTriple $ Triple (RDF.unode datasetUri)
                         (RDF.unode voidPropertyPartition)
                         propPartitionNode

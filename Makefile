@@ -50,8 +50,8 @@ test-sparql-queries: blazegraph.jnl
 	test_sparql_queries example-queries.yaml
 
 blazegraph.jnl: cmtq-dataset/cmtq-dataset.ttl.gz
-	rm blazegraph.jnl
+	rm -f blazegraph.jnl
 	bootstrapBlazegraph cmtq-dataset/cmtq-dataset.ttl.gz
 
 clean:
-	rm $(EXEC) blazegraph.jnl
+	rm -rf $(EXEC) blazegraph.jnl cmtq-dataset
