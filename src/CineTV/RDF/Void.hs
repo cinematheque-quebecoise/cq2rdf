@@ -31,7 +31,7 @@ import           Data.RDF                (LValue (..), Node (..), RDF, Rdf,
                                           Triple (..))
 import qualified Data.RDF                as RDF
 import           Data.RDF.Namespace      (foaf, mkUri, ns_mappings, owl, rdf,
-                                          rdfs, xsd)
+                                          rdfs, xsd, uriOf)
 import qualified Data.Text               as T
 import qualified Data.Text.Read               as T
 import           Data.Time.Clock         (UTCTime (..))
@@ -589,9 +589,13 @@ getGroupByCountQueryResult sparqlEndpoint query = do
 -- |Add prefix mappings for VoID data file.
 addVoidPrefixMappings :: (Rdf a, Monad m) => RdfState a m ()
 addVoidPrefixMappings = do
-  let voidPrefixes =
-        ns_mappings [rdf, rdfs, owl, void, dcterms, foaf, wd, xsd, wd, formats]
-  addPrefixMappings voidPrefixes True
+  let namespaces = [rdf, rdfs, owl, void, dcterms, foaf, wd, xsd, formats]
+  addPrefixMappings (ns_mappings namespaces) True
+
+  forM_ namespaces $ \namespace -> do
+    addTriple $ Triple (RDF.unode datasetUri)
+                       (RDF.unode voidVocabulary)
+                       (RDF.unode $ uriOf namespace)
 
 eitherToMaybe :: Either a b -> Maybe b
 eitherToMaybe e =
