@@ -12,7 +12,6 @@ GITLAB_TOKEN := $(shell cat .gitlab-token)
 
 CONVERSION_MODULES := $(shell find src/CineTV/RDF/Conversion -name "*.hs" -print)
 DATA_RDF_MODULES := $(shell find src/Data/RDF -name "*.hs" -print)
-VOCAB_HASKELL_MODULES := $(shell find src/SW -name "*.hs" -print)
 
 build:
 	cabal build
@@ -21,16 +20,16 @@ cinetv-to-rdf: $(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz $(DESTDIR)/cmtq-datase
 
 generate-void: $(DESTDIR)/cmtq-dataset/void.ttl
 
-$(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs src/CineTV/RDF/Conversion.hs $(CONVERSION_MODULES) $(DATA_RDF_MODULES) $(VOCAB_HASKELL_MODULES)
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.nt.gz: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs $(shell find src/Data/CQLOD/Readers -name "*.hs" -print) $(shell find src/Data/CQLOD/Writers -name "*.hs" -print) $(DATA_RDF_MODULES)
 	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
-$(DESTDIR)/cmtq-dataset/cmtq-dataset.ttl.gz: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs src/CineTV/RDF/Conversion.hs $(CONVERSION_MODULES) $(DATA_RDF_MODULES) $(VOCAB_HASKELL_MODULES)
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.ttl.gz: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs $(shell find src/Data/CQLOD/Readers -name "*.hs" -print) $(shell find src/Data/CQLOD/Writers -name "*.hs" -print) $(DATA_RDF_MODULES)
 	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
-$(DESTDIR)/cmtq-dataset/cmtq-dataset.hdt: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs src/CineTV/RDF/Conversion.hs $(CONVERSION_MODULES) $(DATA_RDF_MODULES) $(VOCAB_HASKELL_MODULES)
+$(DESTDIR)/cmtq-dataset/cmtq-dataset.hdt: app/Main.hs src/Run.hs src/Run/CinetvToRdf.hs $(shell find src/Data/CQLOD/Readers -name "*.hs" -print) $(shell find src/Data/CQLOD/Writers -name "*.hs" -print) $(DATA_RDF_MODULES)
 	cabal run $(EXEC) -- cinetv-to-rdf -b $(BASEURI) -s $(CINETV_PUBLIC_SQLITE) -o $(DESTDIR)
 
-$(DESTDIR)/cmtq-dataset/void.ttl: app/Main.hs src/Run.hs src/Run/GenerateVoid.hs src/CineTV/RDF/Void.hs $(CONVERSION_MODULES) $(DATA_RDF_MODULES) $(VOCAB_HASKELL_MODULES) blazegraph.jnl
+$(DESTDIR)/cmtq-dataset/void.ttl: app/Main.hs src/Run.hs src/Run/GenerateVoid.hs src/Data/CQLOD/RDF/Void.hs $(DATA_RDF_MODULES) blazegraph.jnl
 	generateVoidDataset $(CINETV_PUBLIC_SQLITE) $(DESTDIR)
 
 # If release tag does not exist on Gitlab server, it returns a 403 Forbidden HTTP code.

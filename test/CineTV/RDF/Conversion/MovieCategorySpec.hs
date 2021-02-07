@@ -21,9 +21,9 @@ where
 
 import           CineTV.RDF.Conversion.MovieCategory (convertMoviesCategory)
 import qualified Data.RDF.Types.Extended             as RDF (mkTriple)
+import           Data.RDF.Vocabulary
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                       as SW
 
 import           Control.Monad.State                 (execStateT)
 import           Data.Pool                           (Pool)
@@ -49,8 +49,8 @@ spec = do
         let comedieUri = "/resource/GenreCategory11"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
-          [ RDF.mkTriple workUri SW.crmP2 drameUri
-          , RDF.mkTriple workUri SW.crmP2 comedieUri
+          [ RDF.mkTriple workUri crmP2 drameUri
+          , RDF.mkTriple workUri crmP2 comedieUri
           ]
 
 emptyGraph :: RDF RDF.TList
@@ -76,7 +76,7 @@ dbSetup = do
                                    Nothing
     insertKey (toSqlKey 10) $ Sujet "DRAME"
     insertKey (toSqlKey 11) $ Sujet "COMÉDIE"
-    insert $ Filmo_GenresCategories (toSqlKey 1) (toSqlKey 10)
+    _ <- insert $ Filmo_GenresCategories (toSqlKey 1) (toSqlKey 10)
     insert $ Filmo_GenresCategories (toSqlKey 1) (toSqlKey 11)
   return pool
 

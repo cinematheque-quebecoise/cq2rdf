@@ -15,17 +15,23 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.Rdfs where
+module Data.RDF.Vocabulary.Wikidata where
 
 import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
-rdfsLabel :: Text
-rdfsLabel = RDF.mkUri RDF.rdfs "label"
+wd :: RDF.Namespace
+wd = RDF.mkPrefixedNS' "wd" "http://www.wikidata.org/entity/"
 
-rdfsComment :: Text
-rdfsComment = RDF.mkUri RDF.rdfs "comment"
+wdt :: RDF.Namespace
+wdt = RDF.mkPrefixedNS' "wdt" "http://www.wikidata.org/prop/direct/"
 
-rdfsSeeAlso :: Text
-rdfsSeeAlso = RDF.mkUri RDF.rdfs "seeAlso"
+wdQ483394 :: Text
+wdQ483394 = RDF.mkUri wd "Q483394"
+
+wdtP136 :: Text
+wdtP136 = RDF.mkUri wdt "P136"
+
+wdtP407 :: Text
+wdtP407 = RDF.mkUri wdt "P407"

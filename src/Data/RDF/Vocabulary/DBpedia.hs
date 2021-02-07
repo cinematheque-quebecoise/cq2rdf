@@ -15,11 +15,12 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.Rdf where
+module Data.RDF.Vocabulary.DBpedia where
 
 import           Import             hiding ((^.))
+import           Namespaces
 
 import qualified Data.RDF.Namespace as RDF
 
-rdfType :: Text
-rdfType = RDF.mkUri RDF.rdf "type"
+dboBudget :: Text
+dboBudget = RDF.mkUri dbo "budget"

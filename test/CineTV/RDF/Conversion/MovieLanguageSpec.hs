@@ -21,9 +21,9 @@ where
 
 import           CineTV.RDF.Conversion.MovieLanguage (convertMoviesLanguage)
 import qualified Data.RDF.Types.Extended             as RDF (mkTriple)
+import           Data.RDF.Vocabulary
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                       as SW
 
 import           Control.Monad.State                 (execStateT)
 import           Data.Pool                           (Pool)
@@ -48,7 +48,7 @@ spec = do
         let langueUri    = "/resource/Language10"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
-          [RDF.mkTriple recordingUri SW.crmP72 langueUri]
+          [RDF.mkTriple recordingUri crmP72 langueUri]
 
 emptyGraph :: RDF RDF.TList
 emptyGraph = RDF.mkRdf [] Nothing prefixMappings

@@ -21,9 +21,9 @@ where
 
 import           CineTV.RDF.Conversion.LegalBody  (convertLegalBodies)
 import           Control.Monad.State              (execStateT)
+import           Data.RDF.Vocabulary
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                    as SW
 
 import           Data.Pool                        (Pool)
 import           Data.RDF                         (RDF)
@@ -49,16 +49,16 @@ spec = do
         let legalBodyIdentifierUri  = "/resource/IdentifierLegalBody100"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
-          [ RDF.mkTriple legalBodyUri SW.rdfType SW.crmE40
-          , RDF.mkTripleLit legalBodyUri SW.rdfsLabel (RDF.PlainL "PÈRE FILM")
-          , RDF.mkTriple legalBodyUri SW.crmP1 legalBodyAppellationUri
-          , RDF.mkTriple legalBodyUri SW.crmP48 legalBodyIdentifierUri
-          , RDF.mkTriple legalBodyAppellationUri SW.rdfType SW.crmE41
+          [ RDF.mkTriple legalBodyUri rdfType crmE40
+          , RDF.mkTripleLit legalBodyUri rdfsLabel (RDF.PlainL "PÈRE FILM")
+          , RDF.mkTriple legalBodyUri crmP1 legalBodyAppellationUri
+          , RDF.mkTriple legalBodyUri crmP48 legalBodyIdentifierUri
+          , RDF.mkTriple legalBodyAppellationUri rdfType crmE41
           , RDF.mkTripleLit legalBodyAppellationUri
-                            SW.crmP190
+                            crmP190
                             (RDF.PlainL "PÈRE FILM")
-          , RDF.mkTriple legalBodyIdentifierUri SW.rdfType SW.crmE42
-          , RDF.mkTripleLit legalBodyIdentifierUri SW.crmP190 (RDF.PlainL "100")
+          , RDF.mkTriple legalBodyIdentifierUri rdfType crmE42
+          , RDF.mkTripleLit legalBodyIdentifierUri crmP190 (RDF.PlainL "100")
           ]
 
 emptyGraph :: RDF RDF.TList

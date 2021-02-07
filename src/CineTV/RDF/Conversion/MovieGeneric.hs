@@ -24,7 +24,7 @@ where
 import qualified Data.RDF.Types.Extended      as RDF (mkTriple)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -120,16 +120,16 @@ createRecordingActivityTriples filmoGeneriqueEntity = do
           )
           filmoGeneriqueEntity
 
-  mapM_ addTriple $ RDF.mkTriple recordingEventUri SW.crmP9 roleActivityUri
+  mapM_ addTriple $ RDF.mkTriple recordingEventUri crmP9 roleActivityUri
   mapM_ addTriple
-    $ RDF.mkTriple roleActivityCarriedOutByUri SW.crmP01 roleActivityUri
-  mapM_ addTriple $ RDF.mkTriple roleActivityCarriedOutByUri SW.crmP14_1 roleUri
+    $ RDF.mkTriple roleActivityCarriedOutByUri crmP01 roleActivityUri
+  mapM_ addTriple $ RDF.mkTriple roleActivityCarriedOutByUri crmP14_1 roleUri
 
   forM_ personUriMaybe $ \personUri -> mapM_ addTriple
-    $ RDF.mkTriple roleActivityCarriedOutByUri SW.crmP02 personUri
+    $ RDF.mkTriple roleActivityCarriedOutByUri crmP02 personUri
 
   forM_ legalBodyUriMaybe $ \legalBodyUri -> mapM_ addTriple
-    $ RDF.mkTriple roleActivityCarriedOutByUri SW.crmP02 legalBodyUri
+    $ RDF.mkTriple roleActivityCarriedOutByUri crmP02 legalBodyUri
 
 createDerivingWorkTriples
   :: (RDF.Rdf rdfImpl, Monad m)
@@ -160,7 +160,7 @@ createDerivingWorkTriples filmoGeneriqueEntity = do
           filmoGeneriqueEntity
 
   forM_ (personUriMaybe <|> legalBodyUriMaybe) $ \agentUri -> do
-    mapM_ addTriple $ RDF.mkTriple workUri SW.frbrooR2 workDerivedUri
+    mapM_ addTriple $ RDF.mkTriple workUri frbrooR2 workDerivedUri
     mapM_ addTriple
-      $ RDF.mkTriple workDerivedUri SW.frbrooR16i workDerivedConceptionUri
-    mapM_ addTriple $ RDF.mkTriple workDerivedConceptionUri SW.crmP14 agentUri
+      $ RDF.mkTriple workDerivedUri frbrooR16i workDerivedConceptionUri
+    mapM_ addTriple $ RDF.mkTriple workDerivedConceptionUri crmP14 agentUri

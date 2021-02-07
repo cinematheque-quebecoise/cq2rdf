@@ -34,6 +34,7 @@ Available options:
 
 Available commands:
   cinetv-to-rdf            Convert CineTV to RDF
+  adlib-to-rdf             Convert Adlib to RDF (not yet implemented)
   generate-void            Generate a VoID dataset from SPARQL endpoint
 ```
 
@@ -81,6 +82,15 @@ Which will be available in `./result/bin/cq2rdf-exe`.
 ### Unit tests
 
 Unit tests can be launched with `cabal test`.
+
+To configure `Cabal` with `HPC` for code coverage:
+
+```
+cabal clean
+cabal configure --enable-tests --enable-coverage
+```
+
+Then, you can simply execute unit tests with `cabal test`.
 
 ### SPARQL queries tests
 

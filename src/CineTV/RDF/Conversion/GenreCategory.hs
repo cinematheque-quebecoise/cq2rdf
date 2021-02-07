@@ -24,7 +24,7 @@ where
 import           Data.RDF.Types.Extended      (mkTriple, mkTripleLit)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -67,12 +67,12 @@ convertGenreCategories pool = do
 createGenreCategoryType :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createGenreCategoryType = do
   let genreTypeUri = baseUriPath <> "/GenreCategory"
-  mapM_ addTriple $ mkTriple genreTypeUri SW.rdfType SW.crmE55
+  mapM_ addTriple $ mkTriple genreTypeUri rdfType crmE55
   mapM_ addTriple
-    $ mkTripleLit genreTypeUri SW.rdfsLabel (RDF.PlainL "GenreCategory")
+    $ mkTripleLit genreTypeUri rdfsLabel (RDF.PlainL "GenreCategory")
   mapM_ addTriple $ mkTripleLit
     genreTypeUri
-    SW.rdfsComment
+    rdfsComment
     (RDF.PlainLL "Genre cinématographique ou catégorie d'une oeuvre" "fr")
 
 createTriplesFromGenres
@@ -103,13 +103,13 @@ createTriplesFromGenre sujetEntity = do
   let genreUri           = baseUriPath <> "/GenreCategory" <> genreId
   let identifierGenreUri = baseUriPath <> "/IdentifierGenreCategory" <> genreId
 
-  mapM_ addTriple $ RDF.mkTriple genreUri SW.rdfType SW.crmE55
-  mapM_ addTriple $ RDF.mkTriple genreUri SW.crmP2 "/resource/GenreCategory"
+  mapM_ addTriple $ RDF.mkTriple genreUri rdfType crmE55
+  mapM_ addTriple $ RDF.mkTriple genreUri crmP2 "/resource/GenreCategory"
   mapM_ addTriple
-    $ RDF.mkTripleLit genreUri SW.rdfsLabel (RDF.PlainLL genreLabel "fr")
-  mapM_ addTriple $ RDF.mkTriple genreUri SW.crmP48 identifierGenreUri
+    $ RDF.mkTripleLit genreUri rdfsLabel (RDF.PlainLL genreLabel "fr")
+  mapM_ addTriple $ RDF.mkTriple genreUri crmP48 identifierGenreUri
   mapM_ addTriple
-    $ RDF.mkTripleLit identifierGenreUri SW.crmP190 (RDF.PlainL genreId)
+    $ RDF.mkTripleLit identifierGenreUri crmP190 (RDF.PlainL genreId)
 
  where
   genreId    = sqlKeyToText $ entityKey sujetEntity
@@ -141,6 +141,6 @@ createTriplesFromGenresCategoriesLienWikidata genresLienWdEntity = do
               genresLienWdEntity
       let genresCategoryUri =
             baseUriPath <> "/GenreCategory" <> genresCategoriesId
-      mapM_ addTriple $ mkTriple genresCategoryUri SW.owlSameAs wikidataUri
+      mapM_ addTriple $ mkTriple genresCategoryUri owlSameAs wikidataUri
     Nothing -> return ()
 

@@ -22,8 +22,8 @@ where
 import           CineTV.RDF.Conversion.GenreCategory (convertGenreCategories)
 import qualified Data.RDF.Types.Extended             as RDF
 import           Import
-import           Namespaces
-import qualified SW.Vocabulary                       as SW
+import           Namespaces (prefixMappings)
+import Data.RDF.Vocabulary
 import           Test.Hspec.Expectations.Extended    (shouldContainElems)
 
 import           Control.Monad.State                 (execStateT)
@@ -45,10 +45,10 @@ spec = do
     it "should create a type representing a genre" $ do
       let genreUri = "/resource/GenreCategory"
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple genreUri SW.rdfType SW.crmE55
+        [ RDF.mkTriple genreUri rdfType crmE55
         , RDF.mkTripleLit
           genreUri
-          SW.rdfsComment
+          rdfsComment
           (RDF.PlainLL "Genre cinématographique ou catégorie d'une oeuvre" "fr")
         ]
 
@@ -60,12 +60,12 @@ spec = do
           let identifierGenre1Uri = "/resource/IdentifierGenreCategory1"
 
           RDF.triplesOf graph `shouldContainElems` catMaybes
-            [ RDF.mkTriple genre1Uri SW.rdfType SW.crmE55
-            , RDF.mkTripleLit genre1Uri SW.rdfsLabel (RDF.PlainLL "Drame" "fr")
-            , RDF.mkTriple genre1Uri SW.owlSameAs (RDF.mkUri wd "Q130232")
-            , RDF.mkTriple genre1Uri SW.crmP2 genreUri
-            , RDF.mkTriple genre1Uri SW.crmP48 identifierGenre1Uri
-            , RDF.mkTripleLit identifierGenre1Uri SW.crmP190 (RDF.PlainL "1")
+            [ RDF.mkTriple genre1Uri rdfType crmE55
+            , RDF.mkTripleLit genre1Uri rdfsLabel (RDF.PlainLL "Drame" "fr")
+            , RDF.mkTriple genre1Uri owlSameAs (RDF.mkUri wd "Q130232")
+            , RDF.mkTriple genre1Uri crmP2 genreUri
+            , RDF.mkTriple genre1Uri crmP48 identifierGenre1Uri
+            , RDF.mkTripleLit identifierGenre1Uri crmP190 (RDF.PlainL "1")
             ]
 
 emptyGraph :: RDF RDF.TList

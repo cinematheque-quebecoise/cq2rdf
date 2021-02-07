@@ -16,7 +16,7 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.Void where
+module Data.RDF.Vocabulary.Void where
 
 import           Import             hiding (void, (^.))
 

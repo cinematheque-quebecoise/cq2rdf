@@ -21,9 +21,9 @@ where
 
 import           CineTV.RDF.Conversion.Place      (convertPlaces)
 import           Control.Monad.State              (execStateT)
+import           Data.RDF.Vocabulary
 import           Import
-import           Namespaces
-import qualified SW.Vocabulary                    as SW
+import           Namespaces (prefixMappings)
 
 import           Data.Pool                        (Pool)
 import           Data.RDF                         (RDF)
@@ -47,18 +47,18 @@ spec = do
         let placeUri = "/resource/Place100"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
-          [ RDF.mkTriple placeUri SW.rdfType SW.crmE53
-          , RDF.mkTripleLit placeUri SW.rdfsLabel (RDF.PlainLL "Québec" "fr")
-          , RDF.mkTriple placeUri SW.crmP1 "/resource/AppellationPlace100"
-          , RDF.mkTriple placeUri SW.crmP48 "/resource/IdentifierPlace100"
-          , RDF.mkTriple placeUri SW.owlSameAs (RDF.mkUri wd "Q176")
-          , RDF.mkTriple "/resource/AppellationPlace100" SW.rdfType SW.crmE41
+          [ RDF.mkTriple placeUri rdfType crmE53
+          , RDF.mkTripleLit placeUri rdfsLabel (RDF.PlainLL "Québec" "fr")
+          , RDF.mkTriple placeUri crmP1 "/resource/AppellationPlace100"
+          , RDF.mkTriple placeUri crmP48 "/resource/IdentifierPlace100"
+          , RDF.mkTriple placeUri owlSameAs (RDF.mkUri wd "Q176")
+          , RDF.mkTriple "/resource/AppellationPlace100" rdfType crmE41
           , RDF.mkTripleLit "/resource/AppellationPlace100"
-                            SW.crmP190
+                            crmP190
                             (RDF.PlainL "Québec")
-          , RDF.mkTriple "/resource/IdentifierPlace100" SW.rdfType SW.crmE42
+          , RDF.mkTriple "/resource/IdentifierPlace100" rdfType crmE42
           , RDF.mkTripleLit "/resource/IdentifierPlace100"
-                            SW.crmP190
+                            crmP190
                             (RDF.PlainL "100")
           ]
 

@@ -21,9 +21,9 @@ where
 
 import           CineTV.RDF.Conversion.Language   (convertLanguages)
 import           Control.Monad.State              (execStateT)
+import           Data.RDF.Vocabulary
 import           Import
-import           Namespaces
-import qualified SW.Vocabulary                    as SW
+import           Namespaces                       (prefixMappings)
 
 import           Data.Pool                        (Pool)
 import           Data.RDF                         (RDF)
@@ -50,17 +50,15 @@ spec = do
         let identifierUri  = "/resource/IdentifierLanguage100"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
-          [ RDF.mkTriple languageUri SW.rdfType SW.crmE56
-          , RDF.mkTripleLit languageUri
-                            SW.rdfsLabel
-                            (RDF.PlainLL "français" "fr")
-          , RDF.mkTriple languageUri SW.crmP1 appellationUri
-          , RDF.mkTriple languageUri SW.crmP48 identifierUri
-          , RDF.mkTriple languageUri SW.owlSameAs (RDF.mkUri wd "Q150")
-          , RDF.mkTriple identifierUri SW.rdfType SW.crmE42
-          , RDF.mkTripleLit identifierUri SW.crmP190 (RDF.PlainL "100")
-          , RDF.mkTriple appellationUri SW.rdfType SW.crmE41
-          , RDF.mkTripleLit appellationUri SW.crmP190 (RDF.PlainL "français")
+          [ RDF.mkTriple languageUri rdfType crmE56
+          , RDF.mkTripleLit languageUri rdfsLabel (RDF.PlainLL "français" "fr")
+          , RDF.mkTriple languageUri crmP1 appellationUri
+          , RDF.mkTriple languageUri crmP48 identifierUri
+          , RDF.mkTriple languageUri owlSameAs (RDF.mkUri wd "Q150")
+          , RDF.mkTriple identifierUri rdfType crmE42
+          , RDF.mkTripleLit identifierUri crmP190 (RDF.PlainL "100")
+          , RDF.mkTriple appellationUri rdfType crmE41
+          , RDF.mkTripleLit appellationUri crmP190 (RDF.PlainL "français")
           ]
 
         length (RDF.query graph (RDF.mkNode languageUri) Nothing Nothing)

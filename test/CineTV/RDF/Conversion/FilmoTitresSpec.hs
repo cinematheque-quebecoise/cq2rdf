@@ -23,7 +23,7 @@ import           CineTV.RDF.Conversion.FilmoTitres (convertFilmoTitres)
 import qualified Data.RDF.Types.Extended           as RDF
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                     as SW
+import Data.RDF.Vocabulary
 import           Test.Hspec.Expectations.Extended  (shouldContainElems)
 
 import           Control.Monad.State               (execStateT)
@@ -46,10 +46,10 @@ spec = do
       let workTitleUri = "/resource/WorkTitle10"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple workUri SW.crmP102 workTitleUri
-        , RDF.mkTriple workTitleUri SW.rdfType SW.crmE35
+        [ RDF.mkTriple workUri crmP102 workTitleUri
+        , RDF.mkTriple workTitleUri rdfType crmE35
         , RDF.mkTripleLit workTitleUri
-                          SW.crmP190
+                          crmP190
                           (RDF.PlainL "LES INVASIONS BARBARES")
         ]
 
@@ -58,10 +58,10 @@ spec = do
       let workTitleUri = "/resource/WorkTitle11"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple workUri SW.crmP102 workTitleUri
-        , RDF.mkTriple workTitleUri SW.rdfType SW.crmE35
+        [ RDF.mkTriple workUri crmP102 workTitleUri
+        , RDF.mkTriple workTitleUri rdfType crmE35
         , RDF.mkTripleLit workTitleUri
-                          SW.crmP190
+                          crmP190
                           (RDF.PlainL "L'HOMME DE L'ISLE")
         ]
 

@@ -22,9 +22,9 @@ where
 import           CineTV.RDF.Conversion.MovieGeneric (convertMoviesGeneric)
 import           Control.Monad.State                (execStateT)
 import qualified Data.RDF.Types.Extended            as RDF (mkTriple)
+import           Data.RDF.Vocabulary
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                      as SW
 import           Test.Hspec.Expectations.Extended   (shouldContainElems)
 
 import           Data.Pool                          (Pool)
@@ -50,12 +50,12 @@ spec = do
       let personUri = "/resource/Person1"
       let roleUri   = "/resource/Role1"
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple recordingEventUri SW.crmP9 realisationActivityUri
+        [ RDF.mkTriple recordingEventUri crmP9 realisationActivityUri
         , RDF.mkTriple realisationActivityCarriedOutByUri
-                       SW.crmP01
+                       crmP01
                        realisationActivityUri
-        , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP02 personUri
-        , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP14_1 roleUri
+        , RDF.mkTriple realisationActivityCarriedOutByUri crmP02 personUri
+        , RDF.mkTriple realisationActivityCarriedOutByUri crmP14_1 roleUri
         ]
 
     it "should detect if the activity if occupied by legal body or person" $ do
@@ -65,8 +65,8 @@ spec = do
       let roleUri      = "/resource/Role11"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP02 legalBodyUri
-        , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP14_1 roleUri
+        [ RDF.mkTriple realisationActivityCarriedOutByUri crmP02 legalBodyUri
+        , RDF.mkTriple realisationActivityCarriedOutByUri crmP14_1 roleUri
         ]
 
     it "should handle the role 33 (Source Originale) for creating deriving work"
@@ -77,9 +77,9 @@ spec = do
           let personUri                = "/resource/Person2"
 
           RDF.triplesOf graph `shouldContainElems` catMaybes
-            [ RDF.mkTriple workUri SW.frbrooR2 workDerivedUri
-            , RDF.mkTriple workDerivedUri SW.frbrooR16i workDerivedConceptionUri
-            , RDF.mkTriple workDerivedConceptionUri SW.crmP14 personUri
+            [ RDF.mkTriple workUri frbrooR2 workDerivedUri
+            , RDF.mkTriple workDerivedUri frbrooR16i workDerivedConceptionUri
+            , RDF.mkTriple workDerivedConceptionUri crmP14 personUri
             ]
 
 emptyGraph :: RDF RDF.TList

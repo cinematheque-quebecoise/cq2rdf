@@ -15,26 +15,20 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.Foaf where
+module Data.RDF.Vocabulary.XSD where
 
 import           Import             hiding ((^.))
 
 import qualified Data.RDF.Namespace as RDF
 
-foafPerson :: Text
-foafPerson = RDF.mkUri RDF.foaf "Person"
+xsdDate :: Text
+xsdDate = RDF.mkUri RDF.xsd "date"
 
-foafName :: Text
-foafName = RDF.mkUri RDF.foaf "name"
+xsdDateTime :: Text
+xsdDateTime = RDF.mkUri RDF.xsd "dateTime"
 
-foafFamilyName :: Text
-foafFamilyName = RDF.mkUri RDF.foaf "familyName"
+xsdDouble :: Text
+xsdDouble = RDF.mkUri RDF.xsd "double"
 
-foafGivenName :: Text
-foafGivenName = RDF.mkUri RDF.foaf "givenName"
-
-foafHomepage :: Text
-foafHomepage =  RDF.mkUri RDF.foaf "homepage"
-
-foafPrimaryTopic :: Text
-foafPrimaryTopic = RDF.mkUri RDF.foaf "primaryTopic"
+xsdInteger :: Text
+xsdInteger = RDF.mkUri RDF.xsd "integer"

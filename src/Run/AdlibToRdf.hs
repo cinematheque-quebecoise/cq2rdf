@@ -13,13 +13,18 @@
 -- You should have received a copy of the GNU General Public License
 -- along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
 
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.OWL where
+module Run.AdlibToRdf
+  ( convertAdlibToRdf
+  )
+where
 
-import           Import             hiding ((^.))
+import           Import                            hiding ((^.))
 
-import qualified Data.RDF.Namespace as RDF
+convertAdlibToRdf :: RIO App ()
+convertAdlibToRdf = do
+  logError "Adlib conversion to RDF not yet implemented!"
+  exitFailure
 
-owlSameAs :: Text
-owlSameAs = RDF.mkUri RDF.owl "sameAs"

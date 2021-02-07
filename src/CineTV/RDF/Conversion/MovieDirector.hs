@@ -24,7 +24,7 @@ where
 import qualified Data.RDF.Types.Extended      as RDF (mkTriple)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -105,8 +105,8 @@ createTriplesFromFilmoRealisation filmoRealisationEntity = do
   let roleUri = baseUriPath <> "/Role" <> Text.pack (show customDirectorRoleId)
   let personUri = baseUriPath <> "/Person" <> nomId
 
-  mapM_ addTriple $ RDF.mkTriple recordingEventUri SW.crmP9 roleActivityUri
+  mapM_ addTriple $ RDF.mkTriple recordingEventUri crmP9 roleActivityUri
   mapM_ addTriple
-    $ RDF.mkTriple roleActivityCarriedOutByUri SW.crmP01 roleActivityUri
-  mapM_ addTriple $ RDF.mkTriple roleActivityCarriedOutByUri SW.crmP14_1 roleUri
-  mapM_ addTriple $ RDF.mkTriple roleActivityCarriedOutByUri SW.crmP02 personUri
+    $ RDF.mkTriple roleActivityCarriedOutByUri crmP01 roleActivityUri
+  mapM_ addTriple $ RDF.mkTriple roleActivityCarriedOutByUri crmP14_1 roleUri
+  mapM_ addTriple $ RDF.mkTriple roleActivityCarriedOutByUri crmP02 personUri

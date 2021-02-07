@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 87a057b06dce8e5d4e9ff5609e013d566508ab8a0971f34962a03974a1ac9111
+-- hash: ea972511c1494bca56e5c590443c54c40ca6e938fbd71ab0296c44bd671ad456
 
 name:           cq2rdf
 version:        0.1.0
@@ -37,30 +37,52 @@ library
       CineTV.RDF.Conversion.Person
       CineTV.RDF.Conversion.Place
       CineTV.RDF.Conversion.Role
-      CineTV.RDF.Void
+      Data.CQLOD
+      Data.CQLOD.RDF.Void
+      Data.CQLOD.Readers.CineTV
+      Data.CQLOD.Readers.CineTV.Filmo
+      Data.CQLOD.Readers.CineTV.FilmoDureesOriginales
+      Data.CQLOD.Readers.CineTV.FilmoGenerique
+      Data.CQLOD.Readers.CineTV.FilmoGenresCategories
+      Data.CQLOD.Readers.CineTV.FilmoLangue
+      Data.CQLOD.Readers.CineTV.FilmoLienWikidata
+      Data.CQLOD.Readers.CineTV.FilmoPays
+      Data.CQLOD.Readers.CineTV.FilmoRealisation
+      Data.CQLOD.Readers.CineTV.FilmoResume
+      Data.CQLOD.Readers.CineTV.FilmoTitres
+      Data.CQLOD.Readers.CineTV.Fonction
+      Data.CQLOD.Readers.CineTV.GenresCategoriesLienWikidata
+      Data.CQLOD.Readers.CineTV.Langue
+      Data.CQLOD.Readers.CineTV.LangueLienWikidata
+      Data.CQLOD.Readers.CineTV.Nom
+      Data.CQLOD.Readers.CineTV.NomLienWikidata
+      Data.CQLOD.Readers.CineTV.Pays
+      Data.CQLOD.Readers.CineTV.PaysLienWikidata
+      Data.CQLOD.Readers.CineTV.Sujet
+      Data.CQLOD.Writers.RDF
       Data.RDF.Extended
       Data.RDF.Query.Extended
       Data.RDF.State
       Data.RDF.Types.Extended
+      Data.RDF.Vocabulary
+      Data.RDF.Vocabulary.CRM
+      Data.RDF.Vocabulary.DBpedia
+      Data.RDF.Vocabulary.DCTerms
+      Data.RDF.Vocabulary.Foaf
+      Data.RDF.Vocabulary.Formats
+      Data.RDF.Vocabulary.FRBRoo
+      Data.RDF.Vocabulary.OWL
+      Data.RDF.Vocabulary.Rdf
+      Data.RDF.Vocabulary.Rdfs
+      Data.RDF.Vocabulary.Void
+      Data.RDF.Vocabulary.Wikidata
+      Data.RDF.Vocabulary.XSD
       Import
       Namespaces
       Run
+      Run.AdlibToRdf
       Run.CinetvToRdf
       Run.GenerateVoid
-      Runv1
-      SW.Vocabulary
-      SW.Vocabulary.CRM
-      SW.Vocabulary.DBpedia
-      SW.Vocabulary.DCTerms
-      SW.Vocabulary.Foaf
-      SW.Vocabulary.Formats
-      SW.Vocabulary.FRBRoo
-      SW.Vocabulary.OWL
-      SW.Vocabulary.Rdf
-      SW.Vocabulary.Rdfs
-      SW.Vocabulary.Void
-      SW.Vocabulary.Wikidata
-      SW.Vocabulary.XSD
       Types
       Util
   other-modules:
@@ -69,7 +91,8 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:
-      aeson >=1.4 && <1.5
+      QuickCheck
+    , aeson >=1.4 && <1.5
     , base >=4.11 && <10
     , bytestring >=0.9 && <0.11
     , cinetv4h
@@ -87,6 +110,7 @@ library
     , persistent-sqlite
     , persistent-template
     , process
+    , quickcheck-instances
     , rdf4h >=4.0.0 && <4.0.2
     , regex
     , resource-pool >=0.2 && <0.3
@@ -105,7 +129,8 @@ executable cq2rdf-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson >=1.4 && <1.5
+      QuickCheck
+    , aeson >=1.4 && <1.5
     , base >=4.11 && <10
     , bytestring >=0.9 && <0.11
     , cinetv4h
@@ -125,6 +150,7 @@ executable cq2rdf-exe
     , persistent-sqlite
     , persistent-template
     , process
+    , quickcheck-instances
     , rdf4h >=4.0.0 && <4.0.2
     , regex
     , resource-pool >=0.2 && <0.3
@@ -155,6 +181,8 @@ test-suite cq2rdf-test
       CineTV.RDF.Conversion.PlaceSpec
       CineTV.RDF.Conversion.RoleSpec
       CineTV.RDF.VoidSpec
+      Data.CQLOD.Readers.CineTVSpec
+      Data.CQLOD.Writers.RDFSpec
       Data.RDF.Types.ExtendedSpec
       Test.Hspec.Expectations.Extended
       UtilSpec
@@ -163,7 +191,8 @@ test-suite cq2rdf-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson >=1.4 && <1.5
+      QuickCheck
+    , aeson >=1.4 && <1.5
     , base >=4.11 && <10
     , bytestring >=0.9 && <0.11
     , cinetv4h
@@ -184,6 +213,7 @@ test-suite cq2rdf-test
     , persistent-sqlite
     , persistent-template
     , process
+    , quickcheck-instances
     , rdf4h >=4.0.0 && <4.0.2
     , regex
     , resource-pool >=0.2 && <0.3

@@ -34,9 +34,8 @@ import           Data.Text        (pack, unpack)
 import           Import
 import           Network.URI      (isURIReference)
 import           Text.Parsec      (Parsec)
-import qualified Text.Parsec      as P (many, parse, sepBy, try)
-import qualified Text.Parsec.Char as P (alphaNum, anyChar, char, noneOf, space,
-                                        string)
+import qualified Text.Parsec      as P (many, parse, sepBy)
+import qualified Text.Parsec.Char as P (alphaNum, anyChar, space, string)
 
 -- |Get subject of triple
 subject :: Triple -> Node
@@ -58,17 +57,17 @@ bnodeGen :: Int -> Node
 bnodeGen h = bnode $ "_:" <> pack (show $ abs h)
 
 mkTriple :: Text -> Text -> Text -> Maybe Triple
-mkTriple subject predicate object = do
-  subjectNode   <- mkNode subject
-  predicateNode <- mkNode predicate
-  objectNode    <- mkNode object
+mkTriple s p o = do
+  subjectNode   <- mkNode s
+  predicateNode <- mkNode p
+  objectNode    <- mkNode o
   return $ Triple subjectNode predicateNode objectNode
 
 mkTripleLit :: Text -> Text -> LValue -> Maybe Triple
-mkTripleLit subject predicate literal = do
-  subjectNode   <- mkNode subject
-  predicateNode <- mkNode predicate
-  let objectNode = lnode literal
+mkTripleLit s p lit = do
+  subjectNode   <- mkNode s
+  predicateNode <- mkNode p
+  let objectNode = lnode lit
   return $ Triple subjectNode predicateNode objectNode
 
 mkNode :: Text -> Maybe Node
@@ -94,16 +93,16 @@ parsePlainLiteralNode l = case P.parse literalValuePlainParser "" l of
   Left  _ -> Nothing
   Right v -> Just $ lnode v
 
-parseLangLiteralNode :: Text -> Maybe Node
-parseLangLiteralNode l = case P.parse literalValuePlainLangParser "" l of
-  Left  _ -> Nothing
-  Right v -> Just $ lnode v
+-- parseLangLiteralNode :: Text -> Maybe Node
+-- parseLangLiteralNode l = case P.parse literalValuePlainLangParser "" l of
+--   Left  _ -> Nothing
+--   Right v -> Just $ lnode v
 
-literalValueParser :: Parsec Text () LValue
-literalValueParser =
-  P.try literalValuePlainLangParser
-    <|> P.try literalValueTypedParser
-    <|> literalValuePlainParser
+-- literalValueParser :: Parsec Text () LValue
+-- literalValueParser =
+--   P.try literalValuePlainLangParser
+--     <|> P.try literalValueTypedParser
+--     <|> literalValuePlainParser
 
 literalValuePlainParser :: Parsec Text () LValue
 literalValuePlainParser = PlainL . pack <$> labelParser
@@ -111,21 +110,21 @@ literalValuePlainParser = PlainL . pack <$> labelParser
   labelParser = unwords <$> P.sepBy wordParser P.space
   wordParser  = P.many P.anyChar
 
-literalValuePlainLangParser :: Parsec Text () LValue
-literalValuePlainLangParser = do
-  literal <- labelParser
-  _       <- P.char '@'
-  lang    <- P.many P.alphaNum
-  return $ PlainLL (pack literal) (pack lang)
+-- literalValuePlainLangParser :: Parsec Text () LValue
+-- literalValuePlainLangParser = do
+--   literal <- labelParser
+--   _       <- P.char '@'
+--   lang    <- P.many P.alphaNum
+--   return $ PlainLL (pack literal) (pack lang)
 
-literalValueTypedParser :: Parsec Text () LValue
-literalValueTypedParser = do
-  literal <- labelParser
-  _       <- P.string "^^"
-  xsdType <- P.many P.anyChar
-  return $ TypedL (pack literal) (pack xsdType)
+-- literalValueTypedParser :: Parsec Text () LValue
+-- literalValueTypedParser = do
+--   literal <- labelParser
+--   _       <- P.string "^^"
+--   xsdType <- P.many P.anyChar
+--   return $ TypedL (pack literal) (pack xsdType)
 
-labelParser :: Parsec Text () String
-labelParser = unwords <$> P.sepBy wordParser P.space
-  where wordParser = P.many $ P.noneOf "@"
-  -- where wordParser = P.many $ P.noneOf "@^"
+-- labelParser :: Parsec Text () String
+-- labelParser = unwords <$> P.sepBy wordParser P.space
+--   where wordParser = P.many $ P.noneOf "@"
+--   -- where wordParser = P.many $ P.noneOf "@^"

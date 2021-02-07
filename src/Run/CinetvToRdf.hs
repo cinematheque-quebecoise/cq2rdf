@@ -21,12 +21,13 @@ module Run.CinetvToRdf
   )
 where
 
-import           CineTV.RDF.Conversion             (convertToRdf)
+-- import           CineTV.RDF.Conversion             (convertToRdf)
 import           Import                            hiding ((^.))
 import           Namespaces
+import Data.CQLOD.Readers.CineTV (readCineTV)
+import Data.CQLOD.Writers.RDF (writeRdf)
 
 import           Codec.Compression.GZip            (compress)
-import           Control.Monad.State               (execStateT)
 import qualified Data.ByteString.Lazy              as BS
 import           Data.RDF                          (RDF, Rdf)
 import qualified Data.RDF                          as RDF
@@ -37,6 +38,7 @@ import           System.Directory                  (doesFileExist, removeFile)
 import           System.Process                    (callCommand)
 import           Text.RDF.RDF4H.NTriplesSerializer
 import           Text.RDF.RDF4H.TurtleSerializer
+import           Data.Pool                                   (Pool)
 
 convertCinetvToRdf :: Text -> RIO App ()
 convertCinetvToRdf outputDir = do
@@ -59,17 +61,18 @@ verifySqliteFileExists = do
     exitFailure
 
 -- |Convert CineTV database in the SQLite file in a RDF graph.
-convertCinetv2RdfGraph :: RIO App (RDF RDF.AdjHashMap)
+convertCinetv2RdfGraph :: RIO App (RDF RDF.AlgebraicGraph)
 convertCinetv2RdfGraph = do
   logInfo "Converting CineTV in RDF..."
   env <- ask
   let sqliteDbPath = optionsSqlitePath $ appOptions env
 
   pool <- liftIO $ createPoolConfig (SqliteConf sqliteDbPath 1)
-  let emptyRdf = RDF.mkRdf [] Nothing prefixMappings :: RDF RDF.AdjHashMap
-  liftIO $ execStateT (convertToRdf pool) emptyRdf
+  cinetvToRdf pool
 
--- |
+cinetvToRdf :: (MonadIO m, Rdf a) => Pool SqlBackend -> m (RDF a)
+cinetvToRdf = readCineTV >=> writeRdf
+
 writeRdfGraphToRdfFormats :: (Rdf a) => RDF a -> Text -> RIO App ()
 writeRdfGraphToRdfFormats graph outputDir = do
   -- Write RDF graph to compressed Turtle file

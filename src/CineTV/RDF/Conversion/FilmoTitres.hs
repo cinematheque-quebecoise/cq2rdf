@@ -24,7 +24,7 @@ where
 import           Data.RDF.Types.Extended      (mkTriple, mkTripleLit)
 import           Database.CineTv.Public.Model (FilmoTitres (..))
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -70,12 +70,12 @@ addFilmoTitresTriples filmoTitresEntity = do
   let workUri      = baseUriPath <> "/Work" <> workId
   let workTitleUri = baseUriPath <> "/WorkTitle" <> filmoTitreId
 
-  mapM_ addTriple $ mkTriple workUri SW.crmP102 workTitleUri
+  mapM_ addTriple $ mkTriple workUri crmP102 workTitleUri
 
-  mapM_ addTriple $ mkTriple workTitleUri SW.rdfType SW.crmE35
+  mapM_ addTriple $ mkTriple workTitleUri rdfType crmE35
 
   let title = mkTitleWork filmoTitres
-  mapM_ addTriple $ mkTripleLit workTitleUri SW.crmP190 (RDF.PlainL title)
+  mapM_ addTriple $ mkTripleLit workTitleUri crmP190 (RDF.PlainL title)
 
 mkTitleWork :: FilmoTitres -> Text
 mkTitleWork filmoTitres = do

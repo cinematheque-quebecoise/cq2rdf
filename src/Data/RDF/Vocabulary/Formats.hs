@@ -15,7 +15,7 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.Formats where
+module Data.RDF.Vocabulary.Formats where
 
 import           Import             hiding ((^.))
 

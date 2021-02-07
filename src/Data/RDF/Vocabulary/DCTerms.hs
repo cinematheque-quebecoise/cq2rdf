@@ -15,12 +15,36 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.DBpedia where
+module Data.RDF.Vocabulary.DCTerms where
 
 import           Import             hiding ((^.))
-import           Namespaces
 
 import qualified Data.RDF.Namespace as RDF
 
-dboBudget :: Text
-dboBudget = RDF.mkUri dbo "budget"
+dcterms :: RDF.Namespace
+dcterms = RDF.mkPrefixedNS' "dcterms" "http://purl.org/dc/terms/"
+
+dctermsTitle :: Text
+dctermsTitle = RDF.mkUri dcterms "title"
+
+dctermsCreator :: Text
+dctermsCreator = RDF.mkUri dcterms "creator"
+
+dctermsPublisher :: Text
+dctermsPublisher = RDF.mkUri dcterms "publisher"
+
+dctermsCreated :: Text
+dctermsCreated = RDF.mkUri dcterms "created"
+
+dctermsIssued :: Text
+dctermsIssued = RDF.mkUri dcterms "issued"
+
+dctermsModified :: Text
+dctermsModified = RDF.mkUri dcterms "modified"
+
+dctermsLicense :: Text
+dctermsLicense = RDF.mkUri dcterms "license"
+
+dctermsSubject :: Text
+dctermsSubject = RDF.mkUri dcterms "subject"
+

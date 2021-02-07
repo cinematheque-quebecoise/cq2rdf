@@ -16,13 +16,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module CineTV.RDF.Void where
+module Data.CQLOD.RDF.Void where
 
 import           Data.RDF.State          (RdfState, addPrefixMappings,
                                           addTriple)
 import           Data.RDF.Types.Extended (mkTriple, mkTripleLit)
 import           Import                  hiding (void)
-import           SW.Vocabulary
+import           Data.RDF.Vocabulary
 import           Util                    (utcTimeToText)
 
 import           Control.Monad.State     (execStateT)
@@ -140,7 +140,7 @@ addNumTriples sparqlEndpoint = do
 -- Query the SPARQL endpoint that counts the total number of triples.
 --
 -- @
--- select (count(distinct ?s) as ?count) where {
+-- select (count(?s) as ?count) where {
 --   ?s ?p ?o
 -- }
 -- @
@@ -413,9 +413,9 @@ addClassPartitions sparqlEndpoint = do
 -- Query the SPARQL endpoint for the number of entities per class.
 --
 -- @
--- SELECT ?o (COUNT(?s) as ?count) WHERE {
+-- SELECT ?o (COUNT(?s) AS ?count) WHERE {
 --   ?s a ?o .
--- } GROUPBY ?o
+-- } GROUP BY ?o
 -- @
 selectClassPartitions :: (MonadSparqlQuery m)
                       => EndPoint -- ^ Sparql endpoint
@@ -602,3 +602,4 @@ eitherToMaybe e =
   case e of
     Left _ -> Nothing
     Right v -> Just v
+

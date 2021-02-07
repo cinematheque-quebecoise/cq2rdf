@@ -24,7 +24,7 @@ where
 import           Data.RDF.Types.Extended      (mkTriple, mkTripleLit)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import qualified Data.RDF.Vocabulary                as Data.RDF
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -82,18 +82,18 @@ createTriplesFromPlace paysEntity = do
   let appellationUri = baseUriPath <> "/AppellationPlace" <> placeId
   let identifierUri  = baseUriPath <> "/IdentifierPlace" <> placeId
 
-  mapM_ addTriple $ mkTriple placeUri SW.rdfType SW.crmE53
+  mapM_ addTriple $ mkTriple placeUri Data.RDF.rdfType Data.RDF.crmE53
   mapM_ addTriple
-    $ mkTripleLit placeUri SW.rdfsLabel (RDF.PlainLL placeLabel "fr")
-  mapM_ addTriple $ mkTriple placeUri SW.crmP1 appellationUri
-  mapM_ addTriple $ mkTriple placeUri SW.crmP48 identifierUri
+    $ mkTripleLit placeUri Data.RDF.rdfsLabel (RDF.PlainLL placeLabel "fr")
+  mapM_ addTriple $ mkTriple placeUri Data.RDF.crmP1 appellationUri
+  mapM_ addTriple $ mkTriple placeUri Data.RDF.crmP48 identifierUri
 
-  mapM_ addTriple $ mkTriple appellationUri SW.rdfType SW.crmE41
+  mapM_ addTriple $ mkTriple appellationUri Data.RDF.rdfType Data.RDF.crmE41
   mapM_ addTriple
-    $ mkTripleLit appellationUri SW.crmP190 (RDF.PlainL placeLabel)
+    $ mkTripleLit appellationUri Data.RDF.crmP190 (RDF.PlainL placeLabel)
 
-  mapM_ addTriple $ mkTriple identifierUri SW.rdfType SW.crmE42
-  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL placeId)
+  mapM_ addTriple $ mkTriple identifierUri Data.RDF.rdfType Data.RDF.crmE42
+  mapM_ addTriple $ mkTripleLit identifierUri Data.RDF.crmP190 (RDF.PlainL placeId)
 
 {-|
 Create all triples for representing the link between the Place concept from all rows in
@@ -127,5 +127,5 @@ createTriplesFromPaysLienWikidata paysLienWdEntity = do
   let wikidataUriMaybe = pays_LienWikidataLienWikidata paysLienWd
 
   forM_ wikidataUriMaybe $ \wikidataUri ->
-    mapM_ addTriple $ mkTriple placeUri SW.owlSameAs wikidataUri
+    mapM_ addTriple $ mkTriple placeUri Data.RDF.owlSameAs wikidataUri
   where paysLienWd = entityVal paysLienWdEntity

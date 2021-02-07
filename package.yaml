@@ -40,6 +40,8 @@ dependencies:
 - cinetv4h
 # - rdf4h >= 4 && < 5
 - rdf4h >= 4.0.0 && < 4.0.2
+- QuickCheck
+- quickcheck-instances
 - hsparql
 - mtl >= 2.2 && < 2.3
 - containers

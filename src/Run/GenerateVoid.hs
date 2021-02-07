@@ -24,7 +24,7 @@ module Run.GenerateVoid
   )
 where
 
-import           CineTV.RDF.Void                 (CinetvRdf (..),
+import           Data.CQLOD.RDF.Void                 (CinetvRdf (..),
                                                   createVoidGraph)
 import           Import                          hiding ((^.))
 

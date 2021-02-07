@@ -24,7 +24,7 @@ where
 import           Data.RDF.Types.Extended      (mkTriple, mkTripleLit)
 import           Database.CineTv.Public.Model (FilmoDureesOriginales (..))
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -54,8 +54,8 @@ for each row in table FilmoDureesOriginales
 convertFilmoDureesOriginales
   :: (RDF.Rdf rdfImpl, MonadIO m) => Pool SqlBackend -> RdfState rdfImpl m ()
 convertFilmoDureesOriginales pool = do
-  mapM_ addTriple $ mkTriple (baseUriPath <> "/Duration") SW.rdfType SW.crmE55
-  mapM_ addTriple $ mkTriple (baseUriPath <> "/Second") SW.rdfType SW.crmE58
+  mapM_ addTriple $ mkTriple (baseUriPath <> "/Duration") rdfType crmE55
+  mapM_ addTriple $ mkTriple (baseUriPath <> "/Second") rdfType crmE58
 
   filmoDureesOriginales <- getFilmoDureesOriginales pool
   mapM_ addFilmoDureesOriginalesTriples filmoDureesOriginales
@@ -83,13 +83,13 @@ addFilmoDureesOriginalesTriples filmoDureesOriginalesEntity = do
   let dimensionUri =
         baseUriPath <> "/Dimension" <> totalSecondsText <> "Seconds"
 
-  mapM_ addTriple $ mkTriple manifestationUri SW.rdfType SW.frbrooF3
-  mapM_ addTriple $ mkTriple manifestationUri SW.frbrooCLR6 publicationExprUri
-  mapM_ addTriple $ mkTriple manifestationUri SW.crmP43 dimensionUri
+  mapM_ addTriple $ mkTriple manifestationUri rdfType frbrooF3
+  mapM_ addTriple $ mkTriple manifestationUri frbrooCLR6 publicationExprUri
+  mapM_ addTriple $ mkTriple manifestationUri crmP43 dimensionUri
 
-  mapM_ addTriple $ mkTriple dimensionUri SW.rdfType SW.crmE54
-  mapM_ addTriple $ mkTriple dimensionUri SW.crmP2 (baseUriPath <> "/Duration")
+  mapM_ addTriple $ mkTriple dimensionUri rdfType crmE54
+  mapM_ addTriple $ mkTriple dimensionUri crmP2 (baseUriPath <> "/Duration")
   mapM_ addTriple $ mkTripleLit dimensionUri
-                                SW.crmP90
-                                (RDF.TypedL totalSecondsText SW.xsdInteger)
-  mapM_ addTriple $ mkTriple dimensionUri SW.crmP91 (baseUriPath <> "/Second")
+                                crmP90
+                                (RDF.TypedL totalSecondsText xsdInteger)
+  mapM_ addTriple $ mkTriple dimensionUri crmP91 (baseUriPath <> "/Second")

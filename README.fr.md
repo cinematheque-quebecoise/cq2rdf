@@ -32,6 +32,7 @@ Available options:
 
 Available commands:
   cinetv-to-rdf            Convert CineTV to RDF
+  adlib-to-rdf             Convert Adlib to RDF (not yet implemented)
   generate-void            Generate a VoID dataset from SPARQL endpoint
 ```
 
@@ -75,10 +76,16 @@ $ make build
 
 L'exécutable devient disponible dans le chemin relatif `./result/bin/cq2rdf-exe`.
 
-
 ### Tests unitaires
 
-Pour exécuter les tests unitaires, exécutez la commande `cabal test`.
+Pour configurer `Cabal` avec `HPC` pour évaluer la converture de code:
+
+```
+cabal clean
+cabal configure --enable-tests --enable-coverage
+```
+
+Avec ou sans couverture de code, pour exécuter les tests unitaires, exécutez la commande `cabal test`.
 
 ### Tests de requêtes SPARQL
 

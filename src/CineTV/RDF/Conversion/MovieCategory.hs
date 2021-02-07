@@ -24,7 +24,7 @@ where
 import qualified Data.RDF.Types.Extended      as RDF (mkTriple)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -90,5 +90,4 @@ createTriplesFromFilmoGenreCategory filmoGenreCategoryEntity = do
   let workUri          = baseUriPath <> "/Work" <> filmoId
   let genreCategoryUri = baseUriPath <> "/GenreCategory" <> sujetId
 
-  mapM_ addTriple $ RDF.mkTriple workUri SW.crmP2 genreCategoryUri
-
+  mapM_ addTriple $ RDF.mkTriple workUri crmP2 genreCategoryUri

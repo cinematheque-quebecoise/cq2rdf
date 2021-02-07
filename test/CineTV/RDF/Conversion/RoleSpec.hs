@@ -25,12 +25,12 @@ import           Data.Pool                        (Pool)
 import           Data.RDF                         (RDF)
 import qualified Data.RDF                         as RDF
 import qualified Data.RDF.Types.Extended          as RDF
+import           Data.RDF.Vocabulary
 import           Database.CineTv.Public.Model
 import           Database.Esqueleto               hiding (get)
 import           Database.Persist.Sqlite          (SqliteConf (..))
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                    as SW
 import           Test.Hspec
 import           Test.Hspec.Expectations.Extended (shouldContainElems)
 
@@ -44,11 +44,11 @@ spec = do
       let roleUri = "/resource/Role"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple roleUri SW.rdfType SW.crmE55
-        , RDF.mkTripleLit roleUri SW.rdfsLabel (RDF.PlainL "Role")
+        [ RDF.mkTriple roleUri rdfType crmE55
+        , RDF.mkTripleLit roleUri rdfsLabel (RDF.PlainL "Role")
         , RDF.mkTripleLit
           roleUri
-          SW.rdfsComment
+          rdfsComment
           (RDF.PlainLL
             "Role occupé par un agent dans la production d'une oeuvre"
             "fr"
@@ -59,26 +59,20 @@ spec = do
       let role2Uri = "/resource/Role2"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple role2Uri SW.rdfType SW.crmE55
-        , RDF.mkTripleLit role2Uri
-                          SW.rdfsLabel
-                          (RDF.PlainLL "Interprétation" "fr")
-        , RDF.mkTriple role2Uri SW.crmP2 "/resource/Role"
-        , RDF.mkTriple role2Uri SW.crmP48 "/resource/IdentifierRole2"
-        , RDF.mkTripleLit "/resource/IdentifierRole2"
-                          SW.crmP190
-                          (RDF.PlainL "2")
+        [ RDF.mkTriple role2Uri rdfType crmE55
+        , RDF.mkTripleLit role2Uri rdfsLabel (RDF.PlainLL "Interprétation" "fr")
+        , RDF.mkTriple role2Uri crmP2 "/resource/Role"
+        , RDF.mkTriple role2Uri crmP48 "/resource/IdentifierRole2"
+        , RDF.mkTripleLit "/resource/IdentifierRole2" crmP190 (RDF.PlainL "2")
         ]
 
     it "should add a new role representing the movie director (not in CineTV)"
       $                    RDF.triplesOf graph
       `shouldContainElems` catMaybes
-                             [ RDF.mkTriple "/resource/Role1"
-                                            SW.rdfType
-                                            SW.crmE55
+                             [ RDF.mkTriple "/resource/Role1" rdfType crmE55
                              , RDF.mkTripleLit
                                "/resource/Role1"
-                               SW.rdfsLabel
+                               rdfsLabel
                                (RDF.PlainLL "Réalisation" "fr")
                              ]
 

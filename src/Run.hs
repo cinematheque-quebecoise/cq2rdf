@@ -23,6 +23,7 @@ where
 
 import           Import
 import           Run.CinetvToRdf  (convertCinetvToRdf)
+import           Run.AdlibToRdf  (convertAdlibToRdf)
 import           Run.GenerateVoid (generateVoid)
 import           Util             (createOutputDirIfMissing)
 
@@ -38,6 +39,7 @@ run = do
   command   <- fmap (optionsCommand . appOptions) ask
   case command of
     CinetvToRdf  -> convertCinetvToRdf outputDir
+    AdlibToRdf  -> convertAdlibToRdf
     GenerateVoid -> generateVoid outputDir
 
   endTime <- liftIO getCurrentTime

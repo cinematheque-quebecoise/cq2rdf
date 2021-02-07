@@ -15,7 +15,7 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.CRM where
+module Data.RDF.Vocabulary.CRM where
 
 import           Import             hiding ((^.))
 import           Namespaces

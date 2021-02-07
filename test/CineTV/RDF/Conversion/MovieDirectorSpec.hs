@@ -21,9 +21,9 @@ where
 
 import           CineTV.RDF.Conversion.MovieDirector (convertMoviesDirector)
 import qualified Data.RDF.Types.Extended             as RDF (mkTriple)
+import           Data.RDF.Vocabulary
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                       as SW
 
 import           Control.Monad.State                 (execStateT)
 import           Data.Pool                           (Pool)
@@ -50,12 +50,12 @@ spec = do
         let personUri = "/resource/Person10"
         let roleUri   = "/resource/Role1"
         RDF.triplesOf graph `shouldContainElems` catMaybes
-          [ RDF.mkTriple recordingEventUri SW.crmP9 realisationActivityUri
+          [ RDF.mkTriple recordingEventUri crmP9 realisationActivityUri
           , RDF.mkTriple realisationActivityCarriedOutByUri
-                         SW.crmP01
+                         crmP01
                          realisationActivityUri
-          , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP02 personUri
-          , RDF.mkTriple realisationActivityCarriedOutByUri SW.crmP14_1 roleUri
+          , RDF.mkTriple realisationActivityCarriedOutByUri crmP02 personUri
+          , RDF.mkTriple realisationActivityCarriedOutByUri crmP14_1 roleUri
           ]
 
 emptyGraph :: RDF RDF.TList

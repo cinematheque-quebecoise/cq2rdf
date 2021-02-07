@@ -24,7 +24,7 @@ where
 import qualified Data.RDF.Types.Extended      as RDF (mkTriple)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -77,4 +77,4 @@ createTriplesFromFilmoPays filmoPaysEntity = do
   let recordingEventUri = baseUriPath <> "/RecordingEvent" <> filmoId
   let placeUri = baseUriPath <> "/Place" <> placeId
 
-  mapM_ addTriple $ RDF.mkTriple recordingEventUri SW.crmP7 placeUri
+  mapM_ addTriple $ RDF.mkTriple recordingEventUri crmP7 placeUri

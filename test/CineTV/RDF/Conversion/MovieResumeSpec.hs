@@ -22,9 +22,9 @@ where
 import           CineTV.RDF.Conversion.MovieResume (convertMoviesResume)
 import qualified Data.RDF.Types.Extended           as RDF (mkTriple,
                                                            mkTripleLit)
+import           Data.RDF.Vocabulary
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                     as SW
 
 import           Control.Monad.State               (execStateT)
 import           Data.Pool                         (Pool)
@@ -50,23 +50,23 @@ spec = do
         let synopsisTypeUri    = "/resource/Synopsis"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
-          [ RDF.mkTriple synopsisTypeUri SW.rdfType SW.crmE55
-          , RDF.mkTriple synopsisFrenchUri SW.rdfType SW.crmE33
-          , RDF.mkTriple synopsisFrenchUri SW.crmP67 workUri
-          , RDF.mkTriple synopsisFrenchUri SW.crmP2 synopsisTypeUri
+          [ RDF.mkTriple synopsisTypeUri rdfType crmE55
+          , RDF.mkTriple synopsisFrenchUri rdfType crmE33
+          , RDF.mkTriple synopsisFrenchUri crmP67 workUri
+          , RDF.mkTriple synopsisFrenchUri crmP2 synopsisTypeUri
           , RDF.mkTripleLit synopsisFrenchUri
-                            SW.crmP190
+                            crmP190
                             (RDF.PlainL "Résumé en français")
-          , RDF.mkTriple synopsisFrenchUri SW.crmP72 "/resource/Language38"
-          , RDF.mkTriple synopsisFrenchUri SW.crmP73 synopsisEnglishUri
-          , RDF.mkTriple workUri SW.crmP67 synopsisEnglishUri
-          , RDF.mkTriple synopsisEnglishUri SW.rdfType SW.crmE33
-          , RDF.mkTriple synopsisEnglishUri SW.crmP2 synopsisTypeUri
+          , RDF.mkTriple synopsisFrenchUri crmP72 "/resource/Language38"
+          , RDF.mkTriple synopsisFrenchUri crmP73 synopsisEnglishUri
+          , RDF.mkTriple workUri crmP67 synopsisEnglishUri
+          , RDF.mkTriple synopsisEnglishUri rdfType crmE33
+          , RDF.mkTriple synopsisEnglishUri crmP2 synopsisTypeUri
           , RDF.mkTripleLit synopsisEnglishUri
-                            SW.crmP190
+                            crmP190
                             (RDF.PlainL "Resume in english")
-          , RDF.mkTriple synopsisEnglishUri SW.crmP72 "/resource/Language8"
-          , RDF.mkTriple synopsisEnglishUri SW.crmP73 synopsisFrenchUri
+          , RDF.mkTriple synopsisEnglishUri crmP72 "/resource/Language8"
+          , RDF.mkTriple synopsisEnglishUri crmP73 synopsisFrenchUri
           ]
 
 emptyGraph :: RDF RDF.TList

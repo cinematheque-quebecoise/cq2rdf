@@ -24,7 +24,7 @@ where
 import           Data.RDF.Types.Extended      (mkTriple, mkTripleLit)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (parseDateField, parseYearField,
                                                sqlKeyToText, utcTimeToText)
 
@@ -79,9 +79,9 @@ convertMovies pool = do
 createCurrencies :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createCurrencies = do
   let cadUri = "/resource/CanadianDollar"
-  mapM_ addTriple $ mkTriple cadUri SW.rdfType SW.crmE98
+  mapM_ addTriple $ mkTriple cadUri rdfType crmE98
   mapM_ addTriple
-    $ mkTripleLit cadUri SW.rdfsLabel (RDF.PlainLL "Dollar canadien" "fr")
+    $ mkTripleLit cadUri rdfsLabel (RDF.PlainLL "Dollar canadien" "fr")
 
 createTriplesFromMovies
   :: (RDF.Rdf rdfImpl, MonadIO m) => Pool SqlBackend -> RdfState rdfImpl m ()
@@ -102,25 +102,25 @@ createTriplesFromMovie filmoEntity = do
   let originalTitleUri = baseUriPath <> "/OriginalTitleWork" <> filmoId
   let identifierUri    = baseUriPath <> "/IdentifierWork" <> filmoId
 
-  mapM_ addTriple $ mkTriple filmoUri SW.rdfType SW.frbrooF1
+  mapM_ addTriple $ mkTriple filmoUri rdfType frbrooF1
 
   let comment = "Oeuvre audiovisuelle avec l'identifiant " <> filmoId
-  mapM_ addTriple $ mkTripleLit filmoUri SW.rdfsComment (RDF.PlainL comment)
+  mapM_ addTriple $ mkTripleLit filmoUri rdfsComment (RDF.PlainL comment)
 
   let titleMaybe = mkOriginalTitleWork filmo
 
   forM_ titleMaybe $ \title -> do
-    mapM_ addTriple $ mkTripleLit filmoUri SW.rdfsLabel (RDF.PlainL title)
+    mapM_ addTriple $ mkTripleLit filmoUri rdfsLabel (RDF.PlainL title)
 
-    mapM_ addTriple $ mkTriple filmoUri SW.crmP102 originalTitleUri
+    mapM_ addTriple $ mkTriple filmoUri crmP102 originalTitleUri
 
-    mapM_ addTriple $ mkTriple originalTitleUri SW.rdfType SW.crmE35
-    mapM_ addTriple $ mkTripleLit originalTitleUri SW.crmP190 (RDF.PlainL title)
+    mapM_ addTriple $ mkTriple originalTitleUri rdfType crmE35
+    mapM_ addTriple $ mkTripleLit originalTitleUri crmP190 (RDF.PlainL title)
 
-  mapM_ addTriple $ mkTriple filmoUri SW.crmP48 identifierUri
+  mapM_ addTriple $ mkTriple filmoUri crmP48 identifierUri
 
-  mapM_ addTriple $ mkTriple identifierUri SW.rdfType SW.crmE42
-  mapM_ addTriple $ mkTripleLit identifierUri SW.crmP190 (RDF.PlainL filmoId)
+  mapM_ addTriple $ mkTriple identifierUri rdfType crmE42
+  mapM_ addTriple $ mkTripleLit identifierUri crmP190 (RDF.PlainL filmoId)
 
   let budgetUri = baseUriPath <> "/Budget"
   let cadUri    = baseUriPath <> "/CanadianDollar"
@@ -129,16 +129,16 @@ createTriplesFromMovie filmoEntity = do
     let budgetWorkUriLabel = "Dimension" <> movieCostText <> "CAD"
     let budgetWorkUri      = baseUriPath <> "/" <> budgetWorkUriLabel
 
-    mapM_ addTriple $ mkTriple filmoUri SW.crmP43 budgetWorkUri
+    mapM_ addTriple $ mkTriple filmoUri crmP43 budgetWorkUri
 
-    mapM_ addTriple $ mkTriple budgetWorkUri SW.rdfType SW.crmE54
-    mapM_ addTriple $ mkTriple budgetWorkUri SW.crmP2 budgetUri
+    mapM_ addTriple $ mkTriple budgetWorkUri rdfType crmE54
+    mapM_ addTriple $ mkTriple budgetWorkUri crmP2 budgetUri
     mapM_ addTriple
-      $ mkTripleLit budgetWorkUri SW.rdfsLabel (RDF.PlainL budgetWorkUriLabel)
+      $ mkTripleLit budgetWorkUri rdfsLabel (RDF.PlainL budgetWorkUriLabel)
     mapM_ addTriple $ mkTripleLit budgetWorkUri
-                                  SW.crmP181
+                                  crmP181
                                   (RDF.TypedL movieCostText "xsd:double")
-    mapM_ addTriple $ mkTriple budgetWorkUri SW.crmP180 cadUri
+    mapM_ addTriple $ mkTriple budgetWorkUri crmP180 cadUri
 
   let recordingWorkUri    = baseUriPath <> "/RecordingWork" <> filmoId
   let recordingEventUri   = baseUriPath <> "/RecordingEvent" <> filmoId
@@ -148,38 +148,38 @@ createTriplesFromMovie filmoEntity = do
   let publicProjectionEventUri =
         baseUriPath <> "/PublicProjectionEvent" <> filmoId
 
-  mapM_ addTriple $ mkTriple recordingWorkUri SW.rdfType SW.frbrooF21
-  mapM_ addTriple $ mkTriple recordingWorkUri SW.frbrooR2 filmoUri
+  mapM_ addTriple $ mkTriple recordingWorkUri rdfType frbrooF21
+  mapM_ addTriple $ mkTriple recordingWorkUri frbrooR2 filmoUri
 
-  mapM_ addTriple $ mkTriple recordingEventUri SW.rdfType SW.frbrooF29
-  mapM_ addTriple $ mkTriple recordingEventUri SW.frbrooR22 recordingWorkUri
-  mapM_ addTriple $ mkTriple recordingEventUri SW.frbrooR21 recordingUri
+  mapM_ addTriple $ mkTriple recordingEventUri rdfType frbrooF29
+  mapM_ addTriple $ mkTriple recordingEventUri frbrooR22 recordingWorkUri
+  mapM_ addTriple $ mkTriple recordingEventUri frbrooR21 recordingUri
 
-  mapM_ addTriple $ mkTriple recordingUri SW.rdfType SW.frbrooF26
-  mapM_ addTriple $ mkTriple publicationExprUri SW.crmP165 recordingUri
+  mapM_ addTriple $ mkTriple recordingUri rdfType frbrooF26
+  mapM_ addTriple $ mkTriple publicationExprUri crmP165 recordingUri
 
-  mapM_ addTriple $ mkTriple publicationEventUri SW.rdfType SW.frbrooF30
-  mapM_ addTriple $ mkTriple publicationEventUri SW.frbrooR24 publicationExprUri
+  mapM_ addTriple $ mkTriple publicationEventUri rdfType frbrooF30
+  mapM_ addTriple $ mkTriple publicationEventUri frbrooR24 publicationExprUri
 
   forM_ (filmoAnneeSortie filmo >>= parseYearField) $ \releaseYear -> do
-    mapM_ addTriple $ mkTriple publicationExprUri SW.rdfType SW.frbrooF24
+    mapM_ addTriple $ mkTriple publicationExprUri rdfType frbrooF24
 
-    mapM_ addTriple $ mkTriple publicProjectionEventUri SW.rdfType SW.crmE7
+    mapM_ addTriple $ mkTriple publicProjectionEventUri rdfType crmE7
     mapM_ addTriple $ mkTriple publicProjectionEventUri
-                               SW.crmP2
+                               crmP2
                                (baseUriPath <> "/PublicProjectionEvent")
     mapM_ addTriple
-      $ mkTriple publicProjectionEventUri SW.crmP16 publicationExprUri
+      $ mkTriple publicProjectionEventUri crmP16 publicationExprUri
 
     mapM_ addTriple
-      $ mkTriple publicationEventUri SW.crmP183 publicProjectionEventUri
+      $ mkTriple publicationEventUri crmP183 publicProjectionEventUri
 
     let releaseYearLit = utcTimeToText releaseYear
     let timeSpanUri    = baseUriPath <> "/Time-Span" <> releaseYearLit
-    mapM_ addTriple $ mkTriple publicProjectionEventUri SW.crmP4 timeSpanUri
+    mapM_ addTriple $ mkTriple publicProjectionEventUri crmP4 timeSpanUri
     mapM_ addTriple $ mkTripleLit timeSpanUri
-                                  SW.crmP82a
-                                  (RDF.TypedL releaseYearLit SW.xsdDateTime)
+                                  crmP82a
+                                  (RDF.TypedL releaseYearLit xsdDateTime)
 
   createProdEventTimeSpanTriples filmoEntity
 
@@ -220,24 +220,24 @@ createResourceTimeSpanTriples resourceUri beginDateMaybe endDateMaybe =
     -- let resourceTimePrimitiveUri = baseUriPath <> "/Time_Primitive" <> lit
 
     addTriple $ RDF.triple (RDF.unode resourceUri)
-                           (RDF.unode SW.crmP4)
+                           (RDF.unode crmP4)
                            (RDF.unode resourceTimeSpanUri)
     addTriple $ RDF.triple (RDF.unode resourceTimeSpanUri)
-                           (RDF.unode SW.crmP4i)
+                           (RDF.unode crmP4i)
                            (RDF.unode resourceUri)
 
     case beginDateMaybe of
       Just beginDate -> addTriple $ RDF.triple
         (RDF.unode resourceTimeSpanUri)
-        (RDF.unode SW.crmP79)
-        (RDF.lnode $ RDF.TypedL (utcTimeToText beginDate) SW.xsdDateTime)
+        (RDF.unode crmP79)
+        (RDF.lnode $ RDF.TypedL (utcTimeToText beginDate) xsdDateTime)
       Nothing -> return ()
 
     case endDateMaybe of
       Just endDate -> addTriple $ RDF.triple
         (RDF.unode resourceTimeSpanUri)
-        (RDF.unode SW.crmP80)
-        (RDF.lnode $ RDF.TypedL (utcTimeToText endDate) SW.xsdDateTime)
+        (RDF.unode crmP80)
+        (RDF.lnode $ RDF.TypedL (utcTimeToText endDate) xsdDateTime)
       Nothing -> return ()
 
 createTriplesFromAllFilmoLienWikidata
@@ -263,7 +263,7 @@ createTriplesFromFilmoLienWikidata filmoLienWdEntity = do
     let filmoId =
           sqlKeyToText $ filmo_LienWikidataFilmoId $ entityVal filmoLienWdEntity
     let filmoUri = baseUriPath <> "/Work" <> filmoId
-    mapM_ addTriple $ mkTriple filmoUri SW.owlSameAs wikidataUri
+    mapM_ addTriple $ mkTriple filmoUri owlSameAs wikidataUri
 
 mkOriginalTitleWork :: Filmo -> Maybe Text
 mkOriginalTitleWork filmo = do

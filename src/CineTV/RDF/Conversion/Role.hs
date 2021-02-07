@@ -24,7 +24,7 @@ where
 import           Data.RDF.Types.Extended      (mkTriple, mkTripleLit)
 import           Database.CineTv.Public.Model (Fonction (..))
 import           Import                       hiding ((^.))
-import qualified SW.Vocabulary                as SW
+import qualified Data.RDF.Vocabulary                as Data.RDF
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -67,11 +67,11 @@ convertRoles pool = do
 createRoleType :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createRoleType = do
   let roleTypeUri = baseUriPath <> "/Role"
-  mapM_ addTriple $ mkTriple roleTypeUri SW.rdfType SW.crmE55
-  mapM_ addTriple $ mkTripleLit roleTypeUri SW.rdfsLabel (RDF.PlainL "Role")
+  mapM_ addTriple $ mkTriple roleTypeUri Data.RDF.rdfType Data.RDF.crmE55
+  mapM_ addTriple $ mkTripleLit roleTypeUri Data.RDF.rdfsLabel (RDF.PlainL "Role")
   mapM_ addTriple $ mkTripleLit
     roleTypeUri
-    SW.rdfsComment
+    Data.RDF.rdfsComment
     (RDF.PlainLL "Role occupé par un agent dans la production d'une oeuvre" "fr"
     )
 
@@ -102,13 +102,13 @@ createTriplesFromRole fonctionEntity = do
   let roleUri           = roleTypeUri <> roleTextId
   let roleIdentifierUri = baseUriPath <> "/IdentifierRole" <> roleTextId
 
-  mapM_ addTriple $ mkTriple roleUri SW.crmP2 roleTypeUri
-  mapM_ addTriple $ mkTriple roleUri SW.rdfType SW.crmE55
+  mapM_ addTriple $ mkTriple roleUri Data.RDF.crmP2 roleTypeUri
+  mapM_ addTriple $ mkTriple roleUri Data.RDF.rdfType Data.RDF.crmE55
   mapM_ addTriple
-    $ mkTripleLit roleUri SW.rdfsLabel (RDF.PlainLL roleLabel "fr")
-  mapM_ addTriple $ mkTriple roleUri SW.crmP48 roleIdentifierUri
+    $ mkTripleLit roleUri Data.RDF.rdfsLabel (RDF.PlainLL roleLabel "fr")
+  mapM_ addTriple $ mkTriple roleUri Data.RDF.crmP48 roleIdentifierUri
   mapM_ addTriple
-    $ mkTripleLit roleIdentifierUri SW.crmP190 (RDF.PlainL roleTextId)
+    $ mkTripleLit roleIdentifierUri Data.RDF.crmP190 (RDF.PlainL roleTextId)
 
  where
   roleTextId = (sqlKeyToText . entityKey) fonctionEntity

@@ -21,9 +21,9 @@ where
 
 import           CineTV.RDF.Conversion.Person     (convertPeople)
 import           Control.Monad.State              (execStateT)
+import           Data.RDF.Vocabulary
 import           Import
-import           Namespaces
-import qualified SW.Vocabulary                    as SW
+import           Namespaces (prefixMappings)
 
 import           Data.Pool                        (Pool)
 import           Data.RDF                         (RDF)
@@ -48,23 +48,21 @@ spec = do
         let personUri = "/resource/Person100"
 
         RDF.triplesOf graph `shouldContainElems` catMaybes
-          [ RDF.mkTriple personUri SW.rdfType SW.crmE21
-          , RDF.mkTripleLit personUri
-                            SW.rdfsLabel
-                            (RDF.PlainL "Ruggero Maccari")
-          , RDF.mkTripleLit personUri SW.foafName (RDF.PlainL "Ruggero Maccari")
-          , RDF.mkTripleLit personUri SW.foafGivenName (RDF.PlainL "Ruggero")
-          , RDF.mkTripleLit personUri SW.foafFamilyName (RDF.PlainL "Maccari")
-          , RDF.mkTriple personUri SW.crmP1 "/resource/AppellationPerson100"
-          , RDF.mkTriple personUri SW.crmP48 "/resource/IdentifierPerson100"
-          , RDF.mkTriple personUri SW.owlSameAs (RDF.mkUri wd "Q968421")
-          , RDF.mkTriple "/resource/AppellationPerson100" SW.rdfType SW.crmE41
+          [ RDF.mkTriple personUri rdfType crmE21
+          , RDF.mkTripleLit personUri rdfsLabel (RDF.PlainL "Ruggero Maccari")
+          , RDF.mkTripleLit personUri foafName (RDF.PlainL "Ruggero Maccari")
+          , RDF.mkTripleLit personUri foafGivenName (RDF.PlainL "Ruggero")
+          , RDF.mkTripleLit personUri foafFamilyName (RDF.PlainL "Maccari")
+          , RDF.mkTriple personUri crmP1 "/resource/AppellationPerson100"
+          , RDF.mkTriple personUri crmP48 "/resource/IdentifierPerson100"
+          , RDF.mkTriple personUri owlSameAs (RDF.mkUri wd "Q968421")
+          , RDF.mkTriple "/resource/AppellationPerson100" rdfType crmE41
           , RDF.mkTripleLit "/resource/AppellationPerson100"
-                            SW.crmP190
+                            crmP190
                             (RDF.PlainL "Ruggero Maccari")
-          , RDF.mkTriple "/resource/IdentifierPerson100" SW.rdfType SW.crmE42
+          , RDF.mkTriple "/resource/IdentifierPerson100" rdfType crmE42
           , RDF.mkTripleLit "/resource/IdentifierPerson100"
-                            SW.crmP190
+                            crmP190
                             (RDF.PlainL "100")
           ]
 

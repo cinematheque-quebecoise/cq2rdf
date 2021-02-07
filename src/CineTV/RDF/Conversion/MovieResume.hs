@@ -24,7 +24,7 @@ where
 import qualified Data.RDF.Types.Extended      as RDF (mkTriple, mkTripleLit)
 import           Database.CineTv.Public.Model
 import           Import                       hiding (isNothing, on, (^.))
-import qualified SW.Vocabulary                as SW
+import Data.RDF.Vocabulary
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
@@ -83,9 +83,9 @@ convertMoviesResume pool = do
 
 createSynopsisType :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
 createSynopsisType = do
-  mapM_ addTriple $ RDF.mkTriple synopsisTypeUri SW.rdfType SW.crmE55
+  mapM_ addTriple $ RDF.mkTriple synopsisTypeUri rdfType crmE55
   mapM_ addTriple
-    $ RDF.mkTripleLit synopsisTypeUri SW.rdfsLabel (RDF.PlainL "Synopsis")
+    $ RDF.mkTripleLit synopsisTypeUri rdfsLabel (RDF.PlainL "Synopsis")
 
 createTriplesFromMoviesResume
   :: (RDF.Rdf rdfImpl, MonadIO m) => Pool SqlBackend -> RdfState rdfImpl m ()
@@ -196,13 +196,13 @@ createTriplesFromFilmoResume movieSynopses = do
             <> synopsisLangId synopsis
     let languageUri = baseUriPath <> "/Language" <> synopsisLangId synopsis
 
-    mapM_ addTriple $ RDF.mkTriple workUri SW.crmP67 synopsisUri
-    mapM_ addTriple $ RDF.mkTriple synopsisUri SW.rdfType SW.crmE33
-    mapM_ addTriple $ RDF.mkTriple synopsisUri SW.crmP67 workUri
-    mapM_ addTriple $ RDF.mkTriple synopsisUri SW.crmP2 synopsisTypeUri
-    mapM_ addTriple $ RDF.mkTriple synopsisUri SW.crmP72 languageUri
+    mapM_ addTriple $ RDF.mkTriple workUri crmP67 synopsisUri
+    mapM_ addTriple $ RDF.mkTriple synopsisUri rdfType crmE33
+    mapM_ addTriple $ RDF.mkTriple synopsisUri crmP67 workUri
+    mapM_ addTriple $ RDF.mkTriple synopsisUri crmP2 synopsisTypeUri
+    mapM_ addTriple $ RDF.mkTriple synopsisUri crmP72 languageUri
     mapM_ addTriple $ RDF.mkTripleLit synopsisUri
-                                      SW.crmP190
+                                      crmP190
                                       (RDF.PlainL (synopsisText synopsis))
 
     forM_ (filter (synopsis /=) $ synopses movieSynopses) $ \otherSynopsis -> do
@@ -212,4 +212,4 @@ createTriplesFromFilmoResume movieSynopses = do
               <> synopsisId otherSynopsis
               <> "Language"
               <> synopsisLangId otherSynopsis
-      mapM_ addTriple $ RDF.mkTriple synopsisUri SW.crmP73 otherSynopsisUri
+      mapM_ addTriple $ RDF.mkTriple synopsisUri crmP73 otherSynopsisUri

@@ -23,7 +23,7 @@ import           CineTV.RDF.Conversion.FilmoDureesOriginales (convertFilmoDurees
 import qualified Data.RDF.Types.Extended                     as RDF
 import           Import
 import           Namespaces
-import qualified SW.Vocabulary                               as SW
+import Data.RDF.Vocabulary
 import           Test.Hspec.Expectations.Extended            (shouldContainElems)
 
 import           Control.Monad.State                         (execStateT)
@@ -45,29 +45,28 @@ spec = do
       $                    RDF.triplesOf graph
       `shouldContainElems` catMaybes
                              [ RDF.mkTriple "/resource/Duration"
-                                            SW.rdfType
-                                            SW.crmE55
+                                            rdfType
+                                            crmE55
                              , RDF.mkTriple "/resource/Second"
-                                            SW.rdfType
-                                            SW.crmE58
+                                            rdfType
+                                            crmE58
                              ]
 
     it "should create triples representings duration of manifestations" $ do
-      let workUri            = "/resource/Work1"
       let workManifesUri     = "/resource/ManifestationProductType1"
       let publicationExprUri = "/resource/PublicationExpression1"
       let dimensionUri       = "/resource/Dimension3456Seconds"
 
       RDF.triplesOf graph `shouldContainElems` catMaybes
-        [ RDF.mkTriple workManifesUri SW.rdfType SW.frbrooF3
-        , RDF.mkTriple workManifesUri SW.frbrooCLR6 publicationExprUri
-        , RDF.mkTriple workManifesUri SW.crmP43 dimensionUri
-        , RDF.mkTriple dimensionUri SW.rdfType SW.crmE54
-        , RDF.mkTriple dimensionUri SW.crmP2 "/resource/Duration"
+        [ RDF.mkTriple workManifesUri rdfType frbrooF3
+        , RDF.mkTriple workManifesUri frbrooCLR6 publicationExprUri
+        , RDF.mkTriple workManifesUri crmP43 dimensionUri
+        , RDF.mkTriple dimensionUri rdfType crmE54
+        , RDF.mkTriple dimensionUri crmP2 "/resource/Duration"
         , RDF.mkTripleLit dimensionUri
-                          SW.crmP90
-                          (RDF.TypedL "3456" SW.xsdInteger)
-        , RDF.mkTriple dimensionUri SW.crmP91 "/resource/Second"
+                          crmP90
+                          (RDF.TypedL "3456" xsdInteger)
+        , RDF.mkTriple dimensionUri crmP91 "/resource/Second"
         ]
 
 emptyGraph :: RDF RDF.TList

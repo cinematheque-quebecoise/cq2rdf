@@ -65,10 +65,14 @@ main = do
 parseCommand :: Parser Command
 parseCommand = subparser $
      command "cinetv-to-rdf" (parseCinetvToRdfCommand `withInfo` "Convert CineTV to RDF")
+  <> command "adlib-to-rdf" (parseAdlibToRdfCommand `withInfo` "Convert Adlib to RDF (not yet implemented)")
   <> command "generate-void" (parseVoidGenerationCommand `withInfo` "Generate a VoID dataset from SPARQL endpoint")
 
 parseCinetvToRdfCommand :: Parser Command
 parseCinetvToRdfCommand = pure CinetvToRdf
+
+parseAdlibToRdfCommand :: Parser Command
+parseAdlibToRdfCommand = pure AdlibToRdf
 
 parseVoidGenerationCommand :: Parser Command
 parseVoidGenerationCommand = pure GenerateVoid

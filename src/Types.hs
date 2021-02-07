@@ -20,6 +20,7 @@ import           RIO
 import           RIO.Process
 
 data Command = CinetvToRdf
+             | AdlibToRdf
              | GenerateVoid
 
 -- | Command line arguments

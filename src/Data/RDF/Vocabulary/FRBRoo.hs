@@ -15,7 +15,7 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SW.Vocabulary.FRBRoo where
+module Data.RDF.Vocabulary.FRBRoo where
 
 import           Import             hiding ((^.))
 import           Namespaces
