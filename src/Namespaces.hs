@@ -49,6 +49,9 @@ wdt = mkPrefixedNS' "wdt" "http://www.wikidata.org/prop/direct/"
 schema :: Namespace
 schema = mkPrefixedNS' "schema" "http://schema.org/"
 
+unit :: Namespace
+unit = mkPrefixedNS' "unit" "http://qudt.org/vocab/unit/"
+
 prefixMappings :: PrefixMappings
 prefixMappings = ns_mappings
   [ crm
@@ -65,4 +68,5 @@ prefixMappings = ns_mappings
   , wd
   , wdt
   -- , cmtqo
+  , unit
   ]

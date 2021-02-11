@@ -26,27 +26,50 @@ import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
 import           Util                         (sqlKeyToText)
 
+import qualified Data.List                    as L
 import           Data.Pool                    (Pool)
 import           Database.Esqueleto           hiding (get)
 
 readNomLienWikidata :: (MonadIO m) => Pool SqlBackend -> CQLODStatements m ()
 readNomLienWikidata pool = do
-  nomLienWikidataEntities <-
+  nomLienWikidataEntitiesGenerique <-
     liftIO
     $ flip liftSqlPersistMPool pool
     $ select
     $ distinct
     $ from
-    $ \nom -> return nom
-  mapM_ createStatements nomLienWikidataEntities
+    $ \(filmoGenerique, nomLienWikidata) -> do
+        where_
+          (   nomLienWikidata
+          ?.  Nom_LienWikidataNomId
+          ==. filmoGenerique
+          ^.  Filmo_GeneriqueNomId
+          )
+        return nomLienWikidata
+  nomLienWikidataEntitiesRealisation <-
+    liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \(filmoRealisation, nomLienWikidata) -> do
+        where_
+          (   nomLienWikidata
+          ?.  Nom_LienWikidataNomId
+          ==. filmoRealisation
+          ?.  Filmo_RealisationNomId
+          )
+        return nomLienWikidata
 
-createStatements
-  :: (Monad m) => Entity Nom_LienWikidata -> CQLODStatements m ()
+  let nomLienWikidataEntities =
+        nomLienWikidataEntitiesGenerique ++ nomLienWikidataEntitiesRealisation
+  mapM_ createStatements (L.nub $ catMaybes nomLienWikidataEntities)
+
+createStatements :: (Monad m) => Entity Nom_LienWikidata -> CQLODStatements m ()
 createStatements nomLienWikidataEntity = do
-  let wikidataUriMaybe = WikidataUri <$> nom_LienWikidataLienWikidata
-        (entityVal nomLienWikidataEntity)
+  let wikidataUriMaybe = WikidataUri
+        <$> nom_LienWikidataLienWikidata (entityVal nomLienWikidataEntity)
   forM_ wikidataUriMaybe $ \wikidataUri -> do
-    let nomId =
-          PersonId $ sqlKeyToText $ nom_LienWikidataNomId $ entityVal
-            nomLienWikidataEntity
+    let nomId = PersonId $ sqlKeyToText $ nom_LienWikidataNomId $ entityVal
+          nomLienWikidataEntity
     addStatement $ PersonWikidataLink nomId wikidataUri

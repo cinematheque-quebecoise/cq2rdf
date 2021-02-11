@@ -182,9 +182,6 @@ mkWorkOtherTitleUri wid = baseUriPath <> "/WorkTitle" <> wid
 mkWorkCostUri :: Text -> Text
 mkWorkCostUri dimensionLabel = baseUriPath <> "/" <> dimensionLabel
 
-mkCurrencyUri :: Currency -> Text
-mkCurrencyUri currency = baseUriPath <> "/" <> T.pack (show currency)
-
 mkRecordingWorkUri :: Text -> Text
 mkRecordingWorkUri rwid = baseUriPath <> "/RecordingWork" <> rwid
 
@@ -289,11 +286,6 @@ mkEntityTypesTriples = execState writeTriples []
     append $ mkTripleLit durationTypeUri rdfsLabel (RDF.PlainLL "Durée" "fr")
     append $ mkTripleLit durationTypeUri rdfsComment (RDF.PlainLL "Notion de durée" "fr")
 
-    append $ mkTriple secondsTypeUri rdfType crmE58
-    append $ mkTripleLit secondsTypeUri rdfsLabel (RDF.PlainLL "Second" "fr")
-    append $ mkTripleLit secondsTypeUri rdfsLabel (RDF.PlainLL "Second" "en")
-    append $ mkTripleLit secondsTypeUri rdfsComment (RDF.PlainLL "Unité de temps" "fr")
-
     append $ mkTriple genreCategoryTypeUri rdfType crmE55
     append $ mkTripleLit genreCategoryTypeUri rdfsLabel (RDF.PlainLL "Genre ou category" "fr")
     append $ mkTripleLit genreCategoryTypeUri rdfsLabel (RDF.PlainLL "Genre or category" "en")
@@ -307,11 +299,6 @@ mkEntityTypesTriples = execState writeTriples []
     append $ mkTripleLit budgetTypeUri rdfsLabel (RDF.PlainLL "Budget" "fr")
     append $ mkTripleLit budgetTypeUri rdfsLabel (RDF.PlainLL "Budget" "en")
     append $ mkTripleLit budgetTypeUri rdfsComment (RDF.PlainLL "Budget d'une oeuvre" "fr")
-
-    let cadTypeUri = mkCurrencyUri CAD
-    append $ mkTriple cadTypeUri rdfType crmE55
-    append $ mkTripleLit cadTypeUri rdfsLabel (RDF.PlainLL "Dollar canadien" "fr")
-    append $ mkTripleLit cadTypeUri rdfsLabel (RDF.PlainLL "Canadien dollar" "en")
 
     append $ mkTriple originalTitleTypeUri rdfType crmE55
     append $ mkTripleLit originalTitleTypeUri rdfsLabel (RDF.PlainLL "Titre originale" "fr")
@@ -486,7 +473,7 @@ writeProductionCost (WorkId workId) amount currency =
     append $ mkTriple dimensionUri crmP2   budgetTypeUri
     append $ mkTripleLit dimensionUri rdfsLabel (RDF.PlainL dimensionLabel)
     append $ mkTripleLit dimensionUri crmP181   (RDF.TypedL budgetText xsdDouble)
-    append $ mkTriple dimensionUri crmP180 (mkCurrencyUri currency)
+    append $ mkTriple dimensionUri crmP180 (currencyToUri currency)
 
 writeWorkGenreCategory :: WorkId -> GenreCategoryId -> Triples
 writeWorkGenreCategory (WorkId wid) (GenreCategoryId gid) =
@@ -882,4 +869,4 @@ writeManifestationProductTypeDuration (ManifestationProductTypeId manifProdTypeI
     append $ mkTriple durationUri rdfType crmE54
     append $ mkTriple durationUri crmP2 durationTypeUri
     append $ mkTripleLit durationUri crmP90 (RDF.TypedL totalSecondsText xsdInteger)
-    append $ mkTriple durationUri crmP91 secondsTypeUri
+    append $ mkTriple durationUri crmP91 unitSEC

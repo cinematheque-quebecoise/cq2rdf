@@ -27,6 +27,7 @@ module Data.RDF.Vocabulary
 , module Data.RDF.Vocabulary.Void
 , module Data.RDF.Vocabulary.DCTerms
 , module Data.RDF.Vocabulary.Formats
+, module Data.RDF.Vocabulary.QUDT
 ) where
 
 import Data.RDF.Vocabulary.Rdf
@@ -41,3 +42,4 @@ import Data.RDF.Vocabulary.Foaf
 import Data.RDF.Vocabulary.Void
 import Data.RDF.Vocabulary.DCTerms
 import Data.RDF.Vocabulary.Formats
+import Data.RDF.Vocabulary.QUDT

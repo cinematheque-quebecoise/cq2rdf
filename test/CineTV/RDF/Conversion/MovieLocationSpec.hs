@@ -72,5 +72,6 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
+                                   Nothing
     insert $ Filmo_Pays (toSqlKey 1) (toSqlKey 10)
   return pool

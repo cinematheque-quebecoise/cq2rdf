@@ -400,7 +400,7 @@ spec = do
         , mkTriple dimensionUri crmP2 budgetTypeUri
         , mkTripleLit dimensionUri rdfsLabel (PlainL dimensionLabel)
         , mkTripleLit dimensionUri crmP181   (TypedL (T.pack $ show amount) xsdDouble)
-        , mkTriple dimensionUri crmP180 (mkCurrencyUri CAD)
+        , mkTriple dimensionUri crmP180 unitCAD
         ]
 
   describe "writeWorkGenreCategory" $ do
@@ -785,7 +785,7 @@ spec = do
         , mkTriple durationUri rdfType crmE54
         , mkTriple durationUri crmP2 durationTypeUri
         , mkTripleLit durationUri crmP90 (TypedL (T.pack $ show duration) xsdInteger)
-        , mkTriple durationUri crmP91 "/resource/Second"
+        , mkTriple durationUri crmP91 unitSEC
         ]
 
 hasPredicate :: Text -> Triple -> Bool

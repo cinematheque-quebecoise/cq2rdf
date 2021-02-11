@@ -19,36 +19,43 @@ module Data.CQLOD.Readers.CineTV.Nom
   )
 where
 
-import           Data.CQLOD                   (CQLODStatements, addStatement, CQLODStatement (..), Person (..),
-                                               PersonId (..))
+import           Data.CQLOD                   (CQLODStatement (..),
+                                               CQLODStatements, Person (..),
+                                               PersonId (..), addStatement)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
 import           Util                         (sqlKeyToText)
 
 import           Data.Pool                    (Pool)
 import           Database.Esqueleto           hiding (get)
+import qualified Data.List as L
 
 readNom :: (MonadIO m) => Pool SqlBackend -> CQLODStatements m ()
 readNom pool = do
-  nomEntities <-
+  nomEntitiesGenerique <-
     liftIO
-      $ flip liftSqlPersistMPool pool
-      $ select
-      $ distinct
-      $ from
-      $ \(filmoGenerique, nom) -> do
-          where_
-            (   nom
-            ?.  NomId
-            ==. filmoGenerique
-            ^.  Filmo_GeneriqueNomId
-            )
-          return nom
-  mapM_ createStatements (catMaybes nomEntities)
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \(filmoGenerique, nom) -> do
+        where_ (nom ?. NomId ==. filmoGenerique ^. Filmo_GeneriqueNomId)
+        return nom
+  nomEntitiesRealisation <-
+    liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \(filmoRealisation, nom) -> do
+        where_ (nom ?. NomId ==. filmoRealisation ?. Filmo_RealisationNomId)
+        return nom
+  let nomEntities = nomEntitiesGenerique ++ nomEntitiesRealisation
+  mapM_ createStatements (L.nub $ catMaybes nomEntities)
 
 createStatements :: (Monad m) => Entity Nom -> CQLODStatements m ()
 createStatements nomEntity = do
-  let pid = PersonId $ (sqlKeyToText . entityKey) nomEntity
-  let lastName = (nomNom . entityVal) nomEntity
+  let pid       = PersonId $ (sqlKeyToText . entityKey) nomEntity
+  let lastName  = (nomNom . entityVal) nomEntity
   let firstName = (nomPrenom . entityVal) nomEntity
   addStatement $ PersonDeclaration $ Person pid firstName lastName

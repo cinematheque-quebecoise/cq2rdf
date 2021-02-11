@@ -90,6 +90,7 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
+                                   Nothing
 
     insertKey (toSqlKey 10) $ FilmoDureesOriginales (toSqlKey 1) 57 36
   return pool

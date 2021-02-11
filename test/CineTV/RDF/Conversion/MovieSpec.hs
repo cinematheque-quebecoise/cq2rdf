@@ -176,6 +176,7 @@ dbSetup = do
                                    (Just "01-01-12")
                                    Nothing
                                    (Just 2300000)
+                                   Nothing
     insertKey (toSqlKey 2) $ Filmo (Just "L'")
                                    (Just "HOMME DE L'ISLE")
                                    (Just 2003)
@@ -189,6 +190,7 @@ dbSetup = do
                                    (Just "01-01-12")
                                    Nothing
                                    (Just 2300000)
+                                   Nothing
     insert $ Filmo_LienWikidata (toSqlKey 1)
                                 (Just "http://www.wikidata.org/entity/Q1")
 

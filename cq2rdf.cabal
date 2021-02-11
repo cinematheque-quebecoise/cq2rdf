@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ea972511c1494bca56e5c590443c54c40ca6e938fbd71ab0296c44bd671ad456
+-- hash: e4bba5697e42fd3f77eba83379def601a00bbfc2e837fc67efe96a25e4492a04
 
 name:           cq2rdf
 version:        0.1.0
@@ -72,6 +72,7 @@ library
       Data.RDF.Vocabulary.Formats
       Data.RDF.Vocabulary.FRBRoo
       Data.RDF.Vocabulary.OWL
+      Data.RDF.Vocabulary.QUDT
       Data.RDF.Vocabulary.Rdf
       Data.RDF.Vocabulary.Rdfs
       Data.RDF.Vocabulary.Void

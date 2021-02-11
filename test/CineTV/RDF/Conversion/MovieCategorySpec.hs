@@ -74,6 +74,7 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
+                                   Nothing
     insertKey (toSqlKey 10) $ Sujet "DRAME"
     insertKey (toSqlKey 11) $ Sujet "COMÉDIE"
     _ <- insert $ Filmo_GenresCategories (toSqlKey 1) (toSqlKey 10)

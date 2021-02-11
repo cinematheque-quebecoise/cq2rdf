@@ -91,6 +91,7 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
+                                   Nothing
     insertKey (toSqlKey 50)
       $ FilmoResumes (toSqlKey 1) (Just "Résumé en français")
     insertKey (toSqlKey 100)

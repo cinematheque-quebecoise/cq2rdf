@@ -17,6 +17,7 @@
 module Data.CQLOD where
 
 import           Import
+import Data.RDF.Vocabulary
 
 import           Control.Monad.State (StateT, get, put)
 import           Data.Time.Clock              (UTCTime (..))
@@ -99,6 +100,10 @@ newtype PublicProjectionEventId = PublicProjectionEventId { unPublicProjectionEv
 newtype WorkId = WorkId { unWorkId :: Text } deriving (Eq, Show)
 
 data Currency = CAD deriving (Eq, Show)
+
+currencyToUri :: Currency -> Text
+currencyToUri currency = case currency of
+  CAD -> unitCAD
 
 newtype RecordingWorkId = RecordingWorkId { unRecordingWorkId :: Text } deriving (Eq, Show)
 
