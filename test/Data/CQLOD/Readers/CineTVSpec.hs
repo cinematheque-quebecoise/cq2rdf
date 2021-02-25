@@ -60,8 +60,9 @@ spec = do
       let filteredStatements = [ s | s@(GenreCategoryDeclaration _) <- statements]
       filteredStatements `shouldContainElems`
         [ GenreCategoryDeclaration (GenreCategory (GenreCategoryId "20006") "FICTION")
+        , GenreCategoryDeclaration (GenreCategory (GenreCategoryId "10626") "SÉRIES (TV)")
         ]
-      length filteredStatements `shouldBe` 1
+      length filteredStatements `shouldBe` 2
 
     it "should read genres linked to Wikidata from table GenresCategories_LienWikidata" $ do
       let filteredStatements = [ s | s@GenreCategoryWikidataLink {} <- statements]
@@ -143,11 +144,52 @@ spec = do
     it "should read works from table Filmo" $ do
       let workStatements = [ s | s@(WorkDeclaration _) <- statements]
       workStatements `shouldContainElems`
-        [ WorkDeclaration $ WorkId "63563"
-        , WorkDeclaration $ WorkId "2"
-        , WorkDeclaration $ WorkId "95672"
+        [ WorkDeclaration $ WorkId "2"
+        , WorkDeclaration $ WorkId "63563"
         , WorkDeclaration $ WorkId "95672"
         ]
+
+    it "should categorize unique works by nature of production" $ do
+      let filteredStatements = [ s | s@(WorkTypeDeclaration _ UniqueWork) <- statements]
+      filteredStatements `shouldContainElems`
+        [ WorkTypeDeclaration (WorkId "63563") UniqueWork
+        ]
+
+    it "should categorize tv series using Sujet table" $ do
+      let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeries) <- statements]
+      filteredStatements `shouldContainElems`
+        [ WorkTypeDeclaration (WorkId "8267") TelevisionSeries
+        ]
+
+    it "should categorize tv series episode using FilmoNombresEpisodes table" $ do
+      let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
+      filteredStatements `shouldContainElems`
+        [ WorkTypeDeclaration (WorkId "8267") TelevisionSeriesEpisode
+        ]
+
+    -- it "should categorize tv series episode using FilmoNombresEpisodes table" $ do
+    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
+    --   filteredStatements `shouldContainElems`
+    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeriesEpisode
+    --     ]
+
+    -- it "should categorize tv series episode using FilmoDureesEpisode table" $ do
+    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
+    --   filteredStatements `shouldContainElems`
+    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeriesEpisode
+    --     ]
+
+    -- it "should categorize tv series season using substring [N] or [Saison N] in table Filmo" $ do
+    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
+    --   filteredStatements `shouldContainElems`
+    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeriesSeason
+    --     ]
+
+    -- it "should categorize tv series in table Filmo if it has field in table FilmoAnneeDiffusion" $ do
+    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
+    --   filteredStatements `shouldContainElems`
+    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeries
+    --     ]
 
     it "should read work linked to Wikidata from table Filmo_LienWikidata" $ do
       let filteredStatements = [ s | s@WorkWikidataLink {} <- statements]
@@ -278,8 +320,10 @@ spec = do
       filteredStatements `shouldContainElems`
         [ WorkOriginalTitle (WorkId "63563") "LES INVASIONS BARBARES"
         , WorkOriginalTitle (WorkId "2") "L'HOMME DE L'ISLE"
+        , WorkOriginalTitle (WorkId "8267") "SIX MILLION DOLLAR MAN"
+        , WorkOriginalTitle (WorkId "95672") "19-2"
         ]
-      length filteredStatements `shouldBe` 3
+      length filteredStatements `shouldBe` 4
 
     it "should read work other titles from table FilmoTitres" $ do
       let filteredStatements = [ s | s@WorkOtherTitle {} <- statements]
@@ -292,8 +336,9 @@ spec = do
       let filteredStatements = [ s | s@WorkGenreCategory {} <- statements]
       filteredStatements `shouldContainElems`
         [ WorkGenreCategory (WorkId "63563") (GenreCategoryId "20006")
+        , WorkGenreCategory (WorkId "8267") (GenreCategoryId "10626")
         ]
-      length filteredStatements `shouldBe` 1
+      length filteredStatements `shouldBe` 2
 
     it "should create statements for work synopsis from table Filmo, FilmoResumes and FilmoResumesAnglais" $ do
       let filteredStatements = [ s | s@WorkSynopsis {} <- statements]
@@ -342,8 +387,9 @@ spec = do
         [ RecordingEventTimeSpan (RecordingEventId "63563") (TimeSpan (parseDateField "01-01-11") (parseDateField "01-01-12"))
         , RecordingEventTimeSpan (RecordingEventId "2") (TimeSpan (parseDateField "01-01-11") (parseDateField "01-01-12"))
         , RecordingEventTimeSpan (RecordingEventId "95672") (TimeSpan Nothing Nothing)
+        , RecordingEventTimeSpan (RecordingEventId "8267") (TimeSpan Nothing Nothing)
         ]
-      length filteredStatements `shouldBe` 3
+      length filteredStatements `shouldBe` 4
 
     it "should create recording event activity from table Filmo_Generique" $ do
       let filteredStatements = [ s | s@RecordingEventActivity {} <- statements ]
@@ -403,6 +449,7 @@ dbSetup = do
     _ <- insertKey (toSqlKey 19310) $ Sujet "PÈRE FILM (QUÉBEC)"
     _ <- insertKey (toSqlKey 20006) $ Sujet "FICTION"
     _ <- insertKey (toSqlKey 20007) $ Sujet "GALA"
+    _ <- insertKey (toSqlKey 10626) $ Sujet "SÉRIES (TV)"
     _ <- insert $ GenresCategories_LienWikidata (toSqlKey 20006) (Just "http://www.wikidata.org/entity/Q8253")
 
     _ <- insertKey (toSqlKey 216) $ Pays "Canada : Québec"
@@ -429,6 +476,9 @@ dbSetup = do
     _ <- insertKey (toSqlKey 38) $ Langue "français"
     _ <- insert $ Langue_LienWikidata (toSqlKey 38) (Just "http://www.wikidata.org/entity/Q150")
 
+    _ <- insertKey (toSqlKey 1) $ NatureDeLaProduction "oeuvre unique"
+    _ <- insertKey (toSqlKey 2) $ NatureDeLaProduction "épisodes multiples"
+
     _ <- insertKey (toSqlKey 63563) $ Filmo (Just "LES")
                                    (Just "INVASIONS BARBARES")
                                    (Just 2003)
@@ -442,7 +492,7 @@ dbSetup = do
                                    (Just "01-01-12")
                                    Nothing
                                    Nothing
-                                   Nothing
+                                   (Just $ toSqlKey 1)
     _ <- insertKey (toSqlKey 2) $ Filmo (Just "L'")
                                    (Just "HOMME DE L'ISLE")
                                    (Just 2003)
@@ -458,19 +508,33 @@ dbSetup = do
                                    (Just 2300000)
                                    Nothing
     _ <- insertKey (toSqlKey 95672) $ Filmo Nothing
-                                      (Just "19-2")
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
-                                      Nothing
+                                            (Just "19-2")
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            (Just $ toSqlKey 2)
+    _ <- insertKey (toSqlKey 8267) $ Filmo Nothing
+                                           (Just "SIX MILLION DOLLAR MAN")
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
+                                           Nothing
 
     _ <- insert $ Filmo_LienWikidata (toSqlKey 63563)
                                 (Just "http://www.wikidata.org/entity/Q549012")
@@ -500,6 +564,7 @@ dbSetup = do
     _ <- insert $ Filmo_Pays (toSqlKey 63563) (toSqlKey 216)
 
     _ <- insert $ Filmo_GenresCategories (toSqlKey 63563) (toSqlKey 20006)
+    _ <- insert $ Filmo_GenresCategories (toSqlKey 8267) (toSqlKey 10626)
 
     _ <- insertKey (toSqlKey 1) $ FilmoResumes (toSqlKey 63563) (Just "Résumé en français 2")
     _ <- insertKey (toSqlKey 1) $ FilmoResumesAnglais (toSqlKey 63563) (Just "Resume in english 2")
@@ -510,6 +575,9 @@ dbSetup = do
     _ <- insert $ Filmo_Langue (toSqlKey 63563) (toSqlKey 38)
 
     _ <- insert $ FilmoDureesOriginales (toSqlKey 63563) 100 30
+
+    _ <- insertKey (toSqlKey 3669) $ FilmoNombresEpisodes (toSqlKey 95672) 10
+    _ <- insertKey (toSqlKey 3670) $ FilmoNombresEpisodes (toSqlKey 95672) 10
 
     return ()
 

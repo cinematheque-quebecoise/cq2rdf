@@ -11,3 +11,5 @@ cabal.project.local
 cmtq-dataset
 cq2rdf-exe
 rules.log
+*.db*
+*.tix

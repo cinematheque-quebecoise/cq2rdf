@@ -35,188 +35,188 @@
 #    }
 #    Limit 10
 
-# - name: Réalisateurs de films où Michel Côté a joué
-#   query: |
-#     BASE <http://data.cinematheque.qc.ca>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
-#     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+ - name: Réalisateurs de films où Michel Côté a joué
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
 
-#     SELECT DISTINCT ?director ?directorLabel WHERE {
-#       # Recording activies where Michel Côté played a role
-#       ?recordingEvent crm:P9_consists_of ?recordingActivityMC .
-#       ?recordingActivityCarriedOutByMC crm:P01_has_domain ?recordingActivityMC .
-#       ?recordingActivityCarriedOutByMC crm:P02_has_range </resource/Person56042> .
+     SELECT DISTINCT ?director ?directorLabel WHERE {
+       # Recording activies where Michel Côté played a role
+       ?recordingEvent crm:P9_consists_of ?recordingActivityMC .
+       ?recordingActivityCarriedOutByMC crm:P01_has_domain ?recordingActivityMC .
+       ?recordingActivityCarriedOutByMC crm:P02_has_range </resource/Person56042> .
 
-#       # Find director(s) of same recording event
-#       ?recordingEvent crm:P9_consists_of ?recordingActivityDirector .
-#       ?recordingActivityCarriedOutByDirector crm:P01_has_domain ?recordingActivityDirector .
-#       ?recordingActivityCarriedOutByDirector crm:P14.1_in_the_role_of </resource/Role1> .
-#       ?recordingActivityCarriedOutByDirector crm:P02_has_range ?director .
-#       ?director rdfs:label ?directorLabel .
+       # Find director(s) of same recording event
+       ?recordingEvent crm:P9_consists_of ?recordingActivityDirector .
+       ?recordingActivityCarriedOutByDirector crm:P01_has_domain ?recordingActivityDirector .
+       ?recordingActivityCarriedOutByDirector crm:P14.1_in_the_role_of </resource/Role1> .
+       ?recordingActivityCarriedOutByDirector crm:P02_has_range ?director .
+       ?director rdfs:label ?directorLabel .
 
-#       FILTER (contains(str(?director), "http://data.cinematheque.qc.ca"))
-#     } LIMIT 100
+       FILTER (contains(str(?director), "http://data.cinematheque.qc.ca"))
+     } LIMIT 100
 
-# - name: Les oeuvres audiovisuelles avec une date de sortie entre 2018 et 2020
-#   query: |
-#     BASE <http://data.cinematheque.qc.ca>
-#     PREFIX cmtqo: <http://data.cinematheque.qc.ca/ontology/cmtqo/0.1#>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
-#     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
-#     PREFIX owl: <http://www.w3.org/2002/07/owl#>
-#     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-#     PREFIX wd: <http://www.wikidata.org/entity/>
+ - name: Les oeuvres audiovisuelles avec une date de sortie entre 2018 et 2020
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX cmtqo: <http://data.cinematheque.qc.ca/ontology/cmtqo/0.1#>
+     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+     PREFIX owl: <http://www.w3.org/2002/07/owl#>
+     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+     PREFIX wd: <http://www.wikidata.org/entity/>
 
-#     SELECT DISTINCT ?work ?workTitleStr WHERE {
-#       ?publicProjectionEvent crm:P16_used_specific_object ?publicationExpression .
-#       ?publicationExpression crm:P165_incorporates ?recording .
-#       ?recordingEvent frbroo:R21_created ?recording .
-#       ?recordingEvent frbroo:R22_created_a_realization_of ?recordingWork .
-#       ?recordingWork frbroo:R2_is_derivative_of ?work .
-#       ?work crm:P102_has_title ?workTitle .
-#       ?workTitle crm:P190_has_symbolic_content ?workTitleStr .
+     SELECT DISTINCT ?work ?workTitleStr WHERE {
+       ?publicProjectionEvent crm:P16_used_specific_object ?publicationExpression .
+       ?publicationExpression crm:P165_incorporates ?recording .
+       ?recordingEvent frbroo:R21_created ?recording .
+       ?recordingEvent frbroo:R22_created_a_realization_of ?recordingWork .
+       ?recordingWork frbroo:R2_is_derivative_of ?work .
+       ?work crm:P102_has_title ?workTitle .
+       ?workTitle crm:P190_has_symbolic_content ?workTitleStr .
 
-#       OPTIONAL {
-#         ?publicProjectionEvent crm:P4_has_time-span ?timespan .
-#         ?timespan crm:P82a_begin_of_the_begin ?releaseBegin .
-#       }
+       OPTIONAL {
+         ?publicProjectionEvent crm:P4_has_time-span ?timespan .
+         ?timespan crm:P82a_begin_of_the_begin ?releaseBegin .
+       }
 
-#       BIND(year(?releaseBegin) as ?year)
-#       BIND(year(?releaseEnd) as ?year)
+       BIND(year(?releaseBegin) as ?year)
+       BIND(year(?releaseEnd) as ?year)
 
-#       FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workTitle), "OriginalTitleWork") && ?year >= 2018 && ?year < 2020)
-#     }
-#     LIMIT 100
+       FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workTitle), "OriginalTitleWork") && ?year >= 2018 && ?year < 2020)
+     }
+     LIMIT 100
 
-# - name: Les personnes qui ont travaillé dans au moins 10 films
-#   query: |
-#     BASE <http://data.cinematheque.qc.ca>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
-#     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+ - name: Les personnes qui ont travaillé dans au moins 10 films
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
 
-#     SELECT DISTINCT ?person (COUNT(DISTINCT ?recordingEvent) as ?count) WHERE {
-#       ?recordingEvent crm:P9_consists_of ?recordingActivityMC .
-#       ?recordingActivityCarriedOutByMC crm:P01_has_domain ?recordingActivityMC .
-#       ?recordingActivityCarriedOutByMC crm:P02_has_range ?person .
-#       ?person a crm:E21_Person .
-#       ?person rdfs:label ?personLabel .
-#       FILTER (contains(str(?person), "http://data.cinematheque.qc.ca"))
-#     }
-#     GROUP BY ?person
-#     HAVING(COUNT(?recordingEvent) > 10)
-#     ORDER BY DESC (?count)
-#     LIMIT 10
+     SELECT DISTINCT ?person (COUNT(DISTINCT ?recordingEvent) as ?count) WHERE {
+       ?recordingEvent crm:P9_consists_of ?recordingActivityMC .
+       ?recordingActivityCarriedOutByMC crm:P01_has_domain ?recordingActivityMC .
+       ?recordingActivityCarriedOutByMC crm:P02_has_range ?person .
+       ?person a crm:E21_Person .
+       ?person rdfs:label ?personLabel .
+       FILTER (contains(str(?person), "http://data.cinematheque.qc.ca"))
+     }
+     GROUP BY ?person
+     HAVING(COUNT(?recordingEvent) > 10)
+     ORDER BY DESC (?count)
+     LIMIT 10
 
-# - name: Évolution de la carrière de Woody Allen
-#   query: |
-#     BASE <http://data.cinematheque.qc.ca>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
-#     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+ - name: Évolution de la carrière de Woody Allen
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
 
-#     SELECT DISTINCT ?work ?workTitleStr ?roleLabel ?year WHERE {
-#       ?publicProjectionEvent crm:P16_used_specific_object ?publicationExpression .
+     SELECT DISTINCT ?work ?workTitleStr ?roleLabel ?year WHERE {
+       ?publicProjectionEvent crm:P16_used_specific_object ?publicationExpression .
 
-#       OPTIONAL {
-#         ?publicProjectionEvent crm:P4_has_time-span ?timespan .
-#         ?timespan crm:P79_beginning_is_qualified_by ?releaseBegin .
-#         ?timespan crm:P80_end_is_qualified_by ?releaseEnd .
-#       }
+       OPTIONAL {
+         ?publicProjectionEvent crm:P4_has_time-span ?timespan .
+         ?timespan crm:P79_beginning_is_qualified_by ?releaseBegin .
+         ?timespan crm:P80_end_is_qualified_by ?releaseEnd .
+       }
 
-#       BIND(year(?releaseBegin) as ?year)
-#       BIND(year(?releaseEnd) as ?year)
+       BIND(year(?releaseBegin) as ?year)
+       BIND(year(?releaseEnd) as ?year)
 
-#       ?recordingWork frbroo:R2_is_derivative_of ?work .
-#       ?work crm:P102_has_title ?workTitle .
-#       ?workTitle crm:P190_has_symbolic_content ?workTitleStr .
+       ?recordingWork frbroo:R2_is_derivative_of ?work .
+       ?work crm:P102_has_title ?workTitle .
+       ?workTitle crm:P190_has_symbolic_content ?workTitleStr .
 
-#       ?publicationExpression crm:P165_incorporates ?recording .
+       ?publicationExpression crm:P165_incorporates ?recording .
 
-#       ?recordingEvent frbroo:R22_created_a_realization_of ?recordingWork .
-#       ?recordingEvent frbroo:R21_created ?recording .
-#       ?recordingEvent crm:P9_consists_of ?recordingActivity .
+       ?recordingEvent frbroo:R22_created_a_realization_of ?recordingWork .
+       ?recordingEvent frbroo:R21_created ?recording .
+       ?recordingEvent crm:P9_consists_of ?recordingActivity .
 
-#       ?recordingActivityCarriedOutBy crm:P01_has_domain ?recordingActivity .
-#       ?recordingActivityCarriedOutBy crm:P02_has_range </resource/Person19445> .
-#       ?recordingActivityCarriedOutBy crm:P14.1_in_the_role_of ?role .
-#       ?role rdfs:label ?roleLabel .
+       ?recordingActivityCarriedOutBy crm:P01_has_domain ?recordingActivity .
+       ?recordingActivityCarriedOutBy crm:P02_has_range </resource/Person19445> .
+       ?recordingActivityCarriedOutBy crm:P14.1_in_the_role_of ?role .
+       ?role rdfs:label ?roleLabel .
 
-#       FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workTitle), "OriginalTitleWork"))
-#     }
-#     ORDER BY ASC (?year)
+       FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workTitle), "OriginalTitleWork"))
+     }
+     ORDER BY ASC (?year)
 
-# - name: Les oeuvres liées à Wikidata
-#   query: |
-#     BASE <http://data.cinematheque.qc.ca>
-#     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
-#     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
-#     PREFIX owl: <http://www.w3.org/2002/07/owl#>
+ - name: Les oeuvres liées à Wikidata
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
+     PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-#     SELECT DISTINCT ?work ?workWikidataUri ?workTitleStr WHERE {
+     SELECT DISTINCT ?work ?workWikidataUri ?workTitleStr WHERE {
 
-#       ?work a frbroo:F1_Work .
-#       ?work crm:P102_has_title ?workTitle .
-#       ?workTitle crm:P190_has_symbolic_content ?workTitleStr .
-#       ?work owl:sameAs ?workWikidataUri .
+       ?work a frbroo:F1_Work .
+       ?work crm:P102_has_title ?workTitle .
+       ?workTitle crm:P190_has_symbolic_content ?workTitleStr .
+       ?work owl:sameAs ?workWikidataUri .
 
-#       FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workWikidataUri), "wikidata") && contains(str(?workTitle), "OriginalTitleWork"))
-#     } LIMIT 50
+       FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workWikidataUri), "wikidata") && contains(str(?workTitle), "OriginalTitleWork"))
+     } LIMIT 50
 
-# - name: La proportions d'oeuvres liées à Wikidata
-#   query: |
-#     BASE <http://data.cinematheque.qc.ca>
-#     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
-#     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
-#     PREFIX owl: <http://www.w3.org/2002/07/owl#>
-#     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+ - name: La proportions d'oeuvres liées à Wikidata
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
+     PREFIX owl: <http://www.w3.org/2002/07/owl#>
+     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-#     SELECT DISTINCT ?workCount ?workLinkedCount (xsd:float(?workLinkedCount) / xsd:float(?workCount) as ?proportion) WHERE {
-#       {
-#         SELECT(COUNT(DISTINCT ?work) as ?workCount) WHERE {
-#           ?work a frbroo:F1_Work .
-#           FILTER (contains(str(?work), "http://data.cinematheque.qc.ca"))
-#         }
-#       }
-#       {
-#         SELECT(COUNT(DISTINCT ?work) as ?workLinkedCount) WHERE {
-#           ?work a frbroo:F1_Work .
-#           ?work owl:sameAs ?workWikidataUri .
-#           FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workWikidataUri), "wikidata"))
-#         }
-#       }
-#     }
+     SELECT DISTINCT ?workCount ?workLinkedCount (xsd:float(?workLinkedCount) / xsd:float(?workCount) as ?proportion) WHERE {
+       {
+         SELECT(COUNT(DISTINCT ?work) as ?workCount) WHERE {
+           ?work a frbroo:F1_Work .
+           FILTER (contains(str(?work), "http://data.cinematheque.qc.ca"))
+         }
+       }
+       {
+         SELECT(COUNT(DISTINCT ?work) as ?workLinkedCount) WHERE {
+           ?work a frbroo:F1_Work .
+           ?work owl:sameAs ?workWikidataUri .
+           FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workWikidataUri), "wikidata"))
+         }
+       }
+     }
 
-# - name: Roles possibles dans le cinéma avec leur fréquence
-#   query: |
-#     BASE <http://data.cinematheque.qc.ca>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+ - name: Roles possibles dans le cinéma avec leur fréquence
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
 
-#     SELECT ?role ?roleLabel (count(?role) as ?count) WHERE {
-#       [] crm:P14.1_in_the_role_of ?role .
-#       ?role rdfs:label ?roleLabel .
-#     }
-#     GROUP BY ?role ?roleLabel
-#     ORDER BY DESC(?count)
+     SELECT ?role ?roleLabel (count(?role) as ?count) WHERE {
+       [] crm:P14.1_in_the_role_of ?role .
+       ?role rdfs:label ?roleLabel .
+     }
+     GROUP BY ?role ?roleLabel
+     ORDER BY DESC(?count)
 
-# - name: Genre et catégories de films avec leur fréquence
-#   query: |
-#     BASE <http://data.cinematheque.qc.ca>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
-#     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+ - name: Genre et catégories de films avec leur fréquence
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
 
-#     SELECT DISTINCT ?genre ?genreLabel (count(?genre) as ?count) WHERE {
-#       ?work a frbroo:F1_Work .
-#       ?work crm:P2_has_type ?genre .
-#       ?genre rdfs:label ?genreLabel
-#       FILTER (contains(str(?work), "http://data.cinematheque.qc.ca"))
-#     }
-#     GROUP BY ?genre ?genreLabel
-#     ORDER BY DESC(?count)
+     SELECT DISTINCT ?genre ?genreLabel (count(?genre) as ?count) WHERE {
+       ?work a frbroo:F1_Work .
+       ?work crm:P2_has_type ?genre .
+       ?genre rdfs:label ?genreLabel
+       FILTER (contains(str(?work), "http://data.cinematheque.qc.ca"))
+     }
+     GROUP BY ?genre ?genreLabel
+     ORDER BY DESC(?count)
 
 - name: Réalisatrices avant réalisées le plus de films et qui sont nées à partir de 1980
   query: |
@@ -236,9 +236,10 @@
       ?person owl:sameAs ?personWd .
 
       SERVICE <https://query.wikidata.org/sparql> {
+        # ?personWd wdt:P21 wd:Q6581097 .
         ?personWd wdt:P21 wd:Q6581072 .
-        ?personWd wdt:P569 ?dateNaissance .
-        FILTER (year(?dateNaissance) >= 1980)
+        # ?personWd wdt:P569 ?dateNaissance .
+        # FILTER (year(?dateNaissance) >= 1980)
       }
     }
     GROUPBY ?person

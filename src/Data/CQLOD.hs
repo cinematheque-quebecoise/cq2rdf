@@ -53,6 +53,7 @@ data CQLODStatement = RoleDeclaration Role
                     | SynopsisTranslation SynopsisId SynopsisId
 
                     | WorkDeclaration WorkId
+                    | WorkTypeDeclaration WorkId WorkType
                     | WorkWikidataLink WorkId WikidataUri
                     | WorkSourcePerson WorkId WorkId PersonId
                     | WorkSourceLegalBody WorkId WorkId LegalBodyId
@@ -93,6 +94,9 @@ data CQLODStatement = RoleDeclaration Role
                     | ManifestationProductTypeDuration ManifestationProductTypeId Int -- ^ Duration in seconds
 
                     deriving (Eq, Show)
+
+data WorkType = UniqueWork | TelevisionSeries | TelevisionSeriesSeason | TelevisionSeriesEpisode
+  deriving (Eq, Show)
 
 newtype PublicProjectionEventId = PublicProjectionEventId { unPublicProjectionEventId :: Text }
   deriving (Eq, Show)

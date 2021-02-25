@@ -64,6 +64,7 @@ dependencies:
 - network-uri
 - parsec
 - hashable
+- transformers
 
 ghc-options:
 - -Wall

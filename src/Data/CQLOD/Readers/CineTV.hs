@@ -21,13 +21,14 @@ where
 
 import           Data.CQLOD                           (CQLOD (..),
                                                        CQLODStatements)
-import           Data.CQLOD.Readers.CineTV.Filmo      (readFilmo)
 import           Data.CQLOD.Readers.CineTV.FilmoPays (readFilmoPays)
 import           Data.CQLOD.Readers.CineTV.Fonction   (readFonction)
 import           Data.CQLOD.Readers.CineTV.Pays       (readPays)
 import           Data.CQLOD.Readers.CineTV.Nom       (readNom)
 import           Data.CQLOD.Readers.CineTV.Langue       (readLangue)
 import           Data.CQLOD.Readers.CineTV.Sujet       (readSujet, readOrganisme)
+import           Data.CQLOD.Readers.CineTV.Filmo      (readFilmo)
+-- import           Data.CQLOD.Readers.CineTV.FilmoType      (readFilmoType)
 import           Data.CQLOD.Readers.CineTV.FilmoRealisation       (readFilmoRealisation)
 import           Data.CQLOD.Readers.CineTV.FilmoDureesOriginales       (readFilmoDureesOriginales)
 import           Data.CQLOD.Readers.CineTV.FilmoResume       (readFilmoResume)
@@ -58,6 +59,7 @@ readCineTVStatements pool = do
   readSujet pool
   readOrganisme pool
   readFilmo pool
+  -- readFilmoType pool
   readFilmoRealisation pool
   readFilmoDureesOriginales pool
   readFilmoResume pool

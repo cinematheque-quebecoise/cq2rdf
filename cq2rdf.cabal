@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e4bba5697e42fd3f77eba83379def601a00bbfc2e837fc67efe96a25e4492a04
+-- hash: 02bd1aca42581d46f248ebd11236a416896e9ac580fc69982add0f5558536398
 
 name:           cq2rdf
 version:        0.1.0
@@ -50,6 +50,7 @@ library
       Data.CQLOD.Readers.CineTV.FilmoRealisation
       Data.CQLOD.Readers.CineTV.FilmoResume
       Data.CQLOD.Readers.CineTV.FilmoTitres
+      Data.CQLOD.Readers.CineTV.FilmoType
       Data.CQLOD.Readers.CineTV.Fonction
       Data.CQLOD.Readers.CineTV.GenresCategoriesLienWikidata
       Data.CQLOD.Readers.CineTV.Langue
@@ -118,6 +119,7 @@ library
     , rio >=0.1.12.0
     , text >=1.2 && <1.3
     , time >=1.8 && <1.10
+    , transformers
     , xsd
     , zlib >=0.6 && <0.7
   default-language: Haskell2010
@@ -158,6 +160,7 @@ executable cq2rdf-exe
     , rio >=0.1.12.0
     , text >=1.2 && <1.3
     , time >=1.8 && <1.10
+    , transformers
     , xsd
     , zlib >=0.6 && <0.7
   default-language: Haskell2010
@@ -221,6 +224,7 @@ test-suite cq2rdf-test
     , rio >=0.1.12.0
     , text >=1.2 && <1.3
     , time >=1.8 && <1.10
+    , transformers
     , xsd
     , zlib >=0.6 && <0.7
   default-language: Haskell2010
