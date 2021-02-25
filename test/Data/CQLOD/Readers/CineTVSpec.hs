@@ -149,23 +149,23 @@ spec = do
         , WorkDeclaration $ WorkId "95672"
         ]
 
-    it "should categorize unique works by nature of production" $ do
-      let filteredStatements = [ s | s@(WorkTypeDeclaration _ UniqueWork) <- statements]
-      filteredStatements `shouldContainElems`
-        [ WorkTypeDeclaration (WorkId "63563") UniqueWork
-        ]
+    -- it "should categorize unique works by nature of production" $ do
+    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ UniqueWork) <- statements]
+    --   filteredStatements `shouldContainElems`
+    --     [ WorkTypeDeclaration (WorkId "63563") UniqueWork
+    --     ]
 
-    it "should categorize tv series using Sujet table" $ do
-      let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeries) <- statements]
-      filteredStatements `shouldContainElems`
-        [ WorkTypeDeclaration (WorkId "8267") TelevisionSeries
-        ]
+    -- it "should categorize tv series using Sujet table" $ do
+    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeries) <- statements]
+    --   filteredStatements `shouldContainElems`
+    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeries
+    --     ]
 
-    it "should categorize tv series episode using FilmoNombresEpisodes table" $ do
-      let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
-      filteredStatements `shouldContainElems`
-        [ WorkTypeDeclaration (WorkId "8267") TelevisionSeriesEpisode
-        ]
+    -- it "should categorize tv series episode using FilmoNombresEpisodes table" $ do
+    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
+    --   filteredStatements `shouldContainElems`
+    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeriesEpisode
+    --     ]
 
     -- it "should categorize tv series episode using FilmoNombresEpisodes table" $ do
     --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
