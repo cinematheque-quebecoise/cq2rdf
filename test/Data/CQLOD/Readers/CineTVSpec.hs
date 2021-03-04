@@ -149,29 +149,30 @@ spec = do
         , WorkDeclaration $ WorkId "95672"
         ]
 
-    -- it "should categorize unique works by nature of production" $ do
-    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ UniqueWork) <- statements]
-    --   filteredStatements `shouldContainElems`
-    --     [ WorkTypeDeclaration (WorkId "63563") UniqueWork
-    --     ]
+    it "should categorize unique works by nature of production" $ do
+      let filteredStatements = [ s | s@(WorkTypeDeclaration _ UniqueWork) <- statements]
+      filteredStatements `shouldContainElems`
+        [ WorkTypeDeclaration (WorkId "63563") UniqueWork
+        ]
 
-    -- it "should categorize tv series using Sujet table" $ do
-    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeries) <- statements]
-    --   filteredStatements `shouldContainElems`
-    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeries
-    --     ]
+    it "should categorize tv series using Sujet table" $ do
+      let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeries) <- statements]
+      filteredStatements `shouldContainElems`
+        [ WorkTypeDeclaration (WorkId "8267") TelevisionSeries
+        , WorkTypeDeclaration (WorkId "95672") TelevisionSeries
+        ]
 
-    -- it "should categorize tv series episode using FilmoNombresEpisodes table" $ do
-    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
-    --   filteredStatements `shouldContainElems`
-    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeriesEpisode
-    --     ]
+    it "should categorize tv season by title in table Filmo" $ do
+      let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesSeason) <- statements]
+      filteredStatements `shouldContainElems`
+        [ WorkTypeDeclaration (WorkId "101435") TelevisionSeriesSeason
+        ]
 
-    -- it "should categorize tv series episode using FilmoNombresEpisodes table" $ do
-    --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
-    --   filteredStatements `shouldContainElems`
-    --     [ WorkTypeDeclaration (WorkId "8267") TelevisionSeriesEpisode
-    --     ]
+    it "should categorize tv series episode using FilmoDureesEpisodes table" $ do
+      let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
+      filteredStatements `shouldContainElems`
+        [ WorkTypeDeclaration (WorkId "105281") TelevisionSeriesEpisode
+        ]
 
     -- it "should categorize tv series episode using FilmoDureesEpisode table" $ do
     --   let filteredStatements = [ s | s@(WorkTypeDeclaration _ TelevisionSeriesEpisode) <- statements]
@@ -322,8 +323,10 @@ spec = do
         , WorkOriginalTitle (WorkId "2") "L'HOMME DE L'ISLE"
         , WorkOriginalTitle (WorkId "8267") "SIX MILLION DOLLAR MAN"
         , WorkOriginalTitle (WorkId "95672") "19-2"
+        , WorkOriginalTitle (WorkId "101435") "19-2 [Saison 01]"
+        , WorkOriginalTitle (WorkId "105281") "LA THÉRAPIE DE CARO"
         ]
-      length filteredStatements `shouldBe` 4
+      length filteredStatements `shouldBe` 6
 
     it "should read work other titles from table FilmoTitres" $ do
       let filteredStatements = [ s | s@WorkOtherTitle {} <- statements]
@@ -386,10 +389,12 @@ spec = do
       filteredStatements `shouldContainElems`
         [ RecordingEventTimeSpan (RecordingEventId "63563") (TimeSpan (parseDateField "01-01-11") (parseDateField "01-01-12"))
         , RecordingEventTimeSpan (RecordingEventId "2") (TimeSpan (parseDateField "01-01-11") (parseDateField "01-01-12"))
-        , RecordingEventTimeSpan (RecordingEventId "95672") (TimeSpan Nothing Nothing)
         , RecordingEventTimeSpan (RecordingEventId "8267") (TimeSpan Nothing Nothing)
+        , RecordingEventTimeSpan (RecordingEventId "95672") (TimeSpan Nothing Nothing)
+        , RecordingEventTimeSpan (RecordingEventId "101435") (TimeSpan Nothing Nothing)
+        , RecordingEventTimeSpan (RecordingEventId "105281") (TimeSpan Nothing Nothing)
         ]
-      length filteredStatements `shouldBe` 4
+      length filteredStatements `shouldBe` 6
 
     it "should create recording event activity from table Filmo_Generique" $ do
       let filteredStatements = [ s | s@RecordingEventActivity {} <- statements ]
@@ -521,6 +526,34 @@ dbSetup = do
                                             Nothing
                                             Nothing
                                             (Just $ toSqlKey 2)
+    _ <- insertKey (toSqlKey 101435) $ Filmo Nothing
+                                            (Just "19-2 [Saison 01]")
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            Nothing
+                                            (Just $ toSqlKey 2)
+    _ <- insertKey (toSqlKey 105281) $ Filmo (Just "LA")
+                                       (Just "THÉRAPIE DE CARO")
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       Nothing
+                                       (Just $ toSqlKey 2)
     _ <- insertKey (toSqlKey 8267) $ Filmo Nothing
                                            (Just "SIX MILLION DOLLAR MAN")
                                            Nothing
@@ -578,6 +611,8 @@ dbSetup = do
 
     _ <- insertKey (toSqlKey 3669) $ FilmoNombresEpisodes (toSqlKey 95672) 10
     _ <- insertKey (toSqlKey 3670) $ FilmoNombresEpisodes (toSqlKey 95672) 10
+
+    _ <- insertKey (toSqlKey 3670) $ FilmoDureesEpisodes (toSqlKey 105281) 20 0
 
     return ()
 

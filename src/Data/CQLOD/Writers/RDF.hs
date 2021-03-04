@@ -64,6 +64,7 @@ instance ToTriples CQLODStatement where
     writeSynopsisTranslation sId osId
 
   toTriples (WorkDeclaration   wid      ) = writeWorkDeclaration wid
+  toTriples (WorkTypeDeclaration  wid wtype) = writeWorkTypeDeclaration wid wtype
   toTriples (WorkWikidataLink wid wikidataUri) = writeWorkWikidataLink wid wikidataUri
   toTriples (WorkOriginalTitle wid title) = writeWorkOriginalTitle wid title
   toTriples (WorkOtherTitle wid wtId title) = writeWorkOtherTitle wid wtId title
@@ -169,6 +170,9 @@ mkPersonAppellationUri pId =
 
 mkWorkUri :: Text -> Text
 mkWorkUri wid = baseUriPath <> "/Work" <> wid
+
+mkWorkTypeUri :: WorkType -> Text
+mkWorkTypeUri wtype = baseUriPath <> "/" <> T.pack (show wtype)
 
 mkWorkConceptionUri :: Text -> Text
 mkWorkConceptionUri wcId = baseUriPath <> "/WorkConception" <> wcId
@@ -305,6 +309,19 @@ mkEntityTypesTriples = execState writeTriples []
     append $ mkTripleLit originalTitleTypeUri rdfsLabel (RDF.PlainLL "Original title" "en")
     append $ mkTripleLit originalTitleTypeUri rdfsComment (RDF.PlainLL "Titre originale d'une oeuvre" "fr")
 
+    append $ mkTriple (mkWorkTypeUri UniqueWork) rdfType crmE55
+    append $ mkTripleLit (mkWorkTypeUri UniqueWork) rdfsLabel (RDF.PlainLL "Oeuvre unique" "fr")
+    append $ mkTripleLit (mkWorkTypeUri UniqueWork) rdfsLabel (RDF.PlainLL "Unique work" "fr")
+    append $ mkTriple (mkWorkTypeUri TelevisionSeries) rdfType crmE55
+    append $ mkTripleLit (mkWorkTypeUri TelevisionSeries) rdfsLabel (RDF.PlainLL "Série télévisée" "fr")
+    append $ mkTripleLit (mkWorkTypeUri TelevisionSeries) rdfsLabel (RDF.PlainLL "Television Series" "en")
+    append $ mkTriple (mkWorkTypeUri TelevisionSeriesSeason) rdfType crmE55
+    append $ mkTripleLit (mkWorkTypeUri TelevisionSeriesSeason) rdfsLabel (RDF.PlainLL "Saison d'une série télévisée" "fr")
+    append $ mkTripleLit (mkWorkTypeUri TelevisionSeriesSeason) rdfsLabel (RDF.PlainLL "Television series season" "en")
+    append $ mkTriple (mkWorkTypeUri TelevisionSeriesEpisode) rdfType crmE55
+    append $ mkTripleLit (mkWorkTypeUri TelevisionSeriesEpisode) rdfsLabel (RDF.PlainLL "Épisode d'une série télévisée" "fr")
+    append $ mkTripleLit (mkWorkTypeUri TelevisionSeriesEpisode) rdfsLabel (RDF.PlainLL "Television series episode" "en")
+
 writePersonDeclaration :: Person -> Triples
 writePersonDeclaration person = execState writeTriples []
 
@@ -386,6 +403,17 @@ writeWorkDeclaration (WorkId wid) =
   catMaybes [ mkTriple (mkWorkUri wid) rdfType frbrooF1
             , mkTripleLit (mkWorkUri wid) rdfsComment (RDF.PlainLL ("Oeuvre audiovisuelle avec l'identifiant " <> wid) "fr")
             ]
+
+writeWorkTypeDeclaration :: WorkId -> WorkType -> Triples
+writeWorkTypeDeclaration (WorkId wId) workType =
+  execState writeTriples []
+
+ where
+  writeTriples :: State Triples ()
+  writeTriples = do
+    let workUri = mkWorkUri wId
+    let workTypeUri = mkWorkTypeUri workType
+    append $ mkTriple workUri crmP2 workTypeUri
 
 writeWorkWikidataLink :: WorkId -> WikidataUri -> Triples
 writeWorkWikidataLink (WorkId wId) (WikidataUri wikidataUri) =

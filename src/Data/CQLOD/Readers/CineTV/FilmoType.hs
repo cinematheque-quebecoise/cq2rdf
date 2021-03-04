@@ -51,6 +51,9 @@ createFilmoType
 createFilmoType pool filmoEntity = do
   MaybeT (return $ createFilmoUniqueWork filmoEntity)
     <|> createFilmoSeries pool filmoEntity
+    <|> createFilmoSeason filmoEntity
+    <|> createFilmoSeriesByNumEpisodes pool filmoEntity
+    <|> createFilmoEpisode pool filmoEntity
 
 createFilmoUniqueWork :: Entity Filmo -> Maybe FilmoType
 createFilmoUniqueWork filmoEntity = do
@@ -104,22 +107,63 @@ createFilmoSeries pool filmoEntity = MaybeT $ do
     then return (Just $ FilmoType (entityKey filmoEntity) TelevisionSeries)
     else return Nothing
 
+createFilmoSeason :: (MonadIO m) => Entity Filmo -> MaybeT m FilmoType
+createFilmoSeason filmoEntity = MaybeT $ do
+  let titleMaybe = filmoTitreOriginal $ entityVal filmoEntity
+
+  return $ do
+    title <- titleMaybe
+    if T.isInfixOf "[" title && T.isInfixOf "]" title
+      then Just $ FilmoType (entityKey filmoEntity) TelevisionSeriesSeason
+      else Nothing
+
+createFilmoSeriesByNumEpisodes :: (MonadIO m) => Pool SqlBackend -> Entity Filmo -> MaybeT m FilmoType
+createFilmoSeriesByNumEpisodes pool filmoEntity = MaybeT $ do
+  filmoSeason <-
+    liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \(filmo, filmoNombresEpisodes) -> do
+        where_
+          (   (   filmo
+              ^.  FilmoId
+              ==. filmoNombresEpisodes
+              ^.  FilmoNombresEpisodesFilmoId
+              )
+          &&. (filmo ^. FilmoId ==. val (entityKey filmoEntity))
+          )
+        return filmo
+
+  if not (null filmoSeason)
+    then return (Just $ FilmoType (entityKey filmoEntity) TelevisionSeries)
+    else return Nothing
+
+createFilmoEpisode :: (MonadIO m) => Pool SqlBackend -> Entity Filmo -> MaybeT m FilmoType
+createFilmoEpisode pool filmoEntity = MaybeT $ do
+  filmoEpisode <-
+    liftIO
+    $ flip liftSqlPersistMPool pool
+    $ select
+    $ distinct
+    $ from
+    $ \(filmo, filmoNombresEpisodes) -> do
+        where_
+          (   (   filmo
+              ^.  FilmoId
+              ==. filmoNombresEpisodes
+              ^.  FilmoDureesEpisodesFilmoId
+              )
+          &&. (filmo ^. FilmoId ==. val (entityKey filmoEntity))
+          )
+        return filmo
+
+  if not (null filmoEpisode)
+    then return (Just $ FilmoType (entityKey filmoEntity) TelevisionSeriesEpisode)
+    else return Nothing
+
 createStatements :: (Monad m) => FilmoType -> CQLODStatements m ()
 createStatements filmoType = addStatement $ WorkTypeDeclaration
   (WorkId $ sqlKeyToText $ filmoTypeFilmoId filmoType)
   (filmoTypeWorkType filmoType)
-  -- let filmoId      = sqlKeyToText $ entityKey filmoEntity
-  -- let natureDeLaProductionIdMaybe = filmoNatureDeLaProductionId $ entityVal filmoEntity
-  -- forM_ natureDeLaProductionIdMaybe $ \natureDeLaProductionId -> do
-  --   case sqlKeyToText natureDeLaProductionId of
-  --     "1" -> addStatement $ WorkTypeDeclaration (WorkId filmoId) UniqueWork
-  --     _ -> return ()
-
--- mkTitleWork :: FilmoTitres -> Text
--- mkTitleWork filmoTitres = do
---   let restTitle = filmoTitresTitre filmoTitres
---   case filmoTitresPrefixe filmoTitres of
---     Just prefixTitle -> if T.isSuffixOf "'" prefixTitle
---       then prefixTitle <> "" <> restTitle
---       else prefixTitle <> " " <> restTitle
---     Nothing -> restTitle

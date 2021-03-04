@@ -62,6 +62,11 @@ instance Arbitrary UTCTimeWrapper where
     randomTime <- choose (0, 86401) :: Gen Int
     return $ UTCTimeWrapper $ UTCTime (fromGregorian randomYear randomMonth randomDay) (fromIntegral randomTime)
 
+newtype WorkTypeWrapper = WorkTypeWrapper { unWorkTypeWrapper :: WorkType } deriving (Show)
+
+instance Arbitrary WorkTypeWrapper where
+  arbitrary = WorkTypeWrapper <$> elements [UniqueWork, TelevisionSeries, TelevisionSeriesSeason, TelevisionSeriesEpisode]
+
 alpha :: Gen Char
 alpha = elements $ ['a' .. 'z'] ++ ['A' .. 'Z']
 
@@ -350,6 +355,19 @@ spec = do
         [ mkTriple workUri crmP102 workTitleUri
         , mkTriple workTitleUri rdfType crmE35
         , mkTripleLit workTitleUri crmP190 (PlainL title)
+        ]
+
+  describe "writeWorkType" $ do
+    prop "basic check" $ \(entityId, workTypeWrapper) -> do
+      let workId              = WorkId $ unEntityId entityId
+      let workType              = unWorkTypeWrapper workTypeWrapper
+      let triples           = toTriples $ WorkTypeDeclaration workId workType
+
+      let workUri = "/resource/Work" <> unEntityId entityId
+      let workTypeUri = "/resource/" <> T.pack (show workType)
+
+      triples `shouldContainElems` catMaybes
+        [ mkTriple workUri crmP2 workTypeUri
         ]
 
   describe "writeWorkSourcePerson" $ do

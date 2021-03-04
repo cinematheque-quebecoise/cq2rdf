@@ -1,19 +1,19 @@
-##
-## This file is part of cq2rdf
-##
-## cq2rdf is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-##
-## cq2rdf is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
-##
+#
+# This file is part of cq2rdf
+#
+# cq2rdf is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cq2rdf is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
+#
 image: nixos/nix:latest
 
 before_script:
@@ -42,7 +42,7 @@ before_script:
   - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
 
-  - git clone git@gitlab.com:cinematheque-quebecoise/cinetvdb.git
+  # - git clone git@gitlab.com:cinematheque-quebecoise/cinetvdb.git
 
 stages:
   - build
@@ -55,13 +55,13 @@ compile:
 
 # Create a new tag and release based on the version in "package.yaml" when the
 # pipeline source a trigger and is applied on the master branch.
-release:
-  stage: build
-  script:
-    # Find version in "package.yaml"
-    - VERSION=$(grep version package.yaml | sed 's/version:\s*\([[:digit:]]\.[[:digit:]]*\)/\1/')
-    # Create a new tag and release
-    - "curl --header 'Content-Type: application/json' --header \"PRIVATE-TOKEN: $ACCESS_TOKEN\" --data '{ \"name\": \"Version '${VERSION}' release\", \"tag_name\": \"v'${VERSION}'\", \"ref\": \"master\" }' --request POST https://gitlab.com/api/v4/projects/18031890/releases"
-  rules:
-    - if: '$CI_COMMIT_REF_NAME == "master" && $CI_PIPELINE_SOURCE == "trigger"'
-      when: always
+# release:
+#   stage: build
+#   script:
+#     # Find version in "package.yaml"
+#     - VERSION=$(grep version package.yaml | sed 's/version:\s*\([[:digit:]]\.[[:digit:]]*\)/\1/')
+#     # Create a new tag and release
+#     - "curl --header 'Content-Type: application/json' --header \"PRIVATE-TOKEN: $ACCESS_TOKEN\" --data '{ \"name\": \"Version '${VERSION}' release\", \"tag_name\": \"v'${VERSION}'\", \"ref\": \"master\" }' --request POST https://gitlab.com/api/v4/projects/18031890/releases"
+#   rules:
+#     - if: '$CI_COMMIT_REF_NAME == "master" && $CI_PIPELINE_SOURCE == "trigger"'
+#       when: always
