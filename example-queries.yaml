@@ -218,31 +218,31 @@
      GROUP BY ?genre ?genreLabel
      ORDER BY DESC(?count)
 
-- name: Réalisatrices avant réalisées le plus de films de fictions
-  query: |
-    BASE <http://data.cinematheque.qc.ca>
-    PREFIX wd: <http://www.wikidata.org/entity/>
-    PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-    PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
-    PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    SELECT DISTINCT ?person ?personLabel (COUNT(DISTINCT(?recordingEvent)) as ?count) WHERE {
-      ?work crm:P2_has_type <http://data.cinematheque.qc.ca/resource/GenreCategory4434> .
-      ?recordingWork frbroo:R2_is_derivative_of ?work .
-      ?recordingEvent frbroo:R22_created_a_realization_of ?recordingWork .
-      ?recordingEvent crm:P9_consists_of ?recordingActivity .
-      ?recordingActivityC crm:P01_has_domain ?recordingActivity .
-      ?recordingActivityC crm:P02_has_range ?person .
-      ?recordingActivityC crm:P14.1_in_the_role_of </resource/Role1> .
-      ?person owl:sameAs ?personWd .
-      ?person rdfs:label ?personLabel .
+ - name: Réalisatrices avant réalisées le plus de films de fictions
+   query: |
+     BASE <http://data.cinematheque.qc.ca>
+     PREFIX wd: <http://www.wikidata.org/entity/>
+     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+     PREFIX owl: <http://www.w3.org/2002/07/owl#>
+     PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+     PREFIX frbroo: <http://iflastandards.info/ns/fr/frbr/frbroo/>
+     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+     SELECT DISTINCT ?person ?personLabel (COUNT(DISTINCT(?recordingEvent)) as ?count) WHERE {
+       ?work crm:P2_has_type <http://data.cinematheque.qc.ca/resource/GenreCategory4434> .
+       ?recordingWork frbroo:R2_is_derivative_of ?work .
+       ?recordingEvent frbroo:R22_created_a_realization_of ?recordingWork .
+       ?recordingEvent crm:P9_consists_of ?recordingActivity .
+       ?recordingActivityC crm:P01_has_domain ?recordingActivity .
+       ?recordingActivityC crm:P02_has_range ?person .
+       ?recordingActivityC crm:P14.1_in_the_role_of </resource/Role1> .
+       ?person owl:sameAs ?personWd .
+       ?person rdfs:label ?personLabel .
 
-      SERVICE <https://query.wikidata.org/sparql> {
-        ?personWd wdt:P21 wd:Q6581072 .
-      }
-    }
-    GROUPBY ?person ?personLabel
-    ORDER BY DESC (COUNT(DISTINCT(?recordingEvent)))
-    LIMIT 5
+       SERVICE <https://query.wikidata.org/sparql> {
+         ?personWd wdt:P21 wd:Q6581072 .
+       }
+     }
+     GROUPBY ?person ?personLabel
+     ORDER BY DESC (COUNT(DISTINCT(?recordingEvent)))
+     LIMIT 5
