@@ -15,14 +15,9 @@
 
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Data.RDF.Vocabulary.DBpedia where
-
-import           Import             hiding ((^.))
+module Data.RDF.Vocabulary.Schema where
 
 import qualified Data.RDF.Namespace as RDF
 
-dbo :: RDF.Namespace
-dbo = RDF.mkPrefixedNS' "dbo" "http://dbpedia.org/ontology/"
-
-dboBudget :: Text
-dboBudget = RDF.mkUri dbo "budget"
+schema :: RDF.Namespace
+schema = RDF.mkPrefixedNS' "schema" "http://schema.org/"

@@ -18,9 +18,11 @@
 module Data.RDF.Vocabulary.FRBRoo where
 
 import           Import             hiding ((^.))
-import           Namespaces
 
 import qualified Data.RDF.Namespace as RDF
+
+frbroo :: RDF.Namespace
+frbroo = RDF.mkPrefixedNS' "frbroo" "http://iflastandards.info/ns/fr/frbr/frbroo/"
 
 frbrooF1 :: Text
 frbrooF1 = RDF.mkUri frbroo "F1_Work"

@@ -22,8 +22,7 @@ where
 
 import           Data.CQLOD                   (CQLODStatement (..),
                                                CQLODStatements, WorkId (..),
-                                               WorkTitleId (..), WorkType (..),
-                                               addStatement)
+                                               WorkType (..), addStatement)
 import           Database.CineTv.Public.Model
 import           Import                       hiding ((^.))
 import           Util                         (sqlKeyToText)
@@ -117,7 +116,8 @@ createFilmoSeason filmoEntity = MaybeT $ do
       then Just $ FilmoType (entityKey filmoEntity) TelevisionSeriesSeason
       else Nothing
 
-createFilmoSeriesByNumEpisodes :: (MonadIO m) => Pool SqlBackend -> Entity Filmo -> MaybeT m FilmoType
+createFilmoSeriesByNumEpisodes
+  :: (MonadIO m) => Pool SqlBackend -> Entity Filmo -> MaybeT m FilmoType
 createFilmoSeriesByNumEpisodes pool filmoEntity = MaybeT $ do
   filmoSeason <-
     liftIO
@@ -140,7 +140,8 @@ createFilmoSeriesByNumEpisodes pool filmoEntity = MaybeT $ do
     then return (Just $ FilmoType (entityKey filmoEntity) TelevisionSeries)
     else return Nothing
 
-createFilmoEpisode :: (MonadIO m) => Pool SqlBackend -> Entity Filmo -> MaybeT m FilmoType
+createFilmoEpisode
+  :: (MonadIO m) => Pool SqlBackend -> Entity Filmo -> MaybeT m FilmoType
 createFilmoEpisode pool filmoEntity = MaybeT $ do
   filmoEpisode <-
     liftIO
@@ -160,7 +161,8 @@ createFilmoEpisode pool filmoEntity = MaybeT $ do
         return filmo
 
   if not (null filmoEpisode)
-    then return (Just $ FilmoType (entityKey filmoEntity) TelevisionSeriesEpisode)
+    then return
+      (Just $ FilmoType (entityKey filmoEntity) TelevisionSeriesEpisode)
     else return Nothing
 
 createStatements :: (Monad m) => FilmoType -> CQLODStatements m ()

@@ -18,9 +18,11 @@
 module Data.RDF.Vocabulary.CRM where
 
 import           Import             hiding ((^.))
-import           Namespaces
 
 import qualified Data.RDF.Namespace as RDF
+
+crm :: RDF.Namespace
+crm = RDF.mkPrefixedNS' "crm" "http://www.cidoc-crm.org/cidoc-crm/"
 
 crmE7 :: Text
 crmE7 = RDF.mkUri crm "E7_Activity"

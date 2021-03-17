@@ -18,8 +18,9 @@
 
 module Data.CQLOD.RDF.Void where
 
-import           Data.RDF.State          (RdfState, addPrefixMappings,
-                                          addTriple)
+import Namespaces
+
+import           Data.RDF.State          (RdfState, addTriple, addPrefixMappings)
 import           Data.RDF.Types.Extended (mkTriple, mkTripleLit)
 import           Import                  hiding (void)
 import           Data.RDF.Vocabulary
@@ -30,8 +31,7 @@ import           Data.Hashable           (Hashable (..))
 import           Data.RDF                (LValue (..), Node (..), RDF, Rdf,
                                           Triple (..))
 import qualified Data.RDF                as RDF
-import           Data.RDF.Namespace      (foaf, mkUri, ns_mappings, owl, rdf,
-                                          rdfs, xsd, uriOf)
+import           Data.RDF.Namespace      (mkUri, uriOf, ns_mappings)
 import qualified Data.Text               as T
 import qualified Data.Text.Read               as T
 import           Data.Time.Clock         (UTCTime (..))
@@ -589,7 +589,6 @@ getGroupByCountQueryResult sparqlEndpoint query = do
 -- |Add prefix mappings for VoID data file.
 addVoidPrefixMappings :: (Rdf a, Monad m) => RdfState a m ()
 addVoidPrefixMappings = do
-  let namespaces = [rdf, rdfs, owl, void, dcterms, foaf, wd, xsd, formats]
   addPrefixMappings (ns_mappings namespaces) True
 
   forM_ namespaces $ \namespace -> do

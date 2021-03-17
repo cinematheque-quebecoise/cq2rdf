@@ -14,51 +14,19 @@
 -- along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
 
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Namespaces where
 
 import           Data.RDF
 import           Data.RDF.Namespace
+import           Data.RDF.Vocabulary
 
-cmtqo :: Namespace
-cmtqo =
-  mkPrefixedNS' "cmtqo" "http://data.cinematheque.qc.ca/ontology/cmtqo/0.1#"
-
-crm :: Namespace
-crm = mkPrefixedNS' "crm" "http://www.cidoc-crm.org/cidoc-crm/"
-
-frbroo :: Namespace
-frbroo = mkPrefixedNS' "frbroo" "http://iflastandards.info/ns/fr/frbr/frbroo/"
-
-dbo :: Namespace
-dbo = mkPrefixedNS' "dbo" "http://dbpedia.org/ontology/"
-
-rdac :: Namespace
-rdac = mkPrefixedNS' "rdac" "http://rdaregistry.info/Elements/c/"
-
-dcterms :: Namespace
-dcterms = mkPrefixedNS' "dcterms" "http://purl.org/dc/terms/"
-
-wd :: Namespace
-wd = mkPrefixedNS' "wd" "http://www.wikidata.org/entity/"
-
-wdt :: Namespace
-wdt = mkPrefixedNS' "wdt" "http://www.wikidata.org/prop/direct/"
-
-schema :: Namespace
-schema = mkPrefixedNS' "schema" "http://schema.org/"
-
-unit :: Namespace
-unit = mkPrefixedNS' "unit" "http://qudt.org/vocab/unit/"
-
-prefixMappings :: PrefixMappings
-prefixMappings = ns_mappings
+namespaces :: [Namespace]
+namespaces =
   [ crm
   , frbroo
   , dbo
   , schema
-  , rdac
   , dcterms
   , rdf
   , rdfs
@@ -67,6 +35,10 @@ prefixMappings = ns_mappings
   , owl
   , wd
   , wdt
-  -- , cmtqo
   , unit
+  , formats
+  , void
   ]
+
+prefixMappings :: PrefixMappings
+prefixMappings = ns_mappings namespaces
