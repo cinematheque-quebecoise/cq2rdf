@@ -94,7 +94,7 @@ defaultVoID = do
   mapM_ addTriple $ mkTriple datasetUri rdfType voidDataset
   mapM_ addTriple $ mkTriple datasetUri
                              dctermsLicense
-                             "http://www.opendatacommons.org/licenses/odbl/"
+                             "http://creativecommons.org/licenses/by-sa/4.0/"
 
 -- |Add time when the dataset was exported from CineTV.
 addCreatedDateTime :: (Rdf a, Monad m) => UTCTime -> RdfState a m ()
