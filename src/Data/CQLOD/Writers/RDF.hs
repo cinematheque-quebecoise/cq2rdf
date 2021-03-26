@@ -134,6 +134,9 @@ baseUriPath = "/resource"
 roleTypeUri :: Text
 roleTypeUri = baseUriPath <> "/Role"
 
+directorRoleUri :: Text
+directorRoleUri = baseUriPath <> "/Role1"
+
 genreCategoryTypeUri :: Text
 genreCategoryTypeUri = baseUriPath <> "/GenreCategory"
 
@@ -284,6 +287,15 @@ mkEntityTypesTriples = execState writeTriples []
       rdfsComment
       (RDF.PlainLL "Role occupé par un agent dans la production d'une oeuvre" "fr"
       )
+
+    append $ mkTriple directorRoleUri rdfType crmE55
+    append $ mkTripleLit directorRoleUri rdfsLabel (RDF.PlainLL "Réalisation" "fr")
+    append $ mkTriple directorRoleUri crmP2 roleTypeUri
+    let directorRoleIdentifierUri = baseUriPath <> "/IdentifierRole1"
+    append $ mkTriple directorRoleUri rdfType crmE42
+    append $ mkTripleLit directorRoleUri rdfsLabel (RDF.PlainLL "Identifiant de réalisation" "fr")
+    append $ mkTriple directorRoleUri crmP48 directorRoleIdentifierUri
+    append $ mkTripleLit directorRoleIdentifierUri crmP190 (RDF.PlainL "1")
 
     append $ mkTriple durationTypeUri rdfType crmE55
     append $ mkTripleLit durationTypeUri rdfsLabel (RDF.PlainLL "Duration" "en")
