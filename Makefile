@@ -1,7 +1,7 @@
 # Date of data exportation.
 BASEURI=http://data.cinematheque.qc.ca
 # Destination directory of produced files
-DESTDIR=.
+DESTDIR=cmtq-dataset
 # Executable name
 EXEC := $(shell grep "name:\s*" package.yaml | sed "s/name:\s*\(.*\)\s*/\1/")-exe
 GITLAB_PROJECT_ID=18031890

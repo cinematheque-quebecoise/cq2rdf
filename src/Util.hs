@@ -28,17 +28,17 @@ module Util
   )
 where
 
-import Import
+import           Import
 
 import qualified Data.Text          as Text
+import qualified Data.Text          as T
 import           Data.Time.Clock    (UTCTime (..))
 import           Data.Time.Format   (defaultTimeLocale, formatTime,
                                      iso8601DateFormat, parseTimeM)
 import           Database.Esqueleto (Key, SqlBackend, ToBackendKey, fromSqlKey)
-import qualified Data.Text as T
+import           System.Directory   (createDirectoryIfMissing)
+import           System.FilePath    (joinPath)
 import           Text.XML.XSD       (fromUTCTime)
-import           System.FilePath                   (joinPath)
-import           System.Directory                  (createDirectoryIfMissing)
 
 plus2 :: Int -> Int
 plus2 = (+ 2)
@@ -47,8 +47,8 @@ plus2 = (+ 2)
 createOutputDirIfMissing :: RIO App Text
 createOutputDirIfMissing = do
   env <- ask
-  let outputDir = T.pack $ joinPath
-        [T.unpack $ optionsOutputDir $ appOptions env, "cmtq-dataset"]
+  let outputDir =
+        T.pack $ joinPath [T.unpack $ optionsOutputDir $ appOptions env]
   liftIO $ createDirectoryIfMissing True $ T.unpack outputDir
   return outputDir
 

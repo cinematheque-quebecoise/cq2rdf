@@ -292,9 +292,9 @@ mkEntityTypesTriples = execState writeTriples []
     append $ mkTripleLit directorRoleUri rdfsLabel (RDF.PlainLL "Réalisation" "fr")
     append $ mkTriple directorRoleUri crmP2 roleTypeUri
     let directorRoleIdentifierUri = baseUriPath <> "/IdentifierRole1"
-    append $ mkTriple directorRoleUri rdfType crmE42
-    append $ mkTripleLit directorRoleUri rdfsLabel (RDF.PlainLL "Identifiant de réalisation" "fr")
     append $ mkTriple directorRoleUri crmP48 directorRoleIdentifierUri
+    append $ mkTriple directorRoleIdentifierUri rdfType crmE42
+    append $ mkTripleLit directorRoleIdentifierUri rdfsLabel (RDF.PlainLL "Identifiant de réalisation" "fr")
     append $ mkTripleLit directorRoleIdentifierUri crmP190 (RDF.PlainL "1")
 
     append $ mkTriple durationTypeUri rdfType crmE55
@@ -358,7 +358,9 @@ writePersonDeclaration person = execState writeTriples []
       append $ mkTripleLit personUri foafName (RDF.PlainL fullname)
       append $ mkTriple personUri crmP1 personAppellationUri
       append $ mkTriple personAppellationUri rdfType crmE41
+      append $ mkTripleLit personAppellationUri rdfsLabel (RDF.PlainLL ("Appellation de " <> fullname) "fr")
       append $ mkTripleLit personAppellationUri crmP190 (RDF.PlainL fullname)
+      append $ mkTripleLit personIdentifierUri rdfsLabel (RDF.PlainLL ("Identifiant de " <> fullname) "fr")
 
     forM_ lastNameMaybe $ \lastName ->
       append $ mkTripleLit personUri foafFamilyName (RDF.PlainL lastName)
@@ -511,7 +513,7 @@ writeProductionCost (WorkId workId) amount currency =
     append $ mkTriple workUri crmP43 dimensionUri
     append $ mkTriple dimensionUri rdfType crmE54
     append $ mkTriple dimensionUri crmP2   budgetTypeUri
-    append $ mkTripleLit dimensionUri rdfsLabel (RDF.PlainL dimensionLabel)
+    append $ mkTripleLit dimensionUri rdfsLabel (RDF.PlainL $ budgetText <> T.pack (show currency))
     append $ mkTripleLit dimensionUri crmP181   (RDF.TypedL budgetText xsdDouble)
     append $ mkTriple dimensionUri crmP180 (currencyToUri currency)
 
