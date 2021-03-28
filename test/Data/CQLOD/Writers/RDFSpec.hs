@@ -410,8 +410,8 @@ spec = do
       let triples           = toTriples $ WorkProductionCost (WorkId workId) amount CAD
 
       let workUri = "/resource/Work" <> workId
-      let dimensionLabel = "Dimension" <> T.pack (show amount) <> "CAD"
-      let dimensionUri = "/resource/" <> dimensionLabel
+      let dimensionLabel = T.pack (show amount) <> "CAD"
+      let dimensionUri = "/resource/" <> "Dimension" <> dimensionLabel
       triples `shouldContainElems` catMaybes
         [ mkTriple workUri crmP43 dimensionUri
         , mkTriple dimensionUri rdfType crmE54

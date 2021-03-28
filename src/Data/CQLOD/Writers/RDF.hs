@@ -23,6 +23,7 @@ import           Data.RDF.Vocabulary
 import           Import
 import           Namespaces
 import           Util                    (utcTimeToText)
+import Data.RDF.State
 
 import           Control.Monad.State
 import           Data.RDF                (RDF, Rdf, Triples)
@@ -270,9 +271,19 @@ mkDurationUri durationId = baseUriPath <> "/" <> durationId
 
 writeRdf :: (Monad m, Rdf a) => CQLOD -> m (RDF a)
 writeRdf (CQLOD statements) = do
-  let entityTypeTriples = mkEntityTypesTriples
-  let triples = concatMap toTriples statements
-  return $ RDF.mkRdf (entityTypeTriples ++ triples) Nothing prefixMappings
+  let emptyGraph = RDF.mkRdf [] Nothing prefixMappings
+  execStateT writeRdf' emptyGraph
+  -- let entityTypeTriples = mkEntityTypesTriples
+  -- let triples = concatMap toTriples statements
+  -- return $ RDF.mkRdf (entityTypeTriples ++ triples) Nothing prefixMappings
+ where
+   writeRdf' :: (Monad m, Rdf a) => RdfState a m ()
+   writeRdf' = do
+     let entityTypeTriples = mkEntityTypesTriples
+     forM_ entityTypeTriples addTriple
+
+     forM_ statements $ \statement -> do
+       forM_ (toTriples statement) addTriple
 
 mkEntityTypesTriples :: Triples
 mkEntityTypesTriples = execState writeTriples []
