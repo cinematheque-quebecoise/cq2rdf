@@ -35,7 +35,7 @@
 #    }
 #    Limit 10
 
- - name: Réalisateurs de films où Michel Côté a joué
+ - name: Réalisateurs dans les films où Michel Côté a joué
    query: |
      BASE <http://data.cinematheque.qc.ca>
      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -109,7 +109,7 @@
      ORDER BY DESC (?count)
      LIMIT 10
 
- - name: Évolution de la carrière de Woody Allen
+ - name: Fonctions que Woody Allen a occupé dans sa carrière
    query: |
      BASE <http://data.cinematheque.qc.ca>
      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -164,7 +164,7 @@
        FILTER (contains(str(?work), "http://data.cinematheque.qc.ca") && contains(str(?workWikidataUri), "wikidata") && contains(str(?workTitle), "OriginalTitleWork"))
      } LIMIT 50
 
- - name: La proportions d'oeuvres liées à Wikidata
+ - name: La proportion d'oeuvres liées à Wikidata
    query: |
      BASE <http://data.cinematheque.qc.ca>
      PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
