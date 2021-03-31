@@ -74,8 +74,6 @@ addStatements filmoEntity = do
 
   addWorkOriginalTitleStatement workId filmo
 
-  addWorkSynopsis filmoEntity
-
   addWorkProductionCostStatement workId filmo
 
   addPublicProjectionEventStatements filmoId filmo
@@ -89,32 +87,6 @@ addWorkOriginalTitleStatement workId filmo = do
   forM_ titleMaybe $ \title -> do
     let workOriginalTitleStatement = WorkOriginalTitle workId title
     addStatement workOriginalTitleStatement
-
-addWorkSynopsis
-  :: (Monad m) => Entity Filmo -> CQLODStatements m ()
-addWorkSynopsis filmoEntity = do
-  let filmoId = sqlKeyToText $ entityKey filmoEntity
-  let filmo = entityVal filmoEntity
-  let frLanguageId = LanguageId "38"
-  let enLanguageId = LanguageId "8"
-
-  forM_ (filmoResume filmo) $ \resume -> do
-    let synopsisFrId = SynopsisId $ "Work" <> filmoId <> "-" <> "38"
-    addStatement $ SynopsisDeclaration (Synopsis synopsisFrId resume frLanguageId)
-    addStatement $ WorkSynopsis (WorkId filmoId) synopsisFrId
-
-    forM_ (filmoResumeAnglais filmo) $ \_ -> do
-      let synopsisEnId = SynopsisId $ "Work" <> filmoId <> "-" <> "8"
-      addStatement $ SynopsisTranslation synopsisFrId synopsisEnId
-
-  forM_ (filmoResumeAnglais filmo) $ \resumeAnglais -> do
-    let synopsisEnId = SynopsisId $ "Work" <> filmoId <> "-" <> "8"
-    addStatement $ SynopsisDeclaration (Synopsis synopsisEnId resumeAnglais enLanguageId)
-    addStatement $ WorkSynopsis (WorkId filmoId) synopsisEnId
-
-    forM_ (filmoResume filmo) $ \_ -> do
-      let synopsisFrId = SynopsisId $ "Work" <> filmoId <> "-" <> "38"
-      addStatement $ SynopsisTranslation synopsisEnId synopsisFrId
 
 addWorkProductionCostStatement
   :: (Monad m) => WorkId -> Filmo -> CQLODStatements m ()

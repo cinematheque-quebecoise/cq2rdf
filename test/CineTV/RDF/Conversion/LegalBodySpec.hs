@@ -81,8 +81,6 @@ dbSetup = do
                                       Nothing
                                       Nothing
                                       Nothing
-                                      Nothing
-                                      Nothing
 
     insertKey (toSqlKey 100) $ Sujet "PÈRE FILM"
     insertKey (toSqlKey 15) $ Fonction "Société de production"

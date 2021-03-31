@@ -70,8 +70,6 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
-                                   Nothing
-                                   Nothing
     insertKey (toSqlKey 10) $ Langue "français"
     insert $ Filmo_Langue (toSqlKey 1) (toSqlKey 10)
   return pool

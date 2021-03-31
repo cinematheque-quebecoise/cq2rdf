@@ -92,7 +92,5 @@ dbSetup = do
                                       Nothing
                                       Nothing
                                       Nothing
-                                      Nothing
-                                      Nothing
     insert $ Filmo_GenresCategories (toSqlKey 1000) (toSqlKey 1)
   return pool

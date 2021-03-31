@@ -122,18 +122,6 @@ spec = do
         ]
       length filteredStatements `shouldBe` 1
 
-    it "should read synopsi from table FilmoResumes and FilmoResumesAnglais" $ do
-      let filteredStatements = [ s | s@SynopsisDeclaration {} <- statements]
-      filteredStatements `shouldContainElems`
-        [ SynopsisDeclaration (Synopsis (SynopsisId "Work63563-38") "Résumé en français" (LanguageId "38"))
-        , SynopsisDeclaration (Synopsis (SynopsisId "Work63563-8") "Resume in english" (LanguageId "8"))
-        , SynopsisDeclaration (Synopsis (SynopsisId "Work2-38") "Résumé en français" (LanguageId "38"))
-        , SynopsisDeclaration (Synopsis (SynopsisId "Work2-8") "Resume in english" (LanguageId "8"))
-        , SynopsisDeclaration (Synopsis (SynopsisId "1-38") "Résumé en français 2" (LanguageId "38"))
-        , SynopsisDeclaration (Synopsis (SynopsisId "1-8") "Resume in english 2" (LanguageId "8"))
-        ]
-      length filteredStatements `shouldBe` 6
-
     it "should read recording event locations from table Filmo_Pays" $ do
       let recordingLocationStatements = [ s | s@(RecordingEventLocation _ _) <- statements]
       recordingLocationStatements `shouldContainElems`
@@ -343,18 +331,6 @@ spec = do
         ]
       length filteredStatements `shouldBe` 2
 
-    it "should create statements for work synopsis from table Filmo, FilmoResumes and FilmoResumesAnglais" $ do
-      let filteredStatements = [ s | s@WorkSynopsis {} <- statements]
-      filteredStatements `shouldContainElems`
-        [ WorkSynopsis (WorkId "63563") (SynopsisId "Work63563-38")
-        , WorkSynopsis (WorkId "63563") (SynopsisId "Work63563-8")
-        , WorkSynopsis (WorkId "2") (SynopsisId "Work2-38")
-        , WorkSynopsis (WorkId "2") (SynopsisId "Work2-8")
-        , WorkSynopsis (WorkId "63563") (SynopsisId "1-38")
-        , WorkSynopsis (WorkId "63563") (SynopsisId "1-8")
-        ]
-      length filteredStatements `shouldBe` 6
-
     it "should create statements for work production cost from table Filmo" $ do
       let filteredStatements = [ s | s@WorkProductionCost {} <- statements]
       filteredStatements `shouldContainElems`
@@ -491,8 +467,6 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
-                                   (Just "Résumé en français")
-                                   (Just "Resume in english")
                                    (Just "01-01-11")
                                    (Just "01-01-12")
                                    Nothing
@@ -505,8 +479,6 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
-                                   (Just "Résumé en français")
-                                   (Just "Resume in english")
                                    (Just "01-01-11")
                                    (Just "01-01-12")
                                    Nothing
@@ -514,8 +486,6 @@ dbSetup = do
                                    Nothing
     _ <- insertKey (toSqlKey 95672) $ Filmo Nothing
                                             (Just "19-2")
-                                            Nothing
-                                            Nothing
                                             Nothing
                                             Nothing
                                             Nothing
@@ -537,8 +507,6 @@ dbSetup = do
                                             Nothing
                                             Nothing
                                             Nothing
-                                            Nothing
-                                            Nothing
                                             (Just $ toSqlKey 2)
     _ <- insertKey (toSqlKey 105281) $ Filmo (Just "LA")
                                        (Just "THÉRAPIE DE CARO")
@@ -551,13 +519,9 @@ dbSetup = do
                                        Nothing
                                        Nothing
                                        Nothing
-                                       Nothing
-                                       Nothing
                                        (Just $ toSqlKey 2)
     _ <- insertKey (toSqlKey 8267) $ Filmo Nothing
                                            (Just "SIX MILLION DOLLAR MAN")
-                                           Nothing
-                                           Nothing
                                            Nothing
                                            Nothing
                                            Nothing
@@ -598,9 +562,6 @@ dbSetup = do
 
     _ <- insert $ Filmo_GenresCategories (toSqlKey 63563) (toSqlKey 20006)
     _ <- insert $ Filmo_GenresCategories (toSqlKey 8267) (toSqlKey 10626)
-
-    _ <- insertKey (toSqlKey 1) $ FilmoResumes (toSqlKey 63563) (Just "Résumé en français 2")
-    _ <- insertKey (toSqlKey 1) $ FilmoResumesAnglais (toSqlKey 63563) (Just "Resume in english 2")
 
     _ <- insertKey (toSqlKey 1) $ TypeTitre "1"
     _ <- insert $ FilmoTitres (toSqlKey 63563) (toSqlKey 1) (Just "Les") "Invasions Barbares"

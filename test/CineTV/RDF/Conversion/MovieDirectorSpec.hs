@@ -78,8 +78,6 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
-                                   Nothing
-                                   Nothing
     insertKey (toSqlKey 10) $ Nom (Just "Michel") (Just "Brault")
     insert $ Filmo_Realisation (toSqlKey 1) (toSqlKey 10)
   return pool

@@ -170,8 +170,6 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
-                                   (Just "Résumé en français")
-                                   (Just "Resume in english")
                                    (Just "01-01-11")
                                    (Just "01-01-12")
                                    Nothing
@@ -184,8 +182,6 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
-                                   (Just "Résumé en français")
-                                   (Just "Resume in english")
                                    (Just "01-01-11")
                                    (Just "01-01-12")
                                    Nothing

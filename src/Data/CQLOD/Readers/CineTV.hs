@@ -31,7 +31,6 @@ import           Data.CQLOD.Readers.CineTV.Filmo      (readFilmo)
 import           Data.CQLOD.Readers.CineTV.FilmoType      (readFilmoType)
 import           Data.CQLOD.Readers.CineTV.FilmoRealisation       (readFilmoRealisation)
 import           Data.CQLOD.Readers.CineTV.FilmoDureesOriginales       (readFilmoDureesOriginales)
-import           Data.CQLOD.Readers.CineTV.FilmoResume       (readFilmoResume)
 import           Data.CQLOD.Readers.CineTV.FilmoTitres       (readFilmoTitres)
 import           Data.CQLOD.Readers.CineTV.FilmoLienWikidata       (readFilmoLienWikidata)
 import           Data.CQLOD.Readers.CineTV.FilmoGenerique       (readFilmoGenerique)
@@ -62,7 +61,6 @@ readCineTVStatements pool = do
   readFilmoType pool
   readFilmoRealisation pool
   readFilmoDureesOriginales pool
-  readFilmoResume pool
   readFilmoTitres pool
   readFilmoLienWikidata pool
   readFilmoPays pool

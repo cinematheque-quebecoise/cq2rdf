@@ -32,7 +32,7 @@ blazegraphJar = pkgs.fetchurl {
 #  curl --data-binary @$PROPFILE --header 'Content-Type:text/plain' http://localhost:9999/blazegraph/dataloader
 #''
 in pkgs.runCommand "bootstrapBlazegraph" {
-    buildInputs = with pkgs; [ makeWrapper curl openjdk ];
+    buildInputs = with pkgs; [ makeWrapper curl jdk8 ];
 } ''
   mkdir -p $out/bin
   cp ${./bootstrapBlazegraph.sh} $out/bin/bootstrapBlazegraph

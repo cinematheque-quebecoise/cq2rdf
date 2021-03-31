@@ -15,7 +15,7 @@
 ## along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
 ##
 name:                cq2rdf
-version:             0.1.1
+version:             0.1.0
 license:             GPL-3
 author:              Konstantinos Lambrou-Latreille
 maintainer:          klambroulatreille@cinematheque.qc.ca

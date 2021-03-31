@@ -32,7 +32,6 @@ import           CineTV.RDF.Conversion.MovieDirector         (convertMoviesDirec
 import           CineTV.RDF.Conversion.MovieGeneric          (convertMoviesGeneric)
 import           CineTV.RDF.Conversion.MovieLanguage         (convertMoviesLanguage)
 import           CineTV.RDF.Conversion.MovieLocation         (convertMoviesLocation)
-import           CineTV.RDF.Conversion.MovieResume           (convertMoviesResume)
 import           CineTV.RDF.Conversion.Person                (convertPeople)
 import           CineTV.RDF.Conversion.Place                 (convertPlaces)
 import           CineTV.RDF.Conversion.Role                  (convertRoles)
@@ -58,6 +57,5 @@ convertToRdf pool = do
   convertMoviesDirector pool
   convertMoviesGeneric pool
   convertMoviesLanguage pool
-  convertMoviesResume pool
   convertFilmoTitres pool
   convertFilmoDureesOriginales pool

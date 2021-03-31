@@ -8,7 +8,7 @@ blazegraphJar = pkgs.fetchurl {
 };
 
 in pkgs.runCommand "generateVoidDataset" {
-    buildInputs = with pkgs; [ makeWrapper openjdk ];
+    buildInputs = with pkgs; [ makeWrapper jdk8 ];
 } ''
   mkdir -p $out/bin
   cp ${./generateVoidDataset.sh} $out/bin/generateVoidDataset

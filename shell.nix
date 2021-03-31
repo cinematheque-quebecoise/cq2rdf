@@ -25,7 +25,7 @@ let
 
   cinetv-assets-json = builtins.fromJSON (builtins.readFile (pkgs.fetchurl {
     url = "https://gitlab.com/api/v4/projects/19038139/releases/v${cinetv-version}/assets/links";
-    sha256 = "16j7qhykddv48v8dc3pvld19snd51xilsa4qxrwhwckqb03vix6z";
+    sha256 = "1ybilp0p21b8wnzgm8gp2a7wr48amac4ax6csbb9hvfcxixgxcix";
   }));
 
   cinetv-sqlite = fetchTarball ((builtins.head (builtins.filter (v: v.name == "cinetv-2019-07-12-sqlite.tar.gz") cinetv-assets-json)).direct_asset_url);

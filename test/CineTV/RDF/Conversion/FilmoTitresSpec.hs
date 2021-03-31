@@ -85,11 +85,7 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
-                                   Nothing
-                                   Nothing
     insertKey (toSqlKey 2) $ Filmo Nothing
-                                   Nothing
-                                   Nothing
                                    Nothing
                                    Nothing
                                    Nothing

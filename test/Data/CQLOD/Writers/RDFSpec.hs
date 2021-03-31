@@ -292,35 +292,6 @@ spec = do
         [mkTriple placeUri owlSameAs (unWikidataUri wikidataUri)]
       length triples `shouldBe` 1
 
-  describe "writeSynopsisDeclaration" $ do
-    prop "basic check" $ \(synopsisEntityId, resume, langEntityId) -> do
-      let eid               = unEntityId synopsisEntityId
-      let synopsis              = Synopsis (SynopsisId eid) resume (LanguageId $ unEntityId langEntityId)
-      let triples           = toTriples $ SynopsisDeclaration synopsis
-
-      let synopsisUri           = mkSynopsisUri eid
-      let langUri           = mkLanguageUri $ unEntityId langEntityId
-
-      triples `shouldContainElems` catMaybes
-        [ mkTriple synopsisUri rdfType crmE33
-        , mkTriple synopsisUri crmP2 synopsisTypeUri
-        , mkTriple synopsisUri crmP72 langUri
-        , mkTripleLit synopsisUri crmP190 (PlainL resume)
-        ]
-
-  describe "writeSynopsisTranslation" $ do
-    prop "basic check" $ \(synopsisEntityId, otherSynopsisEntityId) -> do
-      let eid               = unEntityId synopsisEntityId
-      let oeid               = unEntityId otherSynopsisEntityId
-      let triples           = toTriples $ SynopsisTranslation (SynopsisId eid) (SynopsisId oeid)
-
-      let synopsisUri           = mkSynopsisUri eid
-      let otherSynopsisUri           = mkSynopsisUri oeid
-
-      triples `shouldContainElems` catMaybes
-        [ mkTriple synopsisUri crmP73 otherSynopsisUri
-        ]
-
   describe "writeWorkDeclaration" $ do
     prop "basic check" $ \entityId -> do
       let eid               = unEntityId entityId
@@ -431,18 +402,6 @@ spec = do
       let genreCategoryUri = "/resource/GenreCategory" <> genreId
       triples `shouldContainElems` catMaybes
         [ mkTriple workUri crmP2 genreCategoryUri
-        ]
-
-  describe "writeWorkSynopsis" $ do
-    prop "basic check" $ \(entityId, entityId2) -> do
-      let workId              = unEntityId entityId
-      let synId              = unEntityId entityId2
-      let triples           = toTriples $ WorkSynopsis (WorkId workId) (SynopsisId synId)
-
-      let workUri = "/resource/Work" <> workId
-      let synopsisUri = "/resource/Synopsis" <> synId
-      triples `shouldContainElems` catMaybes
-        [ mkTriple synopsisUri crmP67 workUri
         ]
 
   describe "writeRecordingDeclaration" $ do

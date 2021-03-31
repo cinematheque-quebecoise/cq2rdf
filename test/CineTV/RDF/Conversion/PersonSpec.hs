@@ -94,8 +94,6 @@ dbSetup = do
                                       Nothing
                                       Nothing
                                       Nothing
-                                      Nothing
-                                      Nothing
     insert $ Filmo_Generique (toSqlKey 13)
                              (toSqlKey 1000)
                              Nothing

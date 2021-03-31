@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 784134a6cb376cf1653de03fd66ca47faa18a1e4686e97d1734dbab4c99a6505
+-- hash: dad827e9fe48e7f6fd7d6efa68b075668b83e397aa30213587802b6c5895428f
 
 name:           cq2rdf
-version:        0.1.1
+version:        0.1.0
 description:    Please see the README on Gitlab at <https://gitlab.com/cinematheque-quebecoise/cq2rdf#readme>
 author:         Konstantinos Lambrou-Latreille
 maintainer:     klambroulatreille@cinematheque.qc.ca
@@ -33,7 +33,6 @@ library
       CineTV.RDF.Conversion.MovieGeneric
       CineTV.RDF.Conversion.MovieLanguage
       CineTV.RDF.Conversion.MovieLocation
-      CineTV.RDF.Conversion.MovieResume
       CineTV.RDF.Conversion.Person
       CineTV.RDF.Conversion.Place
       CineTV.RDF.Conversion.Role
@@ -48,7 +47,6 @@ library
       Data.CQLOD.Readers.CineTV.FilmoLienWikidata
       Data.CQLOD.Readers.CineTV.FilmoPays
       Data.CQLOD.Readers.CineTV.FilmoRealisation
-      Data.CQLOD.Readers.CineTV.FilmoResume
       Data.CQLOD.Readers.CineTV.FilmoTitres
       Data.CQLOD.Readers.CineTV.FilmoType
       Data.CQLOD.Readers.CineTV.Fonction
@@ -180,7 +178,6 @@ test-suite cq2rdf-test
       CineTV.RDF.Conversion.MovieGenericSpec
       CineTV.RDF.Conversion.MovieLanguageSpec
       CineTV.RDF.Conversion.MovieLocationSpec
-      CineTV.RDF.Conversion.MovieResumeSpec
       CineTV.RDF.Conversion.MovieSpec
       CineTV.RDF.Conversion.PersonSpec
       CineTV.RDF.Conversion.PlaceSpec

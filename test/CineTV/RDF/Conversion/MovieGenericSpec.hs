@@ -102,8 +102,6 @@ dbSetup = do
                                    Nothing
                                    Nothing
                                    Nothing
-                                   Nothing
-                                   Nothing
 
     insertKey (toSqlKey 1) $ Fonction "Réalisation"
     insertKey (toSqlKey 1) $ Nom (Just "Michel") (Just "Brault")
