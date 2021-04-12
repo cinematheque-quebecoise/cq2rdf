@@ -1,6 +1,5 @@
-{ nixpkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> {} }:
 let
-  inherit (nixpkgs) pkgs;
   inherit (pkgs) haskellPackages;
   inherit (pkgs) python38Packages;
 
@@ -11,7 +10,7 @@ let
   rdflib-hdt = import ./nix/rdflib-hdt.nix {
     inherit (python38Packages) buildPythonPackage;
     inherit (python38Packages) fetchPypi;
-    inherit (pkgs.stdenv) lib;
+    inherit (pkgs) lib;
     inherit (python38Packages) rdflib;
     inherit (python38Packages) pybind11;
   };
@@ -25,7 +24,8 @@ let
 
   cinetv-assets-json = builtins.fromJSON (builtins.readFile (pkgs.fetchurl {
     url = "https://gitlab.com/api/v4/projects/19038139/releases/v${cinetv-version}/assets/links";
-    sha256 = "1ybilp0p21b8wnzgm8gp2a7wr48amac4ax6csbb9hvfcxixgxcix";
+    # sha256 = "1ybilp0p21b8wnzgm8gp2a7wr48amac4ax6csbb9hvfcxixgxcix";
+    sha256 = "PbL+euzMbZjW0sx0RZiqCpHMjxL3ofq+5WgFccGlcfk=";
   }));
 
   cinetv-sqlite = fetchTarball ((builtins.head (builtins.filter (v: v.name == "cinetv-2019-07-12-sqlite.tar.gz") cinetv-assets-json)).direct_asset_url);

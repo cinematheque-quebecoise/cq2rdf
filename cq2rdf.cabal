@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dad827e9fe48e7f6fd7d6efa68b075668b83e397aa30213587802b6c5895428f
+-- hash: bf07e98d6c327928a23b773bc56437f85fde997d8b15a077c112c6099ac7a863
 
 name:           cq2rdf
-version:        0.1.0
+version:        0.1.1
 description:    Please see the README on Gitlab at <https://gitlab.com/cinematheque-quebecoise/cq2rdf#readme>
 author:         Konstantinos Lambrou-Latreille
 maintainer:     klambroulatreille@cinematheque.qc.ca

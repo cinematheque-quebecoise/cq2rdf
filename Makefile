@@ -48,7 +48,7 @@ blazegraph.jnl: $(DESTDIR)/cmtq-dataset.ttl.gz
 	rm -f blazegraph.jnl
 	bootstrapBlazegraph $(DESTDIR)/cmtq-dataset.ttl.gz
 
-$(CINETV_SQLITE_DB): ${CINETV_SQLITE_DB_PATH}
+$(CINETV_SQLITE_DB):
 	cp ${CINETV_SQLITE_DB_PATH} .
 
 clean:

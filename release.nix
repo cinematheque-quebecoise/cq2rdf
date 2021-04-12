@@ -2,7 +2,7 @@ let
   /* pkgs = import <nixpkgs> { }; */
   pkgs = import (builtins.fetchGit {
     # Descriptive name to make the store path easier to identify
-    name = "nixos-unstable-2020-04-29";
+    # name = "nixos-unstable-2020-04-29";
     url = "https://github.com/nixos/nixpkgs-channels/";
     # Commit hash for nixos-unstable as of 2018-09-12
     # `git ls-remote https://github.com/nixos/nixpkgs-channels nixos-unstable`
@@ -15,9 +15,8 @@ let
   compiler = "ghc883";
 
   cinetvdb = builtins.fetchGit {
-    url = "git@gitlab.com:cinematheque-quebecoise/cinetvdb.git";
+    url = "https://gitlab.com/cinematheque-quebecoise/cinetvdb.git";
     ref = "refs/heads/master";
-    # rev = "7df9ff12f7d94791d631ccf19cf1c4d6146db616";
   };
 
   rdf4hPackage = pkgs.haskellPackages.callCabal2nix "rdf4h" (builtins.fetchGit {
