@@ -14,7 +14,8 @@
 -- along with cq2rdf.  If not, see <https://www.gnu.org/licenses/>.
 
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Data.RDF.State where
 
@@ -25,7 +26,8 @@ import           Import
 
 -- newtype RdfState rdfImpl m a = RdfState { unRdfState :: StateT (RDF rdfImpl) m a }
 --   deriving (Functor, Applicative, Monad, MonadState (RDF rdfImpl))
-type RdfState rdfImpl m a = StateT (RDF rdfImpl) m a
+newtype RdfState rdfImpl m a = RdfState { unRdfState :: StateT (RDF rdfImpl) m a }
+  deriving (Functor, Applicative, Monad, MonadState (RDF rdfImpl), MonadTrans, MonadIO)
 
 mkRdf
   :: (RDF.Rdf rdfImpl, Monad m)
@@ -36,16 +38,15 @@ mkRdf
 mkRdf triples baseUrlMaybe mappings =
   put $ RDF.mkRdf triples baseUrlMaybe mappings
 
-addTriple :: (RDF.Rdf rdfImpl, Monad m) => RDF.Triple -> RdfState rdfImpl m ()
-addTriple triple = do
-  graph <- get
-  put $ RDF.addTriple graph triple
+addTriple
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => RDF.Triple -> RdfState rdfImpl m ()
+addTriple triple = get >>= \g -> put $ RDF.addTriple g triple
 
 removeTriple
-  :: (RDF.Rdf rdfImpl, Monad m) => RDF.Triple -> RdfState rdfImpl m ()
-removeTriple triple = do
-  graph <- get
-  put $ RDF.removeTriple graph triple
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => RDF.Triple -> RdfState rdfImpl m ()
+removeTriple triple = get >>= \g -> put $ RDF.removeTriple g triple
 
 addPrefixMappings
   :: (RDF.Rdf rdfImpl, Monad m)
@@ -53,10 +54,11 @@ addPrefixMappings
   -> Bool
   -> RdfState rdfImpl m ()
 addPrefixMappings mappings replaceOldMapping = do
-  graph <- get
-  put $ RDF.addPrefixMappings graph mappings replaceOldMapping
+  get >>= \g -> put $ RDF.addPrefixMappings g mappings replaceOldMapping
 
-empty :: (RDF.Rdf rdfImpl, Monad m) => RdfState rdfImpl m ()
+empty
+  :: (RDF.Rdf rdfImpl, Monad m)
+  => RdfState rdfImpl m ()
 empty = put RDF.empty
 
 query

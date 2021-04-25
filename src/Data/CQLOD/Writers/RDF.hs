@@ -272,7 +272,7 @@ mkDurationUri durationId = baseUriPath <> "/" <> durationId
 writeRdf :: (Monad m, Rdf a) => CQLOD -> m (RDF a)
 writeRdf (CQLOD statements) = do
   let emptyGraph = RDF.mkRdf [] Nothing prefixMappings
-  execStateT writeRdf' emptyGraph
+  execStateT (unRdfState writeRdf') emptyGraph
   -- let entityTypeTriples = mkEntityTypesTriples
   -- let triples = concatMap toTriples statements
   -- return $ RDF.mkRdf (entityTypeTriples ++ triples) Nothing prefixMappings

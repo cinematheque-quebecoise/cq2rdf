@@ -20,7 +20,7 @@ module Data.CQLOD.RDF.Void where
 
 import Namespaces
 
-import           Data.RDF.State          (RdfState, addTriple, addPrefixMappings)
+import           Data.RDF.State          (RdfState(unRdfState), addTriple, addPrefixMappings)
 import           Data.RDF.Types.Extended (mkTriple, mkTripleLit)
 import           Import                  hiding (void)
 import           Data.RDF.Vocabulary
@@ -67,7 +67,8 @@ wikidataLinksetUri =
 createVoidGraph :: (MonadSparqlQuery m, Rdf a) => CinetvRdf -> m (RDF a)
 createVoidGraph cinetvRdf = do
   execStateT
-    (  defaultVoID
+    (  unRdfState $
+       defaultVoID
     >> addCreatedDateTime (cinetvSnapshotTime cinetvRdf)
     >> addIssuedDateTime (cinetvIssuedTime cinetvRdf)
     >> addVoidStats (cinetvRdfSparqlEndpoint cinetvRdf)
