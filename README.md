@@ -1,3 +1,7 @@
+***This is a mirror of https://gitlab.com/cinematheque-quebecoise/cq2rdf***
+
+***All contributions must be done through Gitlab.***
+
 # cq2rdf
 
 A tool to convert the database of Cinemathèque québécoise in multple RDF formats.
@@ -57,7 +61,7 @@ $ cabal build
 It can be executed with:
 
 ```
-$ cabal run cq2rdf-exe -- --help
+$ cabal run cq2rdf-exe -- --helpgitlab mirror different README
 ```
 
 Predefined commands are available in the `Makefile` such as:
