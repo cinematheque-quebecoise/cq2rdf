@@ -1,228 +1,231 @@
-cabal-version: 1.12
+cabal-version:      1.12
+name:               cq2rdf
+version:            0.1.1
+license:            GPL-3
+license-file:       LICENSE
+copyright:          2020 Cinémathèque québécoise
+maintainer:         klambroulatreille@cinematheque.qc.ca
+author:             Konstantinos Lambrou-Latreille
+description:
+    Please see the README on Gitlab at <https://gitlab.com/cinematheque-quebecoise/cq2rdf#readme>
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
---
--- see: https://github.com/sol/hpack
---
--- hash: bf07e98d6c327928a23b773bc56437f85fde997d8b15a077c112c6099ac7a863
-
-name:           cq2rdf
-version:        0.1.1
-description:    Please see the README on Gitlab at <https://gitlab.com/cinematheque-quebecoise/cq2rdf#readme>
-author:         Konstantinos Lambrou-Latreille
-maintainer:     klambroulatreille@cinematheque.qc.ca
-copyright:      2020 Cinémathèque québécoise
-license:        GPL-3
-license-file:   LICENSE
-build-type:     Simple
+build-type:         Simple
 extra-source-files:
     README.md
     ChangeLog.md
 
 library
-  exposed-modules:
-      CineTV.RDF.Conversion
-      CineTV.RDF.Conversion.FilmoDureesOriginales
-      CineTV.RDF.Conversion.FilmoTitres
-      CineTV.RDF.Conversion.GenreCategory
-      CineTV.RDF.Conversion.Language
-      CineTV.RDF.Conversion.LegalBody
-      CineTV.RDF.Conversion.Movie
-      CineTV.RDF.Conversion.MovieCategory
-      CineTV.RDF.Conversion.MovieDirector
-      CineTV.RDF.Conversion.MovieGeneric
-      CineTV.RDF.Conversion.MovieLanguage
-      CineTV.RDF.Conversion.MovieLocation
-      CineTV.RDF.Conversion.Person
-      CineTV.RDF.Conversion.Place
-      CineTV.RDF.Conversion.Role
-      Data.CQLOD
-      Data.CQLOD.RDF.Void
-      Data.CQLOD.Readers.CineTV
-      Data.CQLOD.Readers.CineTV.Filmo
-      Data.CQLOD.Readers.CineTV.FilmoDureesOriginales
-      Data.CQLOD.Readers.CineTV.FilmoGenerique
-      Data.CQLOD.Readers.CineTV.FilmoGenresCategories
-      Data.CQLOD.Readers.CineTV.FilmoLangue
-      Data.CQLOD.Readers.CineTV.FilmoLienWikidata
-      Data.CQLOD.Readers.CineTV.FilmoPays
-      Data.CQLOD.Readers.CineTV.FilmoRealisation
-      Data.CQLOD.Readers.CineTV.FilmoTitres
-      Data.CQLOD.Readers.CineTV.FilmoType
-      Data.CQLOD.Readers.CineTV.Fonction
-      Data.CQLOD.Readers.CineTV.GenresCategoriesLienWikidata
-      Data.CQLOD.Readers.CineTV.Langue
-      Data.CQLOD.Readers.CineTV.LangueLienWikidata
-      Data.CQLOD.Readers.CineTV.Nom
-      Data.CQLOD.Readers.CineTV.NomLienWikidata
-      Data.CQLOD.Readers.CineTV.Pays
-      Data.CQLOD.Readers.CineTV.PaysLienWikidata
-      Data.CQLOD.Readers.CineTV.Sujet
-      Data.CQLOD.Writers.RDF
-      Data.RDF.Extended
-      Data.RDF.Query.Extended
-      Data.RDF.State
-      Data.RDF.Types.Extended
-      Data.RDF.Vocabulary
-      Data.RDF.Vocabulary.CRM
-      Data.RDF.Vocabulary.DBpedia
-      Data.RDF.Vocabulary.DCTerms
-      Data.RDF.Vocabulary.Foaf
-      Data.RDF.Vocabulary.Formats
-      Data.RDF.Vocabulary.FRBRoo
-      Data.RDF.Vocabulary.OWL
-      Data.RDF.Vocabulary.QUDT
-      Data.RDF.Vocabulary.Rdf
-      Data.RDF.Vocabulary.Rdfs
-      Data.RDF.Vocabulary.Schema
-      Data.RDF.Vocabulary.Void
-      Data.RDF.Vocabulary.Wikidata
-      Data.RDF.Vocabulary.XSD
-      Import
-      Namespaces
-      Run
-      Run.AdlibToRdf
-      Run.CinetvToRdf
-      Run.GenerateVoid
-      Types
-      Util
-  other-modules:
-      Paths_cq2rdf
-  hs-source-dirs:
-      src
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
-  build-depends:
-      QuickCheck
-    , aeson >=1.4 && <1.5
-    , base >=4.11 && <10
-    , bytestring >=0.9 && <0.11
-    , cinetv4h
-    , conduit >=1.3 && <1.4
-    , containers
-    , directory >=1.3 && <1.4
-    , esqueleto >=3 && <3.4
-    , filepath
-    , hashable
-    , hsparql
-    , mtl >=2.2 && <2.3
-    , network-uri
-    , parsec
-    , persistent >=2.8 && <2.11
-    , persistent-sqlite
-    , persistent-template
-    , process
-    , quickcheck-instances
-    , rdf4h >=4.0.0 && <4.0.2
-    , regex
-    , resource-pool >=0.2 && <0.3
-    , rio >=0.1.12.0
-    , text >=1.2 && <1.3
-    , time >=1.8 && <1.10
-    , transformers
-    , xsd
-    , zlib >=0.6 && <0.7
-  default-language: Haskell2010
+    exposed-modules:
+        CineTV.RDF.Conversion
+        CineTV.RDF.Conversion.FilmoDureesOriginales
+        CineTV.RDF.Conversion.FilmoTitres
+        CineTV.RDF.Conversion.GenreCategory
+        CineTV.RDF.Conversion.Language
+        CineTV.RDF.Conversion.LegalBody
+        CineTV.RDF.Conversion.Movie
+        CineTV.RDF.Conversion.MovieCategory
+        CineTV.RDF.Conversion.MovieDirector
+        CineTV.RDF.Conversion.MovieGeneric
+        CineTV.RDF.Conversion.MovieLanguage
+        CineTV.RDF.Conversion.MovieLocation
+        CineTV.RDF.Conversion.Person
+        CineTV.RDF.Conversion.Place
+        CineTV.RDF.Conversion.Role
+        Data.CQLOD
+        Data.CQLOD.RDF.Void
+        Data.CQLOD.Readers.CineTV
+        Data.CQLOD.Readers.CineTV.Filmo
+        Data.CQLOD.Readers.CineTV.FilmoDureesOriginales
+        Data.CQLOD.Readers.CineTV.FilmoGenerique
+        Data.CQLOD.Readers.CineTV.FilmoGenresCategories
+        Data.CQLOD.Readers.CineTV.FilmoLangue
+        Data.CQLOD.Readers.CineTV.FilmoLienWikidata
+        Data.CQLOD.Readers.CineTV.FilmoPays
+        Data.CQLOD.Readers.CineTV.FilmoRealisation
+        Data.CQLOD.Readers.CineTV.FilmoTitres
+        Data.CQLOD.Readers.CineTV.FilmoType
+        Data.CQLOD.Readers.CineTV.Fonction
+        Data.CQLOD.Readers.CineTV.GenresCategoriesLienWikidata
+        Data.CQLOD.Readers.CineTV.Langue
+        Data.CQLOD.Readers.CineTV.LangueLienWikidata
+        Data.CQLOD.Readers.CineTV.Nom
+        Data.CQLOD.Readers.CineTV.NomLienWikidata
+        Data.CQLOD.Readers.CineTV.Pays
+        Data.CQLOD.Readers.CineTV.PaysLienWikidata
+        Data.CQLOD.Readers.CineTV.Sujet
+        Data.CQLOD.Writers.RDF
+        Data.RDF.Extended
+        Data.RDF.Query.Extended
+        Data.RDF.State
+        Data.RDF.Types.Extended
+        Data.RDF.Vocabulary
+        Data.RDF.Vocabulary.CRM
+        Data.RDF.Vocabulary.DBpedia
+        Data.RDF.Vocabulary.DCTerms
+        Data.RDF.Vocabulary.Foaf
+        Data.RDF.Vocabulary.Formats
+        Data.RDF.Vocabulary.FRBRoo
+        Data.RDF.Vocabulary.OWL
+        Data.RDF.Vocabulary.QUDT
+        Data.RDF.Vocabulary.Rdf
+        Data.RDF.Vocabulary.Rdfs
+        Data.RDF.Vocabulary.Schema
+        Data.RDF.Vocabulary.Void
+        Data.RDF.Vocabulary.Wikidata
+        Data.RDF.Vocabulary.XSD
+        Import
+        Namespaces
+        Run
+        Run.AdlibToRdf
+        Run.CinetvToRdf
+        Run.GenerateVoid
+        Types
+        Util
+
+    hs-source-dirs:   src
+    other-modules:    Paths_cq2rdf
+    default-language: Haskell2010
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-record-updates
+        -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+
+    build-depends:
+        QuickCheck -any,
+        aeson >=1.4 && <1.5,
+        base >=4.11 && <10,
+        bytestring >=0.9 && <0.11,
+        cinetv4h -any,
+        conduit >=1.3 && <1.4,
+        containers -any,
+        directory >=1.3 && <1.4,
+        esqueleto >=3 && <3.4,
+        filepath -any,
+        hashable -any,
+        hsparql -any,
+        mtl >=2.2 && <2.3,
+        network-uri -any,
+        parsec -any,
+        persistent >=2.8 && <2.11,
+        persistent-sqlite -any,
+        persistent-template -any,
+        process -any,
+        quickcheck-instances -any,
+        rdf4h >=4.0.0 && <4.0.2,
+        regex -any,
+        resource-pool >=0.2 && <0.3,
+        rio >=0.1.12.0,
+        text >=1.2 && <1.3,
+        time >=1.8 && <1.10,
+        transformers -any,
+        xsd -any,
+        zlib >=0.6 && <0.7
 
 executable cq2rdf-exe
-  main-is: Main.hs
-  other-modules:
-      Paths_cq2rdf
-  hs-source-dirs:
-      app
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      QuickCheck
-    , aeson >=1.4 && <1.5
-    , base >=4.11 && <10
-    , bytestring >=0.9 && <0.11
-    , cinetv4h
-    , conduit >=1.3 && <1.4
-    , containers
-    , cq2rdf
-    , directory >=1.3 && <1.4
-    , esqueleto >=3 && <3.4
-    , filepath
-    , hashable
-    , hsparql
-    , mtl >=2.2 && <2.3
-    , network-uri
-    , optparse-simple
-    , parsec
-    , persistent >=2.8 && <2.11
-    , persistent-sqlite
-    , persistent-template
-    , process
-    , quickcheck-instances
-    , rdf4h >=4.0.0 && <4.0.2
-    , regex
-    , resource-pool >=0.2 && <0.3
-    , rio >=0.1.12.0
-    , text >=1.2 && <1.3
-    , time >=1.8 && <1.10
-    , transformers
-    , xsd
-    , zlib >=0.6 && <0.7
-  default-language: Haskell2010
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    other-modules:    Paths_cq2rdf
+    default-language: Haskell2010
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-record-updates
+        -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+        -threaded -rtsopts -with-rtsopts=-N
+
+    build-depends:
+        QuickCheck -any,
+        aeson >=1.4 && <1.5,
+        base >=4.11 && <10,
+        bytestring >=0.9 && <0.11,
+        cinetv4h -any,
+        conduit >=1.3 && <1.4,
+        containers -any,
+        cq2rdf -any,
+        directory >=1.3 && <1.4,
+        esqueleto >=3 && <3.4,
+        filepath -any,
+        hashable -any,
+        hsparql -any,
+        mtl >=2.2 && <2.3,
+        network-uri -any,
+        optparse-simple -any,
+        parsec -any,
+        persistent >=2.8 && <2.11,
+        persistent-sqlite -any,
+        persistent-template -any,
+        process -any,
+        quickcheck-instances -any,
+        rdf4h >=4.0.0 && <4.0.2,
+        regex -any,
+        resource-pool >=0.2 && <0.3,
+        rio >=0.1.12.0,
+        text >=1.2 && <1.3,
+        time >=1.8 && <1.10,
+        transformers -any,
+        xsd -any,
+        zlib >=0.6 && <0.7
 
 test-suite cq2rdf-test
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      CineTV.RDF.Conversion.FilmoDureesOriginalesSpec
-      CineTV.RDF.Conversion.FilmoTitresSpec
-      CineTV.RDF.Conversion.GenreCategorySpec
-      CineTV.RDF.Conversion.LanguageSpec
-      CineTV.RDF.Conversion.LegalBodySpec
-      CineTV.RDF.Conversion.MovieCategorySpec
-      CineTV.RDF.Conversion.MovieDirectorSpec
-      CineTV.RDF.Conversion.MovieGenericSpec
-      CineTV.RDF.Conversion.MovieLanguageSpec
-      CineTV.RDF.Conversion.MovieLocationSpec
-      CineTV.RDF.Conversion.MovieSpec
-      CineTV.RDF.Conversion.PersonSpec
-      CineTV.RDF.Conversion.PlaceSpec
-      CineTV.RDF.Conversion.RoleSpec
-      CineTV.RDF.VoidSpec
-      Data.CQLOD.Readers.CineTVSpec
-      Data.CQLOD.Writers.RDFSpec
-      Data.RDF.Types.ExtendedSpec
-      Test.Hspec.Expectations.Extended
-      UtilSpec
-      Paths_cq2rdf
-  hs-source-dirs:
-      test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      QuickCheck
-    , aeson >=1.4 && <1.5
-    , base >=4.11 && <10
-    , bytestring >=0.9 && <0.11
-    , cinetv4h
-    , conduit >=1.3 && <1.4
-    , containers
-    , cq2rdf
-    , directory >=1.3 && <1.4
-    , esqueleto >=3 && <3.4
-    , filepath
-    , hashable
-    , hsparql
-    , hspec
-    , hspec-expectations
-    , mtl >=2.2 && <2.3
-    , network-uri
-    , parsec
-    , persistent >=2.8 && <2.11
-    , persistent-sqlite
-    , persistent-template
-    , process
-    , quickcheck-instances
-    , rdf4h >=4.0.0 && <4.0.2
-    , regex
-    , resource-pool >=0.2 && <0.3
-    , rio >=0.1.12.0
-    , text >=1.2 && <1.3
-    , time >=1.8 && <1.10
-    , transformers
-    , xsd
-    , zlib >=0.6 && <0.7
-  default-language: Haskell2010
+    type:             exitcode-stdio-1.0
+    main-is:          Spec.hs
+    hs-source-dirs:   test
+    other-modules:
+        CineTV.RDF.Conversion.FilmoDureesOriginalesSpec
+        CineTV.RDF.Conversion.FilmoTitresSpec
+        CineTV.RDF.Conversion.GenreCategorySpec
+        CineTV.RDF.Conversion.LanguageSpec
+        CineTV.RDF.Conversion.LegalBodySpec
+        CineTV.RDF.Conversion.MovieCategorySpec
+        CineTV.RDF.Conversion.MovieDirectorSpec
+        CineTV.RDF.Conversion.MovieGenericSpec
+        CineTV.RDF.Conversion.MovieLanguageSpec
+        CineTV.RDF.Conversion.MovieLocationSpec
+        CineTV.RDF.Conversion.MovieSpec
+        CineTV.RDF.Conversion.PersonSpec
+        CineTV.RDF.Conversion.PlaceSpec
+        CineTV.RDF.Conversion.RoleSpec
+        CineTV.RDF.VoidSpec
+        Data.CQLOD.Readers.CineTVSpec
+        Data.CQLOD.Writers.RDFSpec
+        Data.RDF.Types.ExtendedSpec
+        Test.Hspec.Expectations.Extended
+        UtilSpec
+        Paths_cq2rdf
+
+    default-language: Haskell2010
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-record-updates
+        -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+        -threaded -rtsopts -with-rtsopts=-N
+
+    build-depends:
+        QuickCheck -any,
+        aeson >=1.4 && <1.5,
+        base >=4.11 && <10,
+        bytestring >=0.9 && <0.11,
+        cinetv4h -any,
+        conduit >=1.3 && <1.4,
+        containers -any,
+        cq2rdf -any,
+        directory >=1.3 && <1.4,
+        esqueleto >=3 && <3.4,
+        filepath -any,
+        hashable -any,
+        hsparql -any,
+        hspec -any,
+        hspec-expectations -any,
+        mtl >=2.2 && <2.3,
+        network-uri -any,
+        parsec -any,
+        persistent >=2.8 && <2.11,
+        persistent-sqlite -any,
+        persistent-template -any,
+        process -any,
+        quickcheck-instances -any,
+        rdf4h >=4.0.0 && <4.0.2,
+        regex -any,
+        resource-pool >=0.2 && <0.3,
+        rio >=0.1.12.0,
+        text >=1.2 && <1.3,
+        time >=1.8 && <1.10,
+        transformers -any,
+        xsd -any,
+        zlib >=0.6 && <0.7

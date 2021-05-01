@@ -1,10 +1,6 @@
 let
   pkgs = import (builtins.fetchGit {
-    # Descriptive name to make the store path easier to identify
-    # name = "nixos-unstable-2020-04-29";
     url = "https://github.com/NixOS/nixpkgs/";
-    # Commit hash for nixos-unstable as of 2018-09-12
-    # `git ls-remote https://github.com/nixos/nixpkgs-channels nixos-unstable`
     ref = "refs/heads/nixos-20.09";
     rev = "da7f4c4842520167f65c20ad75ecdbd14e27ae91";
   }) {};
@@ -57,6 +53,7 @@ pkgs.mkShell {
     haskellPackages.stylish-haskell
     haskellPackages.brittany
     haskellPackages.haskell-language-server
+    haskellPackages.ghcid
 
     pkgs.curl
     pkgs.cacert
